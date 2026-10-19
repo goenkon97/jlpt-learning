@@ -386,6 +386,19 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
   .tile .peek{display:none}
   .tile .count{font-size:11px;padding-top:8px;line-height:1.4}
 }
+/* voice picker */
+.hero .goal{position:relative}
+.vp{display:inline-block;margin-left:6px}
+.vp .tog{font-size:12px;padding:3px 10px}
+.vp-pop{position:absolute;left:0;top:calc(100% + 6px);width:min(330px,calc(100vw - 40px));max-height:min(60vh,420px);overflow:auto;background:var(--card);border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,.16);z-index:30;padding:10px;text-align:left}
+.vp-h{font-size:12px;font-weight:700;color:var(--blue);margin:2px 4px 8px}
+.vp-item{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;border-radius:10px;padding:8px 10px;text-align:left;color:var(--text)}
+.vp-item:hover{background:var(--t2)}
+.vp-item.on{background:var(--chip)}
+.vp-n{font-size:14px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vp-q{font-size:11px;color:var(--sub);flex:none}
+.vp-play{font-size:10px;color:var(--blue);flex:none}
+.vp-tip{font-size:12px;color:var(--sub);line-height:1.6;margin:8px 4px 2px}
 </style>
 </head>
 <body>
@@ -397,7 +410,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
       <div>
         <div class="name">Goen Kon <span class="namev">（Vue 3）</span></div>
         <h1>Japanese Learning</h1>
-        <div class="goal">目标 <span class="badge">JLPT N2</span></div>
+        <div class="goal">目标 <span class="badge">JLPT N2</span><voice-pick></voice-pick></div>
       </div>
       <word-search></word-search>
     </div>
@@ -484,10 +497,18 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
     <div class="sticky">
       <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><word-search></word-search></div>
       <h1>文章 · 読解</h1>
-      <div class="meta">{{ articles.length }} 篇 · 已覆盖 {{ coveredGrammar }} 条 N2 语法</div>
+      <div class="pagerow">
+        <span class="meta">{{ articles.length }} 篇 · 已覆盖 {{ coveredGrammar }} 条 N2 语法</span>
+      <div class="pager">
+        <button class="pg arrow" :disabled="artPage===1" @click="setAPage(artPage-1)" aria-label="上一页">‹</button>
+        <label class="pick"><span>{{ artPage }} / {{ artPages }}</span><span class="caret">▾</span>
+          <select :value="artPage" @change="setAPage(+$event.target.value)" aria-label="选择页码"><option v-for="p in artPages" :key="p" :value="p">第 {{ p }} 页 · {{ (p-1)*10+1 }}–{{ Math.min(p*10, articles.length) }}</option></select></label>
+        <button class="pg arrow" :disabled="artPage===artPages" @click="setAPage(artPage+1)" aria-label="下一页">›</button>
+      </div>
+      </div>
     </div>
-    <button class="card alist" v-for="(a,i) in articles" :key="a.title" @click="go('a/'+i)">
-      <span class="num">{{ i+1 }}</span>
+    <button class="card alist" v-for="(a,j) in pagedArt" :key="a.title" @click="go('a/'+((artPage-1)*10+j))">
+      <span class="num">{{ (artPage-1)*10+j+1 }}</span>
       <h3 v-html="rb(a.title)"></h3>
       <p class="sum">{{ a.sum }}</p>
       <div class="stat">
@@ -497,6 +518,12 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
         <span>词汇 {{ a.vocab.length }} 个</span>
       </div>
     </button>
+    <div class="pagerow bottom"><div class="pager">
+        <button class="pg arrow" :disabled="artPage===1" @click="setAPage(artPage-1)" aria-label="上一页">‹</button>
+        <label class="pick"><span>{{ artPage }} / {{ artPages }}</span><span class="caret">▾</span>
+          <select :value="artPage" @change="setAPage(+$event.target.value)" aria-label="选择页码"><option v-for="p in artPages" :key="p" :value="p">第 {{ p }} 页 · {{ (p-1)*10+1 }}–{{ Math.min(p*10, articles.length) }}</option></select></label>
+        <button class="pg arrow" :disabled="artPage===artPages" @click="setAPage(artPage+1)" aria-label="下一页">›</button>
+      </div></div>
     <p class="plan">从易到难排列：入门 → 标准 → 偏难。每条 N2 语法至少在两篇文章里出现。</p>
   </template>
 
@@ -3064,19 +3091,65 @@ const AnaPanel = {
 
 /* 挑设备上最好的日语声音：自然音（Edge）> 增强/高级（Apple）> Google > 其他 */
 let VOICE=null;
+/* ---------- 朗读 ----------
+   每台设备可以在首页「声音」里自选日语语音，存在本机（localStorage）。
+   iPhone 静音模式：先播放一段无声音频并把音频会话设为 playback，尽量让朗读不受静音键影响。 */
+const VOICE_KEY='jaVoice';
+const jaVoices=()=>('speechSynthesis' in window)?speechSynthesis.getVoices().filter(v=>/^ja[-_]?/i.test(v.lang)):[];
+const voiceScore=v=>{ const n=v.name;
+  if(/Natural|Online/i.test(n)) return 100+(/Nanami/i.test(n)?5:0);
+  if(/Premium|Enhanced|拡張|高品質|增强|強化|优化/i.test(n)) return 80;
+  if(/Google/i.test(n)) return 60;
+  if(/O-?ren|Kyoko|Otoya|Hattori|Haruka|Ayumi|Nanami|Sayaka/i.test(n)) return 40;
+  return v.localService?20:10; };
 const bestVoice=()=>{
   if(VOICE) return VOICE;
-  const vs=('speechSynthesis' in window)?speechSynthesis.getVoices().filter(v=>/^ja[-_]?/i.test(v.lang)):[];
-  if(!vs.length) return null;
-  const score=v=>{ const n=v.name;
-    if(/Natural|Online/i.test(n)) return 100+(/Nanami/i.test(n)?5:0);
-    if(/Premium|Enhanced|拡張|高品質/i.test(n)) return 80;
-    if(/Google/i.test(n)) return 60;
-    if(/O-?ren|Kyoko|Otoya|Hattori|Haruka|Ayumi|Nanami|Sayaka/i.test(n)) return 40;
-    return v.localService?20:10; };
-  VOICE=vs.sort((a,b)=>score(b)-score(a))[0]; return VOICE;
+  const vs=jaVoices(); if(!vs.length) return null;
+  let pref=null; try{ pref=localStorage.getItem(VOICE_KEY); }catch(_){}
+  VOICE=(pref&&vs.find(v=>v.voiceURI===pref)) || vs.slice().sort((a,b)=>voiceScore(b)-voiceScore(a))[0]; return VOICE;
 };
-if('speechSynthesis' in window){ speechSynthesis.getVoices(); speechSynthesis.addEventListener?.('voiceschanged',()=>{ VOICE=null; }); }
+const voiceBus=Vue.reactive({ n:0 });
+if('speechSynthesis' in window){ speechSynthesis.getVoices(); speechSynthesis.addEventListener?.('voiceschanged',()=>{ VOICE=null; voiceBus.n++; }); }
+const SILENT='data:audio/wav;base64,UklGRvQHAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YdAHAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==';
+let silentEl=null;
+function unlockAudio(){
+  try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(_){}
+  try{ if(!silentEl){ silentEl=new Audio(SILENT); silentEl.setAttribute('playsinline',''); } silentEl.currentTime=0; const p=silentEl.play(); if(p&&p.catch) p.catch(()=>{}); }catch(_){}
+}
+function speakJa(t, rate){
+  if(!('speechSynthesis' in window)) return;
+  unlockAudio();
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t); u.lang='ja-JP'; u.rate=rate||.95; u.pitch=1;
+  const v=bestVoice(); if(v) u.voice=v;
+  speechSynthesis.speak(u);
+}
+/* 首页「声音」：列出本机可用的日语语音，选一个并试听 */
+const VoicePick = {
+  template:`<div class="vp">
+    <button class="tog" :class="{on:open}" @click="toggle">🔊 声音<span v-if="cur"> · {{ short(cur.name) }}</span></button>
+    <div class="vp-pop" v-if="open">
+      <div class="vp-h">选择这台设备上的日语语音</div>
+      <p class="vp-tip" v-if="!list.length">这个浏览器没有提供日语语音。</p>
+      <button class="vp-item" v-for="v in list" :key="v.voiceURI" :class="{on:cur&&cur.voiceURI===v.voiceURI}" @click="pick(v)">
+        <span class="vp-n">{{ v.name }}</span><span class="vp-q">{{ q(v) }}</span><span class="vp-play">▶</span>
+      </button>
+      <p class="vp-tip">点一下就会试听并选中，只保存在这台设备上。iPhone / iPad 可以在 设置 → 辅助功能 → 朗读内容 → 声音 → 日语 里下载「增强」或「高级」语音，下载后会出现在这里，比默认的好听很多。</p>
+    </div></div>`,
+  data(){ return { open:false }; },
+  mounted(){ this._out=e=>{ if(this.open && !this.$el.contains(e.target)) this.open=false; }; document.addEventListener('pointerdown',this._out); },
+  unmounted(){ document.removeEventListener('pointerdown',this._out); },
+  computed:{
+    list(){ voiceBus.n; return jaVoices().slice().sort((a,b)=>voiceScore(b)-voiceScore(a)); },
+    cur(){ voiceBus.n; return this.list.length?bestVoice():null; }
+  },
+  methods:{
+    toggle(){ this.open=!this.open; if(this.open){ speechSynthesis.getVoices(); voiceBus.n++; } },
+    pick(v){ try{ localStorage.setItem(VOICE_KEY,v.voiceURI); }catch(_){} VOICE=v; voiceBus.n++; speakJa('こんにちは。日本語の勉強を頑張りましょう。'); },
+    q(v){ const s=voiceScore(v); return s>=100?'自然 · 推荐':s>=80?'高品质':s>=60?'清晰':'普通'; },
+    short(n){ return n.replace(/\s*\(.*?\)|Microsoft |Google |\s*-\s*Japanese.*$|Japanese|日本語/gi,'').trim().slice(0,14)||n.slice(0,14); }
+  }
+};
 
 /* ---------- 动词变形引擎 ----------
    动词：{ w:'書く', r:'かく', g:1|2|'s'|'k', zh:'写' }
@@ -3517,17 +3590,12 @@ const VerbPage = {
     danKana(i){ const r=vbRow(this.row[1]); return r[i]; },
     danEx(i){ const v={w:this.row[0],r:this.row[1],g:1}; return vbConj(v, this.danuse[i][2]).mk; },
     kuruCls(f){ const r=vbConj(this.kuru,f).mk.match(/来\((.)\)/); return r?{く:'kc-ku',き:'kc-ki',こ:'kc-ko'}[r[1]]:''; },
-    say(t){
-      if(!('speechSynthesis' in window)) return;
-      speechSynthesis.cancel();
-      const u=new SpeechSynthesisUtterance(t); u.lang='ja-JP'; u.rate=.95; u.pitch=1;
-      const v=bestVoice(); if(v) u.voice=v; speechSynthesis.speak(u);
-    }
+    say(t){ speakJa(t); }
   }
 };
 
 Vue.createApp({
-  data(){ const p=parse(); return { route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, flashG:null, flashV:null, openAna:{}, synonyms, synCats, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',talk:'口语'}, gramCat:'all', gramPage:1, gq:'', articles }; },
+  data(){ const p=parse(); return { route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, flashG:null, flashV:null, openAna:{}, synonyms, synCats, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',talk:'口语'}, gramCat:'all', gramPage:1, gq:'', articles, artPage:1 }; },
   computed:{
     art(){ return this.articles[this.idx]; },
     coveredGrammar(){ return new Set(this.articles.flatMap(a=>a.grammar.map(g=>g[0]))).size; },
@@ -3545,12 +3613,17 @@ Vue.createApp({
       return this.grammar.filter(g=>(cat==='all'||g.c===cat) && (!q || this.plain(g.p).includes(q) || g.p.includes(q) || g.zh.includes(q) || g.note.includes(q))); },
     gramPages(){ return Math.max(1, Math.ceil(this.filteredGram.length/10)); },
     pagedGram(){ const p=Math.min(this.gramPage,this.gramPages); return this.filteredGram.slice((p-1)*10, p*10); },
+    artPages(){ return Math.max(1, Math.ceil(this.articles.length/10)); },
+    pagedArt(){ const p=Math.min(this.artPage,this.artPages); return this.articles.slice((p-1)*10, p*10); },
     pagedSyn(){ const p=Math.min(this.synPage,this.synPages); return this.filteredSyn.slice((p-1)*10, p*10); }
   },
   watch:{ q(){ this.synPage=1; }, synCat(){ this.synPage=1; }, gq(){ this.gramPage=1; }, gramCat(){ this.gramPage=1; } },
   methods:{
     rb(s){ return ruby(esc(s)); },
     setPage(p){ if(!p||p<1||p>this.synPages) return; this.synPage=p; window.scrollTo({top:0,behavior:this.smooth()}); },
+    /* 从某篇文章回到列表时，停在这篇所在的那一页 */
+    syncArtPage(p){ if(p.route==='art' && this.route==='a') this.artPage=Math.floor(this.idx/10)+1; if(p.route==='a') this.artPage=Math.floor(p.idx/10)+1; },
+    setAPage(p){ if(!p||p<1||p>this.artPages) return; this.artPage=p; window.scrollTo({top:0,behavior:this.smooth()}); },
     setGPage(p){ if(!p||p<1||p>this.gramPages) return; this.gramPage=p; window.scrollTo({top:0,behavior:this.smooth()}); },
     selIdx(g){ return this.sel[g.title]||0; },
     cur(g){ return g.words[this.selIdx(g)]||g.words[0]; },
@@ -3615,18 +3688,12 @@ Vue.createApp({
     go(r){
       const h = r==='home' ? '#/' : '#/'+r;
       if(location.hash!==h){ history.pushState(null,'',h); }
-      const p=parse(); this.route=p.route; this.idx=p.idx; window.scrollTo(0,0);
+      const p=parse(); this.syncArtPage(p); this.route=p.route; this.idx=p.idx; window.scrollTo(0,0);
     },
-    say(t){
-      if(!('speechSynthesis' in window)) return;
-      speechSynthesis.cancel();
-      const u=new SpeechSynthesisUtterance(t); u.lang='ja-JP'; u.rate=.95; u.pitch=1;
-      const v=bestVoice(); if(v) u.voice=v;
-      speechSynthesis.speak(u);
-    }
+    say(t){ speakJa(t); }
   },
-  mounted(){ window.addEventListener('popstate',()=>{ const p=parse(); this.route=p.route; this.idx=p.idx; }); }
-}).component('word-search', WordSearch).component('ana-panel', AnaPanel).component('verb-page', VerbPage).mount('#app');
+  mounted(){ window.addEventListener('popstate',()=>{ const p=parse(); this.syncArtPage(p); this.route=p.route; this.idx=p.idx; }); }
+}).component('word-search', WordSearch).component('ana-panel', AnaPanel).component('verb-page', VerbPage).component('voice-pick', VoicePick).mount('#app');
 </script>
 
 </body>
