@@ -216,6 +216,8 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .exl{font-size:12px;font-weight:600;color:var(--blue)}
 .play{width:28px;height:28px;border-radius:50%;border:0;background:linear-gradient(#34343a,#0e0e10);color:var(--gold);font-size:10px;flex:none}
 .ver{margin-left:8px;font-size:11px;font-weight:600;color:var(--sub);letter-spacing:0;text-transform:none;white-space:nowrap}
+.pause{display:inline-block;vertical-align:middle;margin-left:8px;font-size:11px;font-weight:700;letter-spacing:0;padding:2px 8px;border-radius:7px;background:var(--cp-bg);color:var(--cp-t);white-space:nowrap}
+@media (max-width:520px){.tile h2 .pause{display:table;margin:4px 0 0}}
 .namev{font-weight:600;opacity:.75;letter-spacing:0;text-transform:none}
 .h1sub{font-size:15px;font-weight:600;color:var(--sub);margin-left:6px;letter-spacing:0}
 .gh{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
@@ -428,7 +430,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
   <template v-if="route==='home'">
     <div class="hero">
       <div>
-        <div class="name">Goen Kon <span class="namev">（Vue 3）</span><span class="ver">v51 · Updated 2026-10-20 20:10</span></div>
+        <div class="name">Goen Kon <span class="namev">（Vue 3）</span><span class="ver">v52 · Updated 2026-10-20 20:22</span></div>
         <h1>Japanese Learning</h1>
         <div class="goal">目标 <span class="badge">JLPT N2</span></div>
       </div>
@@ -444,7 +446,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
         <span class="count">{{ synonyms.length }} 组 · {{ Object.keys(synCats).length }} 个分类</span>
       </button>
       <button class="tile" @click="go('art')">
-        <h2>文章</h2>
+        <h2>文章<span class="pause">N2 改写至第 10 篇 · 暂停更新</span></h2>
         <span class="jp">読解</span>
         <p class="desc">N2 读解文章，汉字上方注假名，读着读着把语法和词汇连起来。</p>
         <div class="peek"><span class="chip" v-for="a in articles.slice(0,4)" :key="a.title">{{ a.short }}</span></div>
@@ -665,7 +667,6 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
           <button class="play" @click="sayEx(e[0])" aria-label="朗读例句">▶</button>
         </div>
       </div>
-      <div class="garts" v-if="g.arts && g.arts.length"><span>文章中出现</span><button v-for="n in g.arts" :key="n" @click="go('a/'+(n-1))">{{ n }}. {{ articles[n-1].short }}</button></div>
     </div>
     <p class="plan" v-if="!filteredGram.length">没有找到相关的语法。</p>
     <div class="pagerow bottom" v-if="gramPages>1"><div class="pager" v-if="gramPages>1">
