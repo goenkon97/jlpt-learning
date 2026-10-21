@@ -14,25 +14,29 @@
 <style>
 /* Layout: same as IELTS site — 720px centered column, name left / search right, tile grid, sticky sub-page header */
 :root{
-  --bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--sub:#6e6e73;--line:#e5e5ea;
+  --bg:#f4f0e8;--card:#fdfbf6;--text:#2a2620;--sub:#7a7164;--line:#e9e1d1;
+  --card2:#f9f5ec;--edge:rgba(196,164,104,.22);--shadow:0 1px 2px rgba(120,90,40,.05),0 8px 24px rgba(120,90,40,.06);--glow:rgba(240,214,160,.35);--ico:#b8892e;--ico-bg:#f3e6c6;--ico-ring:#e6d3a6;--numc:rgba(184,137,46,.13);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Hiragino Mincho ProN",serif;
   --blue:#8a6414;            /* bronze accent (named --blue as in IELTS site) */
-  --chip:#f4ecd9;--greige:#ece6dc;--pager-t:#6b4a0e;
-  --gold:#f0cf8a;--tab:#1d1d1f;
+  --chip:#f4ecd9;--greige:#ece5d7;--pager-t:#6b4a0e;
+  --gold:#f0cf8a;--tab:#f1e6c9;--tab-t:#6b4a0e;
   --t1:#f4ecd9;--t2:#ece6dc;--t3:#f6e4d0;
   --cp-bg:#f3dcc3;--cp-t:#8f3f0f;   /* copper: key grammar in articles */
   --px:20px;
   --font:-apple-system,"SF Pro Text","Helvetica Neue","Hiragino Sans","Hiragino Kaku Gothic ProN","PingFang SC","Noto Sans JP",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#000;--card:#1c1c1e;--text:#f5f5f7;--sub:#98989d;--line:#2c2c2e;
-  --blue:#e8c27a;--chip:#2e2616;--greige:#2a2622;--pager-t:#d9c28f;--tab:#3a3a3c;
+  --bg:#15130f;--card:#1e1b16;--text:#efe9dd;--sub:#a49b8b;--line:#332d24;
+  --card2:#1a1813;--edge:rgba(232,194,122,.12);--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);--glow:rgba(232,194,122,.07);--ico:#e8c27a;--ico-bg:#2e2616;--ico-ring:#4a3c22;--numc:rgba(232,194,122,.09);--tab-t:#e8c27a;
+  --blue:#e8c27a;--chip:#2e2616;--greige:#2a2620;--pager-t:#d9c28f;--tab:#2e2616;
   --t1:#2e2616;--t2:#2a2622;--t3:#33241a;--cp-bg:#3a2414;--cp-t:#f0b98a;color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#000;--card:#1c1c1e;--text:#f5f5f7;--sub:#98989d;--line:#2c2c2e;
-  --blue:#e8c27a;--chip:#2e2616;--greige:#2a2622;--pager-t:#d9c28f;--tab:#3a3a3c;
+  --bg:#15130f;--card:#1e1b16;--text:#efe9dd;--sub:#a49b8b;--line:#332d24;
+  --card2:#1a1813;--edge:rgba(232,194,122,.12);--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);--glow:rgba(232,194,122,.07);--ico:#e8c27a;--ico-bg:#2e2616;--ico-ring:#4a3c22;--numc:rgba(232,194,122,.09);--tab-t:#e8c27a;
+  --blue:#e8c27a;--chip:#2e2616;--greige:#2a2620;--pager-t:#d9c28f;--tab:#2e2616;
   --t1:#2e2616;--t2:#2a2622;--t3:#33241a;--cp-bg:#3a2414;--cp-t:#f0b98a;color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font:16px/1.55 var(--font);-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--font);-webkit-font-smoothing:antialiased;min-height:100vh}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .wrap{max-width:720px;margin:0 auto;padding-left:max(var(--px),env(safe-area-inset-left,0px));padding-right:max(var(--px),env(safe-area-inset-right,0px));padding-block:28px 48px}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -67,7 +71,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
 .sticky h1{font-size:26px;letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance}
 .meta{font-size:12px;color:var(--sub);margin-top:8px}
 .card{position:relative;background:var(--card);border-radius:20px;padding:20px;margin-bottom:14px;overflow:hidden}
-.num{position:absolute;top:0;left:0;background:var(--tab);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:0 0 10px 0;font-variant-numeric:tabular-nums}
+.num{position:absolute;top:0;left:0;background:var(--tab);color:var(--tab-t);font-size:11px;font-weight:700;padding:3px 9px;border-radius:0 0 10px 0;font-variant-numeric:tabular-nums}
 .card h3{font-size:17px;margin:6px 0 10px}
 .words{display:flex;flex-direction:column;gap:10px}
 .w{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -428,6 +432,47 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .n2i .gback{padding:2px 8px;font-size:11px}
 .nv-trap{font-size:13.5px;line-height:1.6;background:var(--cp-bg);color:var(--cp-t);border-radius:10px;padding:6px 10px;margin:-4px 0 10px}
 .nv-trap b{font-weight:700;margin-right:6px}
+
+/* ===== warm paper theme (same as IELTS site) ===== */
+.tile,.card,.ws-pop{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--edge);box-shadow:var(--shadow)}
+.tile:hover{box-shadow:0 2px 4px rgba(120,90,40,.06),0 14px 32px rgba(120,90,40,.09)}
+.ana,.anabtn,.simh button,.vb-exc button{background:var(--card)}
+.search{background:var(--card2);border-color:var(--line)}
+.sticky{background:var(--bg);box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax)}
+.glow{position:absolute;left:0;right:0;top:0;height:460px;background:radial-gradient(110% 420px at 50% -80px,var(--glow),transparent 70%);z-index:-1;pointer-events:none}
+.tile h2 .h1sub{display:block;margin:2px 0 0;font-size:12px}
+.tile h2 .pause{white-space:normal}
+/* home header */
+.hero{flex-direction:column;align-items:stretch;gap:10px}
+.topline{text-align:center;font-size:15px;font-weight:700;letter-spacing:.01em;color:var(--text)}
+.topline .ver{color:var(--ico);font-weight:600}
+.hero-row{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.hname{font-family:var(--serif);font-size:52px;font-weight:600;letter-spacing:-.01em;line-height:1.05;display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px}
+.hname .tags{display:inline-flex;align-items:center;gap:6px;font-family:var(--font)}
+.hname .badge{font-size:12px;padding:4px 11px;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.tagline{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--sub);margin-top:6px}
+.tagline .goal2{font-style:normal;font-family:var(--font);font-size:12.5px;margin-left:10px;color:var(--sub)}
+/* home tiles */
+.tile{position:relative;overflow:hidden;padding:22px 22px 20px}
+.tile .ico{width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fbf3df,var(--ico-bg));border:1px solid var(--ico-ring);display:grid;place-items:center;margin-bottom:12px;flex:none}
+.tile .ico svg{width:22px;height:22px;stroke:var(--ico);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tile .no{position:absolute;top:12px;right:18px;font-family:var(--serif);font-size:40px;font-weight:700;line-height:1;color:var(--numc);pointer-events:none}
+.tile h2{font-size:22px}
+.tile .desc,.tile .peek{display:none}
+.tile .count{margin-top:2px;padding-top:2px;font-size:13.5px;color:var(--sub)}
+.tile .jp{font-weight:600}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tile .ico{background:var(--ico-bg)}}
+:root[data-theme="dark"] .tile .ico{background:var(--ico-bg)}
+@media (max-width:520px){
+  .hname{font-size:40px}
+  .tagline{font-size:16px}
+  .tile{padding:14px 14px 14px}
+  .tile .ico{width:38px;height:38px;margin-bottom:8px}
+  .tile .ico svg{width:18px;height:18px}
+  .tile .no{font-size:28px;top:10px;right:12px}
+  .tile h2{font-size:18px}
+  .tile .count{font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -435,17 +480,21 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 
   <!-- ===== HOME ===== -->
   <template v-if="route==='home'">
+    <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div>
-        <div class="name">Goen Kon <span class="namev">（Vue 3）</span><span class="ver">v59 · Updated 2026-10-21 14:24</span></div>
-        <h1>Japanese Learning</h1>
-        <div class="goal">{{ T('目标','ပန်းတိုင်') }} <span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button></div>
+      <div class="topline">Japanese <span class="ver">v60 · Updated 2026-10-21 14:53</span></div>
+      <div class="hero-row">
+        <div>
+          <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button></span></h1>
+          <div class="tagline">I can do all things.</div>
+        </div>
+        <word-search></word-search>
       </div>
-      <word-search></word-search>
     </div>
 
     <div class="grid">
       <button class="tile" @click="go('syn')">
+        <span class="no">01</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></svg></span>
         <h2>同义词</h2>
         <span class="jp">類義語</span>
         <p class="desc">{{ T('意思相近的词放在一起，分清细微差别和用法。','အဓိပ္ပာယ်နီးစပ်တဲ့ စကားလုံးတွေကို အတူစုထားပြီး သိမ်မွေ့တဲ့ ကွာခြားချက်နဲ့ အသုံးပြုပုံကို ခွဲခြားပါ။') }}</p>
@@ -453,6 +502,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
         <span class="count">{{ synonyms.length }} {{ T('组','အုပ်စု') }} · {{ Object.keys(synCats).length }} {{ T('个分类','အမျိုးအစား') }}</span>
       </button>
       <button class="tile" @click="go('art')">
+        <span class="no">02</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg></span>
         <h2>文章<span class="pause">{{ T('N2 改写至第 10 篇 · 暂停更新','N2 ၁၀ ပုဒ်အထိ · ခဏရပ်ထား') }}</span></h2>
         <span class="jp">読解</span>
         <p class="desc">{{ T('N2 读解文章，汉字上方注假名，读着读着把语法和词汇连起来。','N2 စာဖတ်ဆောင်းပါးများ၊ ခန်းဂျိအပေါ်မှာ ခါနာ အသံထွက်ပါပြီး ဖတ်ရင်း သဒ္ဒါနဲ့ ဝေါဟာရကို ချိတ်ဆက်ပါ။') }}</p>
@@ -460,6 +510,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
         <span class="count">{{ articles.length }} {{ T('篇','ပုဒ်') }} · {{ T('覆盖 N2 语法','N2 သဒ္ဒါ') }} {{ coveredGrammar }} {{ T('条','ခု ပါဝင်') }}</span>
       </button>
       <button class="tile" @click="go('gram')">
+        <span class="no">03</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg></span>
         <h2>语法<span class="h1sub">{{ T('（N2 ＋ N3 ＋ 接续词 ＋ 敬语 ＋ 口语）','（N2 ＋ N3 ＋ ဆက်စပ်စကား ＋ ရိုသေစကား ＋ စကားပြော）') }}</span></h2>
         <span class="jp">文法</span>
         <p class="desc">{{ T('N2、N3 重点文型，加接续词、敬语和生活口语：接续、意思、两个例句、相近说法。','N2、N3 အဓိက သဒ္ဒါပုံစံများ၊ ဆက်စပ်စကား၊ ရိုသေစကားနဲ့ နေ့စဉ်စကားပြော：ချိတ်ဆက်ပုံ၊ အဓိပ္ပာယ်၊ ဥပမာ နှစ်ခု၊ ဆင်တူပုံစံများ။') }}</p>
@@ -467,6 +518,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
         <span class="count">{{ grammar.length }} {{ T('条','ခု') }} · N2 {{ gramCounts.n2 }} · N3 {{ gramCounts.n3 }} · {{ T('接续词','ဆက်စပ်စကား') }} {{ gramCounts.conj }} · {{ T('敬语','ရိုသေစကား') }} {{ gramCounts.keigo }} · {{ T('口语','စကားပြော') }} {{ gramCounts.talk }}</span>
       </button>
       <button class="tile" @click="go('n2')">
+        <span class="no">04</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v13M8 10h5M8 14h5"/></svg></span>
         <h2>N2 词汇</h2>
         <span class="jp">語彙</span>
         <p class="desc">{{ T('按 N2 词表系统补词汇：读音、中文、例句、朗读和详细解析。','N2 ဝေါဟာရစာရင်းအတိုင်း စနစ်တကျ ဖြည့်ပါ：အသံထွက်၊ အဓိပ္ပာယ်၊ ဥပမာ၊ အသံဖတ်နဲ့ အသေးစိတ် ခွဲခြမ်းစိတ်ဖြာချက်။') }}</p>
@@ -474,6 +526,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
         <span class="count">{{ n2vocab.length }} {{ T('词 · 持续增加中','လုံး · ဆက်တိုးနေဆဲ') }}</span>
       </button>
       <button class="tile wide" @click="go('verb')">
+        <span class="no">05</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.5 4.5L20 16M20 20v-4h-4"/></svg></span>
         <h2>动词变形</h2>
         <span class="jp">動詞の活用</span>
         <p class="desc">{{ T('一类、二类、三类动词怎么变：て形、ない形、可能、被动、使役……图解加例句，还能查任意动词。','အုပ်စု ၁၊ ၂၊ ၃ ကြိယာ ပုံပြောင်းနည်း：て形、ない形、နိုင်ခြေ၊ ခံရ၊ ခိုင်းစေ……ပုံနဲ့ ဥပမာပါပြီး ဘယ်ကြိယာမဆို ရှာနိုင်ပါတယ်။') }}</p>
