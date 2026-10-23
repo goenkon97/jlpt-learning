@@ -71,6 +71,8 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
 .sticky h1{font-size:26px;letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance}
 .meta{font-size:12px;color:var(--sub);margin-top:8px}
 .card{position:relative;background:var(--card);border-radius:20px;padding:20px;margin-bottom:14px;overflow:hidden}
+.cpy{position:absolute;top:0;right:0;border:0;background:var(--tab);color:var(--tab-t);font-size:11px;font-weight:700;padding:4px 10px;border-radius:0 0 0 10px;line-height:1.2;display:flex;align-items:center;gap:4px;cursor:pointer;z-index:2}
+.cpy:hover{opacity:.85}.cpy.ok{background:var(--chip);color:var(--blue)}
 .num{position:absolute;top:0;left:0;background:var(--tab);color:var(--tab-t);font-size:11px;font-weight:700;padding:3px 9px;border-radius:0 0 10px 0;font-variant-numeric:tabular-nums}
 .card h3{font-size:17px;margin:6px 0 10px}
 .words{display:flex;flex-direction:column;gap:10px}
@@ -485,7 +487,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v74 · Updated 2026-10-22 16:05</span></div>
+      <div class="topline">Japanese <span class="ver">v75 · Updated 2026-10-23 18:59</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button></span></h1>
@@ -561,7 +563,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
       </div>
     </div>
     <div class="card" v-for="(g,i) in pagedSyn" :key="g.title">
-      <span class="num">{{ (synPage-1)*10+i+1 }}</span>
+      <span class="num">{{ (synPage-1)*10+i+1 }}</span><button class="cpy" :class="{ok:copied===('s:'+g.title)}" @click="copyCard('s:'+g.title)" :aria-label="T('复制本卡','ကတ်ကို ကူးယူ')" :title="T('复制本卡','ကတ်ကို ကူးယူ')"><svg v-if="copied!==('s:'+g.title)" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span v-else>✓ {{ T('已复制','ကူးပြီး') }}</span></button>
       <h3>{{ sT(g) }}</h3>
       <div class="words">
         <button class="wrow" v-for="(w,j) in g.words" :key="w.k" :class="{on:selIdx(g)===j}" @click="pick(g,j)">
@@ -717,7 +719,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
       </div>
     </div>
     <div class="card gcard" v-for="(g,i) in pagedGram" :key="g.p">
-      <span class="num">{{ (gramPage-1)*10+i+1 }}</span>
+      <span class="num">{{ (gramPage-1)*10+i+1 }}</span><button class="cpy" :class="{ok:copied===('g:'+g.p)}" @click="copyCard('g:'+g.p)" :aria-label="T('复制本卡','ကတ်ကို ကူးယူ')" :title="T('复制本卡','ကတ်ကို ကူးယူ')"><svg v-if="copied!==('g:'+g.p)" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span v-else>✓ {{ T('已复制','ကူးပြီး') }}</span></button>
       <div class="gh"><span class="ghp"><h3 v-html="rb(g.p)"></h3><button class="play lt" @click="sayEx(g.p.replace(/〜/g,'').replace(/[／/]/g,'、'))" aria-label="朗读语法">▶</button></span><span class="glv" :class="g.c">{{ (mmOn?gramTagMy:gramTag)[g.c] }}</span></div>
       <div class="gzh" :lang="mmOn?'my':'zh'">{{ gT(g,0) }}</div>
       <div class="grow"><span class="pos">{{ T('接续','ဆက်ပုံ') }}</span><span class="gtx" v-html="rb(gT(g,1))"></span></div>
@@ -762,7 +764,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
       </div>
     </div>
     <div class="card nv" v-for="(w,i) in pagedN2" :key="w.k">
-      <span class="num">{{ (n2Page-1)*10+i+1 }}</span>
+      <span class="num">{{ (n2Page-1)*10+i+1 }}</span><button class="cpy" :class="{ok:copied===('n:'+w.k)}" @click="copyCard('n:'+w.k)" :aria-label="T('复制本卡','ကတ်ကို ကူးယူ')" :title="T('复制本卡','ကတ်ကို ကူးယူ')"><svg v-if="copied!==('n:'+w.k)" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span v-else>✓ {{ T('已复制','ကူးပြီး') }}</span></button>
       <div class="nv-h">
         <span class="nv-w" v-html="rb(vAlign(w))"></span>
         <button class="play lt" @click="say(w.r)" aria-label="朗读单词">▶</button>
@@ -8414,7 +8416,7 @@ const VerbPage = {
 };
 
 Vue.createApp({
-  data(){ const p=parse(); return { route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{v:'动词',n:'名词',adj:'形容词',adv:'副词·其他'}, n2CatsMy:{v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား'}, n2Cat:'all', n2Page:1, nq:'' }; },
+  data(){ const p=parse(); return { route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{v:'动词',n:'名词',adj:'形容词',adv:'副词·其他'}, n2CatsMy:{v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား'}, n2Cat:'all', n2Page:1, nq:'' }; },
   computed:{
     art(){ return this.articles[this.idx]; },
     coveredGrammar(){ return new Set(this.articles.flatMap(a=>a.grammar.map(g=>g[0]))).size; },
@@ -8456,6 +8458,21 @@ Vue.createApp({
     cur(g){ return g.words[this.selIdx(g)]||g.words[0]; },
     pick(g,j){ this.sel[g.title]=j; const w=g.words[j]; this.say(w.r||w.k); },
     /* 朗读用假名读音：网站里居る・有る・御等写成汉字，直接交给语音引擎容易读错 */
+    /* 复制卡片：词 + 读音 + 意思 + 例句（日语去掉注音）+ 翻译；翻译跟随当前语言 */
+    cpPlain(s){ return (s||'').replace(/[一-鿿々〆ヶ]+\(([ぁ-ゖー]+)\)/g,m=>m.replace(/\([ぁ-ゖー]+\)/,'')).replace(/\[\[|\]\]|\{\{n?\d+:|\}\}/g,'').replace(/<[^>]+>/g,''); },
+    cardText(key){ const t=key.slice(0,1), id=key.slice(2), P=x=>this.cpPlain(x), L=[];
+      if(t==='s'){ const g=this.synonyms.find(x=>x.title===id); if(!g) return ''; L.push(this.sT(g));
+        g.words.forEach((w,j)=>{ L.push(''); L.push(w.k+(w.r&&w.r!==w.k?'（'+w.r+'）':'')+'  '+(this.mmOn?this.posMy(w.pos):w.pos)+'  '+this.sW(g,j,0)); if(w.ex){ L.push(this.T('例句：','ဥပမာ：')+P(w.ex)); L.push(this.sW(g,j,1)); } }); }
+      else if(t==='g'){ const g=this.grammar.find(x=>x.p===id); if(!g) return ''; L.push(P(g.p)+'  ['+(this.mmOn?this.gramTagMy:this.gramTag)[g.c]+']'); L.push(this.gT(g,0));
+        if(g.conn) L.push(this.T('接续：','ဆက်ပုံ：')+P(this.gT(g,1))); if(g.note) L.push(this.T('注意：','သတိပြု：')+P(this.gT(g,2)));
+        const ex=this.mmOn&&this.gramMy[g.p]? g.ex.map((e,i)=>[e[0],this.gramMy[g.p][3+i]||e[1]]) : g.ex; if(ex.length){ L.push(''); L.push(this.T('例句','ဥပမာ')); ex.forEach(e=>{ L.push('・'+P(e[0])); L.push('　'+e[1]); }); } }
+      else { const w=this.n2vocab.find(x=>x.k===id); if(!w) return ''; L.push(w.k+(w.r&&w.r!==w.k?'（'+w.r+'）':'')+'  '+(this.mmOn?this.posMy(w.pos):w.pos)); L.push(this.nM(w,0));
+        if(w.trap) L.push('⚠ '+this.T('中文陷阱：','မှားတတ်ချက်：')+this.nM(w,2)); if(w.ex){ L.push(''); L.push(this.T('例句：','ဥပမာ：')+P(w.ex)); L.push(this.nM(w,1)); } }
+      return L.join('\n'); },
+    copyCard(key){ const txt=this.cardText(key); if(!txt) return;
+      const done=()=>{ this.copied=key; clearTimeout(this.cpT); this.cpT=setTimeout(()=>{ this.copied=null; },1500); };
+      const fallback=()=>{ const ta=document.createElement('textarea'); ta.value=txt; ta.setAttribute('readonly',''); ta.style.cssText='position:fixed;top:0;left:0;opacity:0'; document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0,txt.length); let ok=false; try{ ok=document.execCommand('copy'); }catch(_){} ta.remove(); if(ok) done(); else window.prompt(this.T('复制下面的内容：','အောက်ပါစာကို ကူးယူပါ：'),txt); };
+      if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(txt).then(done,fallback); } else fallback(); },
     T(zh,my){ return this.mmOn ? my : zh; },
     aMy(i){ return this.mmOn ? artMy[i] : null; },
     aN2(w){ if(!this.mmOn) return w[2]; const m=n2My[w[0]]; return m ? m[0] : (artN2My[w[0]]||w[2]); },
