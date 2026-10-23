@@ -487,7 +487,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v76 · Updated 2026-10-23 19:08</span></div>
+      <div class="topline">Japanese <span class="ver">v77 · Updated 2026-10-23 19:11</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button></span></h1>
@@ -8471,7 +8471,7 @@ Vue.createApp({
         if(w.trap) L.push('⚠ '+this.T('中文陷阱：','မှားတတ်ချက်：')+this.nM(w,2)); if(w.ex){ L.push(''); L.push(this.T('例句：','ဥပမာ：')+P(w.ex)); L.push(this.nM(w,1)); } }
       return L; },
     cardText(key){ return this.cardLines(key).join('\n').replace(/([一-鿿々〆ヶ]+)\(([ぁ-ゖー]+)\)/g,'$1（$2）'); },
-    cardHtml(key){ return '<div>'+this.cardLines(key).map(l=>ruby(esc(l))).join('<br>')+'</div>'; },
+    cardHtml(key){ return '<div>'+this.cardLines(key).map(l=>esc(l).replace(/([一-鿿々〆ヶ]+)\(([ぁ-ゖー]+)\)/g,'<ruby>$1<rp>（</rp><rt>$2</rt><rp>）</rp></ruby>')).join('<br>')+'</div>'; },
     copyCard(key){ const txt=this.cardText(key); if(!txt) return; const html=this.cardHtml(key);
       const done=()=>{ this.copied=key; clearTimeout(this.cpT); this.cpT=setTimeout(()=>{ this.copied=null; },1500); };
       const fallback=()=>{ const on=e=>{ e.preventDefault(); e.clipboardData.setData('text/html',html); e.clipboardData.setData('text/plain',txt); };
