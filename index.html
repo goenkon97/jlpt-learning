@@ -14,27 +14,19 @@
 <style>
 /* Layout: same as IELTS site — 720px centered column, name left / search right, tile grid, sticky sub-page header */
 :root{
-  --bg:#f4f0e8;--card:#fdfbf6;--text:#2a2620;--sub:#7a7164;--line:#e9e1d1;
-  --card2:#f9f5ec;--edge:rgba(196,164,104,.22);--shadow:0 1px 2px rgba(120,90,40,.05),0 8px 24px rgba(120,90,40,.06);--glow:rgba(240,214,160,.35);--ico:#b8892e;--ico-bg:#f3e6c6;--ico-ring:#e6d3a6;--numc:rgba(184,137,46,.13);
+  /* 枫叶（紅葉）主题：奶油色底、深栗色文字、枫红点缀（--blue 沿用雅思站的变量名，实际是枫红） */
+  --bg:#fbf4ea;--card:#fffaf3;--card2:#fff6ec;--text:#3b2a20;--sub:#8a7264;--line:#f0e1cf;
+  --edge:rgba(196,66,26,.10);--shadow:0 1px 2px rgba(140,60,20,.04),0 8px 22px rgba(140,60,20,.06);--glow:transparent;
+  --ico:#c4421a;--ico-bg:#fde6d3;--ico-ring:#f7cdb0;--numc:rgba(196,66,26,.10);
+  --blue:#c4421a;--chip:#fde8d6;--greige:#f6e9da;--pager-t:#9a3412;
+  --gold:#ffffff;--tab:#fbdcc4;--tab-t:#9a3412;
+  --t1:#fdf1e4;--t2:#f8efe5;--t3:#fdeedf;--cp-bg:#fde3c3;--cp-t:#94450a;
+  --leaf:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 4 56 22 66 15 63 36 79 25 76 35 93 32 84 46 95 53 72 64 77 75 56 70 53 96 47 96 44 70 23 75 28 64 5 53 16 46 7 32 24 35 21 25 37 36 34 15 44 22Z'/%3E%3C/svg%3E");
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Hiragino Mincho ProN",serif;
-  --blue:#8a6414;            /* bronze accent (named --blue as in IELTS site) */
-  --chip:#f4ecd9;--greige:#ece5d7;--pager-t:#6b4a0e;
-  --gold:#f0cf8a;--tab:#f1e6c9;--tab-t:#6b4a0e;
-  --t1:#f4ecd9;--t2:#ece6dc;--t3:#f6e4d0;
-  --cp-bg:#f3dcc3;--cp-t:#8f3f0f;   /* copper: key grammar in articles */
   --px:20px;
   --font:-apple-system,"SF Pro Text","Helvetica Neue","Hiragino Sans","Hiragino Kaku Gothic ProN","PingFang SC","Noto Sans JP",sans-serif;
+  color-scheme:light;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#15130f;--card:#1e1b16;--text:#efe9dd;--sub:#a49b8b;--line:#332d24;
-  --card2:#1a1813;--edge:rgba(232,194,122,.12);--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);--glow:rgba(232,194,122,.07);--ico:#e8c27a;--ico-bg:#2e2616;--ico-ring:#4a3c22;--numc:rgba(232,194,122,.09);--tab-t:#e8c27a;
-  --blue:#e8c27a;--chip:#2e2616;--greige:#2a2620;--pager-t:#d9c28f;--tab:#2e2616;
-  --t1:#2e2616;--t2:#2a2622;--t3:#33241a;--cp-bg:#3a2414;--cp-t:#f0b98a;color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#15130f;--card:#1e1b16;--text:#efe9dd;--sub:#a49b8b;--line:#332d24;
-  --card2:#1a1813;--edge:rgba(232,194,122,.12);--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);--glow:rgba(232,194,122,.07);--ico:#e8c27a;--ico-bg:#2e2616;--ico-ring:#4a3c22;--numc:rgba(232,194,122,.09);--tab-t:#e8c27a;
-  --blue:#e8c27a;--chip:#2e2616;--greige:#2a2620;--pager-t:#d9c28f;--tab:#2e2616;
-  --t1:#2e2616;--t2:#2a2622;--t3:#33241a;--cp-bg:#3a2414;--cp-t:#f0b98a;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--font);-webkit-font-smoothing:antialiased;min-height:100vh}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
@@ -332,8 +324,6 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .vb-fv{font-weight:600;text-align:right}
 .kc-ku,.vb-fv.kc-ku{color:#2f6f9f}.kc-ki,.vb-fv.kc-ki{color:#3c8a4f}.kc-ko,.vb-fv.kc-ko{color:var(--cp-t)}
 .kc-ku,.kc-ki,.kc-ko{font-weight:700}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .kc-ku{color:#8cc3ec}:root:not([data-theme="light"]) .kc-ki{color:#93d3a2}}
-:root[data-theme="dark"] .kc-ku{color:#8cc3ec}:root[data-theme="dark"] .kc-ki{color:#93d3a2}
 /* 规则卡 */
 .vb-idx{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .vb-idx button.on{background:linear-gradient(#34343a,#0e0e10);color:var(--gold)}
@@ -466,8 +456,6 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .tile .desc,.tile .peek{display:none}
 .tile .count{margin-top:2px;padding-top:2px;font-size:13.5px;color:var(--sub)}
 .tile .jp{font-weight:600}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tile .ico{background:var(--ico-bg)}}
-:root[data-theme="dark"] .tile .ico{background:var(--ico-bg)}
 @media (max-width:520px){
   .hname{font-size:40px}
   .tagline{font-size:16px}
@@ -478,6 +466,52 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
   .tile h2{font-size:18px}
   .tile .count{font-size:12px}
 }
+/* ===== 枫叶（紅葉）主题：奶油色底、深栗色文字、枫红→橙的渐变点缀，五个模块分别用红/橙/琥珀/赭/金五种秋叶色 ===== */
+body{background:var(--bg)}
+.tile,.card,.ws-pop{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
+.search{background:#fffdf8;border-color:var(--line)}
+.sticky{background:var(--bg);box-shadow:0 0 0 100vmax var(--bg)}
+.seg{background:#f7eadb}
+.badge,.tog.on,.seg button.on,.play,.mm-btn.on,.glv.n2,.gsim button.on,.vb-tag.g1,.vb-to.g1,.vb-sn,.vb-pick button.on,.vb-quick button.on,.vb-cands button.on,.vb-idx button.on{background:linear-gradient(135deg,#e8590c,#c0261a);color:#fff;box-shadow:0 2px 6px rgba(192,38,26,.18)}
+.vb-pick button.on rt,.vb-quick button.on rt,.vb-cands button.on rt,.gsim button.on rt{color:#fff;opacity:.85}
+.play.lt{background:var(--chip);color:#c4421a;box-shadow:none}
+/* 首页：飘落的枫叶 */
+.leaves{display:none}
+.glow{display:block;height:340px;background:radial-gradient(90% 300px at 50% -60px,rgba(251,146,60,.18),transparent 70%)}
+.leaves{display:block;position:absolute;left:0;right:0;top:0;height:330px;overflow:hidden;pointer-events:none;z-index:-1}
+.leaves i{position:absolute;width:34px;height:34px;-webkit-mask:var(--leaf) center/contain no-repeat;mask:var(--leaf) center/contain no-repeat;opacity:.75}
+.leaves i:nth-child(1){left:6%;top:18px;background:#d9381e;transform:rotate(-18deg)}
+.leaves i:nth-child(2){left:22%;top:118px;width:20px;height:20px;background:#f08c1a;transform:rotate(25deg);opacity:.55}
+.leaves i:nth-child(3){right:8%;top:30px;width:46px;height:46px;background:#c0261a;transform:rotate(14deg);opacity:.6}
+.leaves i:nth-child(4){right:28%;top:150px;width:22px;height:22px;background:#e2a21b;transform:rotate(-30deg);opacity:.55}
+.leaves i:nth-child(5){left:48%;top:6px;width:18px;height:18px;background:#e8590c;transform:rotate(40deg);opacity:.5}
+.leaves i:nth-child(6){right:4%;top:200px;width:26px;height:26px;background:#a8431a;transform:rotate(-8deg);opacity:.45}
+.leaves i:nth-child(7){left:2%;top:240px;width:24px;height:24px;background:#f2a33a;transform:rotate(60deg);opacity:.45}
+@media (prefers-reduced-motion:no-preference){
+  .leaves i{animation:leafSway 6s ease-in-out infinite}
+  .leaves i:nth-child(2n){animation-duration:7.5s;animation-delay:-2s}
+  .leaves i:nth-child(3n){animation-duration:9s;animation-delay:-4s}
+  @keyframes leafSway{0%,100%{translate:0 0;rotate:0deg}50%{translate:6px 8px;rotate:12deg}}
+}
+.topline{color:#9a3412;letter-spacing:.2em;text-transform:uppercase;font-size:12.5px}
+.topline .ver{color:#b08d76;letter-spacing:0;text-transform:none}
+.hname{color:#3b2a20}
+.tagline::before{content:"";display:inline-block;vertical-align:-3px;width:18px;height:18px;margin-right:8px;background:linear-gradient(135deg,#f08c1a,#c0261a);-webkit-mask:var(--leaf) center/contain no-repeat;mask:var(--leaf) center/contain no-repeat;transform:rotate(-15deg)}
+.tagline{color:#a0602e}
+/* 五个模块：五种秋叶色 */
+.grid .tile:nth-child(1){--lf:#c0261a;--lf2:#fde4dc}
+.grid .tile:nth-child(2){--lf:#e0620d;--lf2:#fdebd8}
+.grid .tile:nth-child(3){--lf:#c98a06;--lf2:#fcf1d2}
+.grid .tile:nth-child(4){--lf:#9c3d14;--lf2:#f6e3d6}
+.grid .tile:nth-child(5){--lf:#d9381e;--lf2:#fde6d3}
+.tile{transition:transform .2s ease,box-shadow .2s ease;background:linear-gradient(160deg,var(--lf2,#fff5ea) 0%,var(--card) 42%)}
+.tile:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(140,60,20,.05),0 14px 30px rgba(170,70,20,.12)}
+.tile::after{content:"";position:absolute;right:-14px;bottom:-16px;width:96px;height:96px;background:var(--lf,#c4421a);-webkit-mask:var(--leaf) center/contain no-repeat;mask:var(--leaf) center/contain no-repeat;opacity:.08;transform:rotate(-20deg);pointer-events:none}
+.tile .ico{background:var(--lf,#c4421a);border:0;box-shadow:0 4px 10px rgba(150,60,20,.18)}
+.tile .ico svg{stroke:#fff}
+.tile .no{color:var(--lf);opacity:.18}
+.tile .jp{color:var(--lf,#c4421a)}
+.credit{color:#b08d76}
 </style>
 </head>
 <body>
@@ -485,9 +519,9 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 
   <!-- ===== HOME ===== -->
   <template v-if="route==='home'">
-    <div class="glow" aria-hidden="true"></div>
+    <div class="glow" aria-hidden="true"></div><div class="leaves" aria-hidden="true"><i v-for="n in 7" :key="n"></i></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v77 · Updated 2026-10-23 19:11</span></div>
+      <div class="topline">Japanese <span class="ver">v84 · Updated 2026-10-23 19:34</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button></span></h1>
