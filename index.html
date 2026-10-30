@@ -591,7 +591,7 @@ body{background:var(--bg)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div><div class="leaves" aria-hidden="true"><i v-for="n in 7" :key="n"></i></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v95 · Updated 2026-10-30 21:15</span></div>
+      <div class="topline">Japanese <span class="ver">v96 · Updated 2026-10-30 21:40</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -8971,43 +8971,55 @@ Vue.createApp({
       if(!this.authUser) return;
       if(!r||!r.ok){ this.favErr=r?this.T('收藏加载失败（状态码 '+r.status+'）','ဖွင့်၍မရပါ (ကုဒ် '+r.status+')'):this.T('连不上后端，收藏没有加载','ဆာဗာကို ချိတ်ဆက်၍မရပါ'); this.favState='err'; return; }
       const rows=await r.json();
-      this.favs=rows.filter(x=>x.kind==='w'||x.kind==='g').reverse().map(x=>({ k:x.kind, key:x.word, id:x.id }));   // 最新的放最上面
+      /* 日语站约定：收藏不分类型，只认"这段文字收藏了没有"。
+         以前语法收藏存成 kind='g'、单词存成 'w'，同一段文字可能各有一条。这里不看 kind，按文字合并成一项：
+         ids 记下这段文字在数据库里对应的所有编号，取消收藏时一起删掉，旧数据也就顺手清理了。
+         k 固定写 'w' 只是给模板里的 key 用，没有分类的意思。 */
+      const byKey=new Map();
+      rows.slice().reverse().forEach(x=>{   // reverse：后端按编号从小到大返回，倒过来让最新的在最上面
+        const hit=byKey.get(x.word);
+        if(hit) hit.ids.push(x.id); else byKey.set(x.word,{ k:'w', key:x.word, id:x.id, ids:[x.id] });
+      });
+      this.favs=[...byKey.values()];
       this.favState='ok';
     },
-    isFav(k,key){ return this.favs.some(f=>f.k===k&&f.key===key); },
+    /* 第一个参数 k 是以前用来区分单词/语法的，模板里还在传，这里已经不看它了 */
+    isFav(k,key){ return this.favs.some(f=>f.key===key); },
     async toggleFav(k,key){
       if(!this.favOn) return;
       if(!this.authUser){ this.openLogin(); this.loginMsg=this.T('登录后才能收藏','သိမ်းရန် လော့ဂ်အင်ဝင်ပါ'); return; }
-      const bk=k+'|'+key; if(favBusy[bk]) return; favBusy[bk]=true;
-      const ex=this.favs.find(f=>f.k===k&&f.key===key);
+      const bk=key; if(favBusy[bk]) return; favBusy[bk]=true;   // 同一段文字正在处理时，再点不重复发请求
+      const ex=this.favs.find(f=>f.key===key);                  // 不分类型：只按文字找
       try{
         if(ex){   // 已收藏 → 取消：先在页面上去掉，失败再放回来
           this.favs=this.favs.filter(f=>f!==ex);
-          const r=await this.authFetch('/favorites/'+ex.id,{ method:'DELETE' });
+          // 这段文字在数据库里可能有多条（旧的 g + 新的 w），全部删掉；任何一条失败都算失败
+          const ids=(ex.ids&&ex.ids.length)?ex.ids:[ex.id];
+          let r=null;
+          for(const id of ids){ r=await this.authFetch('/favorites/'+id,{ method:'DELETE' }); if(!r||!r.ok) break; }
           if(!this.authUser) return;
           if(!r||!r.ok){ this.favs=[ex].concat(this.favs); this.toast(this.T('取消收藏失败，请重试','ဖယ်ရှား၍မရပါ၊ ထပ်ကြိုးစားပါ')); } else this.toast(this.T('已取消收藏','သိမ်းထားမှုကို ဖယ်ရှားပြီးပါပြီ'));   // 成功也弹提示
         }else{    // 未收藏 → 收藏：先显示，等后端给出编号
-          this.favs=[{ k, key, id:null }].concat(this.favs);
+          this.favs=[{ k:'w', key, id:null, ids:[] }].concat(this.favs);
           const tmp=this.favs[0];
-          const r=await this.authFetch('/favorites',{ method:'POST', body:JSON.stringify({ site:SITE, kind:k, word:key, status:'unknown' }) });
+          // 日语站一律传 kind:'w'（后端对日语站也会强制存成 w），语法和单词不再区分
+          const r=await this.authFetch('/favorites',{ method:'POST', body:JSON.stringify({ site:SITE, kind:'w', word:key, status:'unknown' }) });
           if(!this.authUser) return;
-          if(r&&r.ok){ const d=await r.json(); tmp.id=d.id; this.toast(this.T('收藏成功','သိမ်းဆည်းပြီးပါပြီ')); } else { this.favs=this.favs.filter(f=>f!==tmp); this.toast(this.T('收藏失败，请重试','သိမ်းဆည်း၍မရပါ၊ ထပ်ကြိုးစားပါ')); }
+          if(r&&r.ok){ const d=await r.json(); tmp.id=d.id; tmp.ids=[d.id]; this.toast(this.T('收藏成功','သိမ်းဆည်းပြီးပါပြီ')); } else { this.favs=this.favs.filter(f=>f!==tmp); this.toast(this.T('收藏失败，请重试','သိမ်းဆည်း၍မရပါ၊ ထပ်ကြိုးစားပါ')); }
         }
       }finally{ delete favBusy[bk]; }
     },
     /* 收藏本里每一行要显示的内容：从词库里按文字找回读音和中文意思 */
+    /* 收藏不分类型，所以按文字依次去各个词库里找：先找单词，找不到再找语法 */
     favInfo(f){
-      if(f.k==='g'){
-        const g=this.grammar.find(x=>x.p===f.key); if(g) return { type:'g', g };
-        // 语法库里没有 → 去 30 篇文章的"本文 N2 语法"里找（g[0] 是语法文型，g[1] 中文意思，g[2..5] 两个例句和翻译）
-        for(let ai=0;ai<this.articles.length;ai++){ const i=this.articles[ai].grammar.findIndex(x=>x[0]===f.key); if(i>=0) return { type:'ag', g:this.articles[ai].grammar[i], ai, i }; }
-        return { type:'none' };
-      }
       const n=this.n2vocab.find(w=>w.k===f.key); if(n) return { type:'n2', w:n };
       for(const grp of this.synonyms){ const j=grp.words.findIndex(x=>x.k===f.key); if(j>=0) return { type:'syn', w:grp.words[j], grp, j }; }
       // N2 词库、同义词里都没有 → 去文章里找：先找"重点词汇"（有读音、意思、例句），再找"N2 词汇"（只有读音和意思，没有例句）
       for(let ai=0;ai<this.articles.length;ai++){ const i=this.articles[ai].vocab.findIndex(x=>x[0]===f.key); if(i>=0) return { type:'av', v:this.articles[ai].vocab[i], ai, i }; }
       for(let ai=0;ai<this.articles.length;ai++){ const a=this.articles[ai].n2||[]; const i=a.findIndex(x=>x[0]===f.key); if(i>=0) return { type:'an', w:a[i], ai, i }; }
+      // 单词库里都没有 → 当作语法找：先找语法库，再找 30 篇文章的"本文 N2 语法"（g[0] 文型，g[1] 中文意思，g[2..5] 两个例句和翻译）
+      const g=this.grammar.find(x=>x.p===f.key); if(g) return { type:'g', g };
+      for(let ai=0;ai<this.articles.length;ai++){ const i=this.articles[ai].grammar.findIndex(x=>x[0]===f.key); if(i>=0) return { type:'ag', g:this.articles[ai].grammar[i], ai, i }; }
       return { type:'none' };
     },
     setFPage(p){ if(!p||p<1||p>this.favPages) return; this.favPage=p; window.scrollTo({top:0,behavior:this.smooth()}); },
