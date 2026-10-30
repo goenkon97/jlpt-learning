@@ -573,7 +573,7 @@ body{background:var(--bg)}
 .lguser{display:flex;align-items:center;gap:12px;margin:10px 0}.lguser img{width:44px;height:44px;border-radius:50%}.lguser b{display:block;font-size:15px}.lguser small{color:var(--sub);font-size:12px;word-break:break-all}
 .lgbox{display:flex;justify-content:center;min-height:44px;margin-top:8px}
 .lgin{margin-left:8px;border:0;border-radius:999px;padding:5px 14px;background:linear-gradient(135deg,#e8590c,#c0261a);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
-.ftoast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;background:linear-gradient(135deg,#f08c1a,#c0261a);color:#fff;padding:14px 26px;border-radius:18px;font-size:16px;font-weight:700;line-height:1.4;max-width:80vw;text-align:center;box-shadow:0 10px 30px rgba(192,38,26,.35);border:1px solid rgba(255,255,255,.35);pointer-events:none}   /* 提示：屏幕正中间，底色用和胶囊按钮一样的主题橙红渐变，字白色 */
+.ftoast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;background:linear-gradient(135deg,rgba(240,140,26,.78),rgba(192,38,26,.78));color:#fff;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:8px 18px;border-radius:14px;font-size:14px;font-weight:600;line-height:1.4;max-width:70vw;text-align:center;box-shadow:0 6px 18px rgba(192,38,26,.18);border:1px solid rgba(255,255,255,.3);pointer-events:none}   /* 提示：屏幕正中间；比之前更小（字 14px、内边距小）、更淡（底色 78% 透明度 + 轻微毛玻璃） */
 /* 弹窗进出场：在正中间轻轻放大 + 淡入，消失时淡出 */
 .tst-enter-active,.tst-leave-active{transition:opacity .25s ease,transform .25s ease}
 .tst-enter-from,.tst-leave-to{opacity:0;transform:translate(-50%,-50%) scale(.9)}
@@ -591,7 +591,7 @@ body{background:var(--bg)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div><div class="leaves" aria-hidden="true"><i v-for="n in 7" :key="n"></i></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v94 · Updated 2026-10-30 21:14</span></div>
+      <div class="topline">Japanese <span class="ver">v95 · Updated 2026-10-30 21:15</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
