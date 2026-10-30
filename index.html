@@ -554,9 +554,15 @@ body{background:var(--bg)}
 .fvmark{flex:none;border:0;background:none;color:var(--sub);cursor:pointer;padding:3px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;-webkit-tap-highlight-color:transparent}
 .fvmark svg{fill:none;transition:fill .15s;width:19px;height:19px}
 .fvmark.on{color:var(--blue)}.fvmark.on svg{fill:currentColor}
+/* 首页：tagline 右边的收藏本大按钮 */
+.favhome{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;margin-left:14px;padding:6px 14px 6px 11px;border:0;border-radius:999px;background:var(--blue);color:#fff;font:700 14px/1 var(--font);font-style:normal;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.18);-webkit-tap-highlight-color:transparent}
+.favhome svg{fill:none}.favhome:active{transform:scale(.96)}
+/* 各模块返回栏：返回键右边的收藏本小按钮；margin-right:auto 把搜索框顶到最右 */
+.bar .favhd{flex:none;margin-right:auto;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--blue);background:var(--card);color:var(--blue);display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.bar .favhd svg{fill:none}
 .exr,.gr{display:inline-flex;align-items:center;gap:6px}
-.wrow{position:relative}.wrow .fvmark{position:absolute;top:8px;right:10px}.wrow .w{padding-right:34px}
-.nv-h .fvmark{margin-left:auto}.nv-h .fvmark+.glv{margin-left:0}
+.wrow .fvmark{margin-left:4px}   /* 同义词行：收藏按钮紧跟在词后面 */
+.nv-h .fvmark{margin-left:0}   /* 单词行：收藏按钮紧跟在词性后面，级别标签仍靠右 */
 .pkmask{position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;padding:20px}
 .pkmask .pk{width:100%;max-width:380px;margin:0}
 .pkh{display:flex;justify-content:space-between;align-items:baseline}.pkh small{color:var(--sub)}
@@ -567,7 +573,10 @@ body{background:var(--bg)}
 .lguser{display:flex;align-items:center;gap:12px;margin:10px 0}.lguser img{width:44px;height:44px;border-radius:50%}.lguser b{display:block;font-size:15px}.lguser small{color:var(--sub);font-size:12px;word-break:break-all}
 .lgbox{display:flex;justify-content:center;min-height:44px;margin-top:8px}
 .lgin{margin-left:8px;border:0;border-radius:999px;padding:5px 14px;background:linear-gradient(135deg,#e8590c,#c0261a);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
-.ftoast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9999;background:var(--text);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:14px;max-width:86vw;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.ftoast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translateX(-50%);z-index:9999;background:rgba(44,44,48,.55);color:#fff;-webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px);border:1px solid rgba(255,255,255,.18);padding:9px 18px;border-radius:99px;font-size:14px;max-width:86vw;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+/* 弹窗进出场：从上方轻轻滑下 + 淡入淡出 */
+.tst-enter-active,.tst-leave-active{transition:opacity .28s ease,transform .28s ease}
+.tst-enter-from,.tst-leave-to{opacity:0;transform:translate(-50%,-14px)}
 .fvl{padding:6px 16px}
 .fvr{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}.fvr:last-child{border-bottom:0}
 .fvm{flex:1;min-width:0}.fvt{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.fvt b{font-size:17px}
@@ -582,11 +591,11 @@ body{background:var(--bg)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div><div class="leaves" aria-hidden="true"><i v-for="n in 7" :key="n"></i></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v90 · Updated 2026-10-30 20:40</span></div>
+      <div class="topline">Japanese <span class="ver">v91 · Updated 2026-10-30 20:56</span></div>
       <div class="hero-row">
         <div>
-          <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
-          <div class="tagline">I can do all things.</div>
+          <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
+          <div class="tagline">I can do all things.<button class="favhome" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg><span>收藏本</span></button></div>
         </div>
         <word-search></word-search>
       </div>
@@ -640,7 +649,7 @@ body{background:var(--bg)}
   <!-- ===== SYNONYMS ===== -->
   <template v-else-if="route==='syn'">
     <div class="sticky">
-      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><word-search></word-search></div>
+      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><button class="favhd" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><word-search></word-search></div>
       <h1>同义词 · 類義語</h1>
       <input id="q2" class="search" style="width:100%" v-model="q" :placeholder="T('筛选同义词（单词 / 读音 / 中文）','ရှာဖွေရန်（စကားလုံး / အသံထွက် / အဓိပ္ပာယ်）')">
       <div class="seg" role="tablist">
@@ -662,9 +671,9 @@ body{background:var(--bg)}
       <h3>{{ sT(g) }}</h3>
       <div class="words">
         <button class="wrow" v-for="(w,j) in g.words" :key="w.k" :class="{on:selIdx(g)===j}" @click="pick(g,j)">
-          <span class="w"><span class="k">{{ w.k }}</span><span class="r">{{ w.r }}</span><span class="pos">{{ mmOn ? posMy(w.pos) : w.pos }}</span></span>
+          <span class="w"><span class="k">{{ w.k }}</span><span class="r">{{ w.r }}</span><span class="pos">{{ mmOn ? posMy(w.pos) : w.pos }}</span><span class="fvmark" role="button" tabindex="0" v-if="favOn" :class="{on:isFav('w',w.k)}" @click.stop="toggleFav('w',w.k)" @keydown.enter.stop="toggleFav('w',w.k)" :aria-label="isFav('w',w.k)?'取消收藏':'收藏'"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></span></span>
           <span class="wz">{{ sW(g,j,0) }}</span>
-          <span class="fvmark" role="button" tabindex="0" v-if="favOn" :class="{on:isFav('w',w.k)}" @click.stop="toggleFav('w',w.k)" @keydown.enter.stop="toggleFav('w',w.k)" :aria-label="isFav('w',w.k)?'取消收藏':'收藏'"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></span>
+          
         </button>
       </div>
       <div class="ex">
@@ -685,7 +694,7 @@ body{background:var(--bg)}
   <!-- ===== ARTICLE LIST ===== -->
   <template v-else-if="route==='art'">
     <div class="sticky">
-      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><word-search></word-search></div>
+      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><button class="favhd" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><word-search></word-search></div>
       <h1>文章 · 読解</h1>
       <div class="pagerow">
         <span class="meta">{{ articles.length }} {{ T('篇','ပုဒ်') }} · {{ T('已覆盖','') }} {{ coveredGrammar }} {{ T('条 N2 语法','N2 သဒ္ဒါ ပါဝင်') }}</span>
@@ -721,7 +730,7 @@ body{background:var(--bg)}
   <!-- ===== ARTICLE READER ===== -->
   <template v-else-if="route==='a' && art">
     <div class="sticky">
-      <div class="bar"><button class="back" @click="go('art')">‹ 返回</button><word-search></word-search></div>
+      <div class="bar"><button class="back" @click="go('art')">‹ 返回</button><button class="favhd" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><word-search></word-search></div>
       <h1 v-html="rb(art.title)"></h1>
       <div class="tools">
         <button class="tog" :class="{on:furi}" @click="furi=!furi">{{ T('假名','ခါနာ') }}</button>
@@ -797,7 +806,7 @@ body{background:var(--bg)}
   <!-- ===== GRAMMAR ===== -->
   <template v-else-if="route==='gram'">
     <div class="sticky">
-      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><word-search></word-search></div>
+      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><button class="favhd" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><word-search></word-search></div>
       <h1>语法 · 文法<span class="h1sub">（{{ Object.keys(gramCounts).length }} 类）</span></h1>
       <input class="search" style="width:100%" v-model="gq" :placeholder="T('筛选语法（文型 / 中文意思）','သဒ္ဒါ ရှာရန်（ပုံစံ / အဓိပ္ပာယ်）')">
       <div class="seg" role="tablist">
@@ -816,7 +825,7 @@ body{background:var(--bg)}
     </div>
     <div class="card gcard" v-for="(g,i) in pagedGram" :key="g.p">
       <span class="num">{{ (gramPage-1)*10+i+1 }}</span><button class="cpy" :class="{ok:copied===('g:'+g.p)}" @click="copyCard('g:'+g.p)" :aria-label="T('复制本卡','ကတ်ကို ကူးယူ')" :title="T('复制本卡','ကတ်ကို ကူးယူ')"><svg v-if="copied!==('g:'+g.p)" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span v-else>✓ {{ T('已复制','ကူးပြီး') }}</span></button>
-      <div class="gh"><span class="ghp"><h3 v-html="rb(g.p)"></h3><button class="play lt" @click="sayEx(g.p.replace(/〜/g,'').replace(/[／/]/g,'、'))" aria-label="朗读语法">▶</button></span><span class="gr"><button class="fvmark" type="button" v-if="favOn" :class="{on:isFav('g',g.p)}" @click.stop="toggleFav('g',g.p)" :aria-label="isFav('g',g.p)?'取消收藏':'收藏'" :title="isFav('g',g.p)?'取消收藏':'收藏'"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><span class="glv" :class="g.c">{{ (mmOn?gramTagMy:gramTag)[g.c] }}</span></span></div>
+      <div class="gh"><span class="ghp"><h3 v-html="rb(g.p)"></h3><button class="play lt" @click="sayEx(g.p.replace(/〜/g,'').replace(/[／/]/g,'、'))" aria-label="朗读语法">▶</button><button class="fvmark" type="button" v-if="favOn" :class="{on:isFav('g',g.p)}" @click.stop="toggleFav('g',g.p)" :aria-label="isFav('g',g.p)?'取消收藏':'收藏'" :title="isFav('g',g.p)?'取消收藏':'收藏'"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button></span><span class="gr"><span class="glv" :class="g.c">{{ (mmOn?gramTagMy:gramTag)[g.c] }}</span></span></div>
       <div class="gzh" :lang="mmOn?'my':'zh'">{{ gT(g,0) }}</div>
       <div class="grow"><span class="pos">{{ T('接续','ဆက်ပုံ') }}</span><span class="gtx" v-html="rb(gT(g,1))"></span></div>
       <div class="grow" v-if="g.note"><span class="pos">{{ T('注意','သတိပြု') }}</span><span class="gtx" v-html="rb(gT(g,2))"></span></div>
@@ -841,7 +850,7 @@ body{background:var(--bg)}
   <!-- ===== N2 VOCAB ===== -->
   <template v-else-if="route==='n2'">
     <div class="sticky">
-      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><word-search></word-search></div>
+      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><button class="favhd" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><word-search></word-search></div>
       <h1>N2 词汇 · 語彙</h1>
       <input class="search" style="width:100%" v-model="nq" :placeholder="T('筛选词汇（汉字 / 假名 / 中文）','ဝေါဟာရ ရှာရန်（ခန်းဂျိ / ခါနာ / အဓိပ္ပာယ်）')">
       <div class="seg" role="tablist">
@@ -909,7 +918,7 @@ body{background:var(--bg)}
         <span class="num">{{ (favPage-1)*10+i+1 }}</span>
         <!-- 语法 -->
         <template v-if="it.type==='g'">
-          <div class="gh"><span class="ghp"><h3 v-html="rb(it.g.p)"></h3><button class="play lt" @click="sayEx(it.g.p.replace(/〜/g,'').replace(/[／/]/g,'、'))" aria-label="朗读语法">▶</button></span><span class="gr"><button class="fvmark on" type="button" @click.stop="toggleFav('g',it.f.key)" aria-label="取消收藏"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><span class="glv" :class="it.g.c">{{ (mmOn?gramTagMy:gramTag)[it.g.c] }}</span></span></div>
+          <div class="gh"><span class="ghp"><h3 v-html="rb(it.g.p)"></h3><button class="play lt" @click="sayEx(it.g.p.replace(/〜/g,'').replace(/[／/]/g,'、'))" aria-label="朗读语法">▶</button><button class="fvmark on" type="button" @click.stop="toggleFav('g',it.f.key)" aria-label="取消收藏"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button></span><span class="gr"><span class="glv" :class="it.g.c">{{ (mmOn?gramTagMy:gramTag)[it.g.c] }}</span></span></div>
           <div class="gzh" :lang="mmOn?'my':'zh'">{{ gT(it.g,0) }}</div>
           <div class="grow"><span class="pos">{{ T('接续','ဆက်ပုံ') }}</span><span class="gtx" v-html="rb(gT(it.g,1))"></span></div>
           <div class="grow" v-if="it.g.note"><span class="pos">{{ T('注意','သတိပြု') }}</span><span class="gtx" v-html="rb(gT(it.g,2))"></span></div>
@@ -966,7 +975,7 @@ body{background:var(--bg)}
 
   <!-- ===== VERB ===== -->
   <template v-else-if="route==='verb'">
-    <verb-page @home="go('home')"></verb-page>
+    <verb-page @home="go('home')" @fav="go('fav')"></verb-page>
   </template>
 
 <div class="pkmask" v-if="loginOpen" @click.self="loginOpen=false"><div class="card pk">
@@ -982,7 +991,7 @@ body{background:var(--bg)}
     <small class="pkm" v-if="loginMsg">{{ loginMsg }}</small>
   </template>
 </div></div>
-<div class="ftoast" v-if="favToast" role="status">{{ favToast }}</div>
+<transition name="tst"><div class="ftoast" v-if="favToast" role="status">{{ favToast }}</div></transition>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
@@ -8467,7 +8476,7 @@ const VerbPage = {
   template: `
 <div class="vb">
   <div class="sticky">
-    <div class="bar"><button class="back" @click="$emit('home')">‹ {{ L('返回') }}</button><word-search></word-search></div>
+    <div class="bar"><button class="back" @click="$emit('home')">‹ {{ L('返回') }}</button><button class="favhd" type="button" v-if="$root.favOn" @click="$emit('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><word-search></word-search></div>
     <h1>{{ L('动词变形') }} · 動詞の活用</h1>
     <div class="seg" role="tablist">
       <button role="tab" v-for="t in tabs" :key="t[0]" :aria-selected="tab===t[0]" :class="{on:tab===t[0]}" @click="setTab(t[0])">{{ L(t[1]) }}</button>
@@ -8894,7 +8903,7 @@ Vue.createApp({
         saveToken(d.token);
         this.authUser={ name:d.user.name||d.user.email, email:d.user.email, picture:d.user.picture||'' };
         this.verifyMsg='登录成功，用户编号 #'+d.user.id+'。';
-        this.loginOpen=false; this.toast('登录成功'); this.loadFavs();
+        this.loginOpen=false; this.go('home'); this.toast('登录成功'); this.loadFavs();   // 登录成功一律回首页，再弹提示
       }catch(e){ this.loginMsg='连不上后端，请稍后再试'; this.verifyMsg=''; }
     },
     doLogout(){
@@ -8940,13 +8949,13 @@ Vue.createApp({
           this.favs=this.favs.filter(f=>f!==ex);
           const r=await this.authFetch('/favorites/'+ex.id,{ method:'DELETE' });
           if(!this.authUser) return;
-          if(!r||!r.ok){ this.favs=[ex].concat(this.favs); this.toast('取消收藏失败，请重试'); }
+          if(!r||!r.ok){ this.favs=[ex].concat(this.favs); this.toast('取消收藏失败，请重试'); } else this.toast('已取消收藏');   // 成功也弹提示
         }else{    // 未收藏 → 收藏：先显示，等后端给出编号
           this.favs=[{ k, key, id:null }].concat(this.favs);
           const tmp=this.favs[0];
           const r=await this.authFetch('/favorites',{ method:'POST', body:JSON.stringify({ site:SITE, kind:k, word:key, status:'unknown' }) });
           if(!this.authUser) return;
-          if(r&&r.ok){ const d=await r.json(); tmp.id=d.id; } else { this.favs=this.favs.filter(f=>f!==tmp); this.toast('收藏失败，请重试'); }
+          if(r&&r.ok){ const d=await r.json(); tmp.id=d.id; this.toast('收藏成功'); } else { this.favs=this.favs.filter(f=>f!==tmp); this.toast('收藏失败，请重试'); }
         }
       }finally{ delete favBusy[bk]; }
     },
