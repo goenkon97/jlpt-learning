@@ -547,6 +547,32 @@ body{background:var(--bg)}
 /* iPad 横屏 / 大屏：主列放宽，避免左右空出一大截（手机和竖屏不受影响） */
 @media (min-width:1000px){.wrap{max-width:980px}}
 @media (min-width:1280px){.wrap{max-width:1140px}}
+
+/* ===== 登录 / 收藏 ===== */
+.tagbtn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--sub);cursor:pointer;overflow:hidden}
+.tagbtn img{width:100%;height:100%;object-fit:cover}
+.fvmark{flex:none;border:0;background:none;color:var(--sub);cursor:pointer;padding:3px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;-webkit-tap-highlight-color:transparent}
+.fvmark svg{fill:none;transition:fill .15s;width:19px;height:19px}
+.fvmark.on{color:var(--blue)}.fvmark.on svg{fill:currentColor}
+.exr,.gr{display:inline-flex;align-items:center;gap:6px}
+.wrow{position:relative}.wrow .fvmark{position:absolute;top:8px;right:10px}.wrow .w{padding-right:34px}
+.nv-h .fvmark{margin-left:auto}.nv-h .fvmark+.glv{margin-left:0}
+.pkmask{position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;padding:20px}
+.pkmask .pk{width:100%;max-width:380px;margin:0}
+.pkh{display:flex;justify-content:space-between;align-items:baseline}.pkh small{color:var(--sub)}
+.pkt{margin:6px 0 10px;font-size:13px;color:var(--sub);line-height:1.5}
+.pkm{display:block;color:var(--blue);margin-top:8px}
+.pka{display:flex;justify-content:flex-end;margin-top:6px}
+.ghost{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:6px 14px;font-size:14px;cursor:pointer}
+.lguser{display:flex;align-items:center;gap:12px;margin:10px 0}.lguser img{width:44px;height:44px;border-radius:50%}.lguser b{display:block;font-size:15px}.lguser small{color:var(--sub);font-size:12px;word-break:break-all}
+.lgbox{display:flex;justify-content:center;min-height:44px;margin-top:8px}
+.lgin{margin-left:8px;border:0;border-radius:999px;padding:5px 14px;background:linear-gradient(135deg,#e8590c,#c0261a);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
+.ftoast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9999;background:var(--text);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:14px;max-width:86vw;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.fvl{padding:6px 16px}
+.fvr{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}.fvr:last-child{border-bottom:0}
+.fvm{flex:1;min-width:0}.fvt{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.fvt b{font-size:17px}
+.fk{font-style:normal;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--t2);color:var(--sub)}
+.fvz{margin-top:2px;font-size:13.5px;color:var(--sub);line-height:1.5}
 </style>
 </head>
 <body>
@@ -556,10 +582,10 @@ body{background:var(--bg)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div><div class="leaves" aria-hidden="true"><i v-for="n in 7" :key="n"></i></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v88 · Updated 2026-10-30 17:26</span></div>
+      <div class="topline">Japanese <span class="ver">v90 · Updated 2026-10-30 20:40</span></div>
       <div class="hero-row">
         <div>
-          <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button></span></h1>
+          <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
           <div class="tagline">I can do all things.</div>
         </div>
         <word-search></word-search>
@@ -638,6 +664,7 @@ body{background:var(--bg)}
         <button class="wrow" v-for="(w,j) in g.words" :key="w.k" :class="{on:selIdx(g)===j}" @click="pick(g,j)">
           <span class="w"><span class="k">{{ w.k }}</span><span class="r">{{ w.r }}</span><span class="pos">{{ mmOn ? posMy(w.pos) : w.pos }}</span></span>
           <span class="wz">{{ sW(g,j,0) }}</span>
+          <span class="fvmark" role="button" tabindex="0" v-if="favOn" :class="{on:isFav('w',w.k)}" @click.stop="toggleFav('w',w.k)" @keydown.enter.stop="toggleFav('w',w.k)" :aria-label="isFav('w',w.k)?'取消收藏':'收藏'"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></span>
         </button>
       </div>
       <div class="ex">
@@ -789,7 +816,7 @@ body{background:var(--bg)}
     </div>
     <div class="card gcard" v-for="(g,i) in pagedGram" :key="g.p">
       <span class="num">{{ (gramPage-1)*10+i+1 }}</span><button class="cpy" :class="{ok:copied===('g:'+g.p)}" @click="copyCard('g:'+g.p)" :aria-label="T('复制本卡','ကတ်ကို ကူးယူ')" :title="T('复制本卡','ကတ်ကို ကူးယူ')"><svg v-if="copied!==('g:'+g.p)" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span v-else>✓ {{ T('已复制','ကူးပြီး') }}</span></button>
-      <div class="gh"><span class="ghp"><h3 v-html="rb(g.p)"></h3><button class="play lt" @click="sayEx(g.p.replace(/〜/g,'').replace(/[／/]/g,'、'))" aria-label="朗读语法">▶</button></span><span class="glv" :class="g.c">{{ (mmOn?gramTagMy:gramTag)[g.c] }}</span></div>
+      <div class="gh"><span class="ghp"><h3 v-html="rb(g.p)"></h3><button class="play lt" @click="sayEx(g.p.replace(/〜/g,'').replace(/[／/]/g,'、'))" aria-label="朗读语法">▶</button></span><span class="gr"><button class="fvmark" type="button" v-if="favOn" :class="{on:isFav('g',g.p)}" @click.stop="toggleFav('g',g.p)" :aria-label="isFav('g',g.p)?'取消收藏':'收藏'" :title="isFav('g',g.p)?'取消收藏':'收藏'"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><span class="glv" :class="g.c">{{ (mmOn?gramTagMy:gramTag)[g.c] }}</span></span></div>
       <div class="gzh" :lang="mmOn?'my':'zh'">{{ gT(g,0) }}</div>
       <div class="grow"><span class="pos">{{ T('接续','ဆက်ပုံ') }}</span><span class="gtx" v-html="rb(gT(g,1))"></span></div>
       <div class="grow" v-if="g.note"><span class="pos">{{ T('注意','သတိပြု') }}</span><span class="gtx" v-html="rb(gT(g,2))"></span></div>
@@ -838,7 +865,7 @@ body{background:var(--bg)}
         <span class="nv-w" v-html="rb(vAlign(w))"></span>
         <button class="play lt" @click="say(w.r)" aria-label="朗读单词">▶</button>
         <span class="pos">{{ mmOn ? posMy(w.pos) : w.pos }}</span>
-        <span class="glv n2">N2</span>
+        <button class="fvmark" type="button" v-if="favOn" :class="{on:isFav('w',w.k)}" @click.stop="toggleFav('w',w.k)" :aria-label="isFav('w',w.k)?'取消收藏':'收藏'" :title="isFav('w',w.k)?'取消收藏':'收藏'"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><span class="glv n2">N2</span>
       </div>
       <div class="nv-zh">{{ nM(w,0) }}</div>
       <div class="nv-trap" v-if="w.trap"><b>⚠ {{ T('中文陷阱','တရုတ်စကားနဲ့ မှားတတ်ချက်') }}</b>{{ nM(w,2) }}</div>
@@ -859,10 +886,103 @@ body{background:var(--bg)}
       </div></div>
   </template>
 
+  <!-- ===== FAVORITES ===== -->
+  <template v-else-if="route==='fav'">
+    <div class="sticky">
+      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><word-search></word-search></div>
+      <h1>收藏本 · お気に入り<span class="h1sub">（{{ favs.length }}）</span></h1>
+      <div class="pagerow" v-if="favPages>1">
+        <span class="meta">{{ favs.length }} 条 · ▶ 朗读</span>
+        <div class="pager">
+          <button class="pg arrow" :disabled="favPage===1" @click="setFPage(favPage-1)" aria-label="上一页">‹</button>
+          <label class="pick"><span>{{ favPage }} / {{ favPages }}</span><span class="caret">▾</span>
+            <select :value="favPage" @change="setFPage(+$event.target.value)" aria-label="选择页码"><option v-for="p in favPages" :key="p" :value="p">第 {{ p }} 页 · {{ (p-1)*10+1 }}–{{ Math.min(p*10, favs.length) }}</option></select></label>
+          <button class="pg arrow" :disabled="favPage===favPages" @click="setFPage(favPage+1)" aria-label="下一页">›</button>
+        </div>
+      </div>
+    </div>
+    <p class="plan" v-if="!authUser">登录后才能看到你的收藏。<button class="lgin" @click="openLogin">用 Google 登录</button></p>
+    <p class="plan" v-else-if="favState==='loading'">收藏加载中…</p>
+    <p class="plan" v-else-if="favState==='err'">{{ favErr }}</p>
+    <template v-else-if="favs.length">
+      <div class="card fvc" v-for="(it,i) in pagedFav" :key="it.f.k+'|'+it.f.key">
+        <span class="num">{{ (favPage-1)*10+i+1 }}</span>
+        <!-- 语法 -->
+        <template v-if="it.type==='g'">
+          <div class="gh"><span class="ghp"><h3 v-html="rb(it.g.p)"></h3><button class="play lt" @click="sayEx(it.g.p.replace(/〜/g,'').replace(/[／/]/g,'、'))" aria-label="朗读语法">▶</button></span><span class="gr"><button class="fvmark on" type="button" @click.stop="toggleFav('g',it.f.key)" aria-label="取消收藏"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><span class="glv" :class="it.g.c">{{ (mmOn?gramTagMy:gramTag)[it.g.c] }}</span></span></div>
+          <div class="gzh" :lang="mmOn?'my':'zh'">{{ gT(it.g,0) }}</div>
+          <div class="grow"><span class="pos">{{ T('接续','ဆက်ပုံ') }}</span><span class="gtx" v-html="rb(gT(it.g,1))"></span></div>
+          <div class="grow" v-if="it.g.note"><span class="pos">{{ T('注意','သတိပြု') }}</span><span class="gtx" v-html="rb(gT(it.g,2))"></span></div>
+          <div class="ex">
+            <div class="gxr" v-for="(e,k) in gEx(it.g)" :key="k">
+              <div class="gexb"><div class="jp2" v-html="render(e[0])"></div><div class="t">{{ e[1] }}</div><ana-panel :ex="e[0]" :key="e[0]"></ana-panel></div>
+              <button class="play" @click="sayEx(e[0])" aria-label="朗读例句">▶</button>
+            </div>
+          </div>
+        </template>
+        <!-- N2 词汇 -->
+        <template v-else-if="it.type==='n2'">
+          <div class="nv-h">
+            <span class="nv-w" v-html="rb(vAlign(it.w))"></span>
+            <button class="play lt" @click="say(it.w.r)" aria-label="朗读单词">▶</button>
+            <span class="pos">{{ mmOn ? posMy(it.w.pos) : it.w.pos }}</span>
+            <button class="fvmark on" type="button" @click.stop="toggleFav('w',it.f.key)" aria-label="取消收藏"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><span class="glv n2">N2</span>
+          </div>
+          <div class="nv-zh">{{ nM(it.w,0) }}</div>
+          <div class="nv-trap" v-if="it.w.trap"><b>⚠ {{ T('中文陷阱','တရုတ်စကားနဲ့ မှားတတ်ချက်') }}</b>{{ nM(it.w,2) }}</div>
+          <div class="ex" v-if="it.w.ex">
+            <div class="gxr"><div class="gexb"><div class="jp2" v-html="render(it.w.ex,null,'v')"></div><div class="t">{{ nM(it.w,1) }}</div></div><button class="play" @click="sayEx(it.w.ex)" aria-label="朗读例句">▶</button></div>
+            <ana-panel :ex="it.w.ex" :key="it.w.ex"></ana-panel>
+          </div>
+        </template>
+        <!-- 同义词里的单词 -->
+        <template v-else-if="it.type==='syn'">
+          <div class="nv-h">
+            <span class="nv-w" v-html="rb(vAlign(it.w))"></span>
+            <button class="play lt" @click="say(it.w.r||it.w.k)" aria-label="朗读单词">▶</button>
+            <span class="pos">{{ mmOn ? posMy(it.w.pos) : it.w.pos }}</span>
+            <button class="fvmark on" type="button" @click.stop="toggleFav('w',it.f.key)" aria-label="取消收藏"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><span class="glv">{{ T('同义词','ဝေါဟာရတူ') }}</span>
+          </div>
+          <div class="nv-zh">{{ sW(it.grp,it.j,0) }}</div>
+          <div class="ex" v-if="it.w.ex">
+            <div class="gxr"><div class="gexb"><div class="jp2" v-html="render(it.w.ex)"></div><div class="t">{{ sW(it.grp,it.j,1) }}</div></div><button class="play" @click="sayEx(it.w.ex)" aria-label="朗读例句">▶</button></div>
+            <ana-panel :ex="it.w.ex" :key="it.w.ex"></ana-panel>
+          </div>
+        </template>
+        <!-- 词库里已经找不到的收藏：只显示文字，可以取消 -->
+        <template v-else>
+          <div class="nv-h"><span class="nv-w">{{ it.f.key }}</span><button class="fvmark on" type="button" @click.stop="toggleFav(it.f.k,it.f.key)" aria-label="取消收藏"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button></div>
+        </template>
+      </div>
+      <div class="pagerow bottom" v-if="favPages>1"><div class="pager">
+        <button class="pg arrow" :disabled="favPage===1" @click="setFPage(favPage-1)" aria-label="上一页">‹</button>
+        <label class="pick"><span>{{ favPage }} / {{ favPages }}</span><span class="caret">▾</span>
+          <select :value="favPage" @change="setFPage(+$event.target.value)" aria-label="选择页码"><option v-for="p in favPages" :key="p" :value="p">第 {{ p }} 页 · {{ (p-1)*10+1 }}–{{ Math.min(p*10, favs.length) }}</option></select></label>
+        <button class="pg arrow" :disabled="favPage===favPages" @click="setFPage(favPage+1)" aria-label="下一页">›</button>
+      </div></div>
+    </template>
+    <p class="plan" v-else>这里还没有收藏。在 N2 词汇、同义词、语法里点书签图标，就会收藏到这里。</p>
+  </template>
+
   <!-- ===== VERB ===== -->
   <template v-else-if="route==='verb'">
     <verb-page @home="go('home')"></verb-page>
   </template>
+
+<div class="pkmask" v-if="loginOpen" @click.self="loginOpen=false"><div class="card pk">
+  <div class="pkh"><b>登录</b><small>{{ authUser ? '已登录' : '未登录' }}</small></div>
+  <template v-if="authUser">
+    <div class="lguser"><img v-if="authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><div><b>{{ authUser.name }}</b><small>{{ authUser.email }}</small></div></div>
+    <p class="pkt">{{ verifyMsg }}</p>
+    <div class="pka"><button class="ghost" @click="doLogout">退出登录</button></div>
+  </template>
+  <template v-else>
+    <p class="pkt">用 Google 账号登录后，收藏的单词和语法会保存在你的账号里，和英语站通用同一个账号。</p>
+    <div id="gbtn" class="lgbox"></div>
+    <small class="pkm" v-if="loginMsg">{{ loginMsg }}</small>
+  </template>
+</div></div>
+<div class="ftoast" v-if="favToast" role="status">{{ favToast }}</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
@@ -7988,7 +8108,7 @@ const ruby = s => s.replace(/([一-鿿々〆ヶ]+)\(([ぁ-ゖー]+)\)/g, '<ruby>
 const parse = () => {
   const h = location.hash, m = h.match(/^#\/a\/(\d+)$/);
   if (m) return { route:'a', idx:+m[1] };
-  return { route: ({'#/syn':'syn','#/art':'art','#/gram':'gram','#/verb':'verb','#/n2':'n2'})[h] || 'home', idx:0 };
+  return { route: ({'#/syn':'syn','#/art':'art','#/gram':'gram','#/verb':'verb','#/n2':'n2','#/fav':'fav'})[h] || 'home', idx:0 };
 };
 
 /* ---------- 本地词典搜索 ---------- */
@@ -8587,10 +8707,29 @@ const VerbPage = {
   }
 };
 
+/* ===== 登录与收藏：和英语站共用同一个后端，site 用 "jlpt" 区分 ===== */
+const GOOGLE_CLIENT_ID = "575466444996-0fbl5i1mdfp7b4rmv80kiec6j954d46c.apps.googleusercontent.com";   // 公开的 Client ID，不是密码
+const API_BASE = ["localhost","127.0.0.1"].includes(location.hostname) ? "http://localhost:8080" : "https://ielts-backend-node.vercel.app";
+const SITE = "jlpt";             // 告诉后端：这是日语站的收藏
+const TOKEN_KEY = "jlpt_token";  // 我们自己的 token 存在 localStorage 里，刷新后靠它恢复登录
+const saveToken = t => { try{ localStorage.setItem(TOKEN_KEY,t); }catch(e){} };
+const loadToken = () => { try{ return localStorage.getItem(TOKEN_KEY)||''; }catch(e){ return ''; } };
+const clearToken = () => { try{ localStorage.removeItem(TOKEN_KEY); }catch(e){} };
+/* 页面一打开就悄悄叫醒后端和数据库（免费版会休眠），不等结果 */
+if(API_BASE){ try{ fetch(API_BASE+'/health').catch(()=>{}); }catch(e){} }
+const loadGsi = () => new Promise((ok,no)=>{
+  if(window.google && google.accounts && google.accounts.id) return ok();
+  const el=document.createElement('script'); el.src='https://accounts.google.com/gsi/client'; el.async=true; el.onload=ok; el.onerror=no; document.head.appendChild(el);
+});
+let gsiReady=false, favToastT=0; const favBusy={};
 Vue.createApp({
-  data(){ const p=parse(); return { route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{v:'动词',n:'名词',adj:'形容词',adv:'副词·其他'}, n2CatsMy:{v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား'}, n2Cat:'all', n2Page:1, nq:'' }; },
+  data(){ const p=parse(); return { route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{v:'动词',n:'名词',adj:'形容词',adv:'副词·其他'}, n2CatsMy:{v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား'}, n2Cat:'all', n2Page:1, nq:'', authUser:null, loginOpen:false, loginMsg:'', verifyMsg:'', favs:[], favState:'idle', favErr:'', favPage:1, favToast:'' }; },
   computed:{
     art(){ return this.articles[this.idx]; },
+    favOn(){ return !!API_BASE; },
+    favEntries(){ return this.favs.map(f=>Object.assign({ f }, this.favInfo(f))); },
+    favPages(){ return Math.max(1, Math.ceil(this.favs.length/10)); },
+    pagedFav(){ const p=Math.min(this.favPage,this.favPages); return this.favEntries.slice((p-1)*10, p*10); },
     coveredGrammar(){ return new Set(this.articles.flatMap(a=>a.grammar.map(g=>g[0]))).size; },
     catCounts(){ const c={}; Object.keys(this.synCats).forEach(k=>{ const n=this.synonyms.filter(g=>g.c===k).length; if(n) c[k]=n; }); return c; },
     filteredSyn(){
@@ -8733,9 +8872,94 @@ Vue.createApp({
       if(location.hash!==h){ history.pushState(null,'',h); }
       const p=parse(); this.syncArtPage(p); this.route=p.route; this.idx=p.idx; window.scrollTo(0,0);
     },
-    say(t){ speakJa(t); }
+    say(t){ speakJa(t); },
+    /* ===== 登录 ===== */
+    toast(m){ this.favToast=m; clearTimeout(favToastT); favToastT=setTimeout(()=>{ this.favToast=''; },2800); },
+    async openLogin(){
+      this.loginOpen=true; this.loginMsg='';
+      if(this.authUser) return;
+      try{ await loadGsi(); }catch(e){ this.loginMsg='连不上 Google，请检查网络后再试'; return; }
+      if(!gsiReady){ google.accounts.id.initialize({ client_id:GOOGLE_CLIENT_ID, callback:r=>this.onGoogle(r) }); gsiReady=true; }
+      await this.$nextTick();   // 等弹窗里的 #gbtn 画出来，再让 Google 把按钮放进去
+      const box=document.getElementById('gbtn');
+      if(box) google.accounts.id.renderButton(box,{ theme:'outline', size:'large', text:'signin_with', width:280 });
+    },
+    /* 用户在 Google 弹窗里确认后，Google 调用它；resp.credential 就是 Google 的「证明书」，发给后端核对 */
+    async onGoogle(resp){
+      this.verifyMsg='正在请求后端验证…';
+      try{
+        const r=await fetch(API_BASE+'/auth/google',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ idToken:resp.credential }) });
+        if(!r.ok){ this.loginMsg='登录没有通过（状态码 '+r.status+'），请重试'; this.verifyMsg=''; return; }
+        const d=await r.json();   // { token: 我们自己发的通行证, user: {...} }
+        saveToken(d.token);
+        this.authUser={ name:d.user.name||d.user.email, email:d.user.email, picture:d.user.picture||'' };
+        this.verifyMsg='登录成功，用户编号 #'+d.user.id+'。';
+        this.loginOpen=false; this.toast('登录成功'); this.loadFavs();
+      }catch(e){ this.loginMsg='连不上后端，请稍后再试'; this.verifyMsg=''; }
+    },
+    doLogout(){
+      if(window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
+      clearToken(); this.authUser=null; this.verifyMsg=''; this.loginOpen=false; this.favs=[]; this.favState='idle';
+    },
+    /* 页面启动：如果存着 token，就带着它去问后端「我是谁」 */
+    async restoreLogin(){
+      const t=loadToken(); if(!t||!API_BASE) return;
+      try{
+        const r=await fetch(API_BASE+'/me',{ headers:{ Authorization:'Bearer '+t } });
+        if(r.ok){ const u=await r.json(); this.authUser={ name:u.name||u.email, email:u.email, picture:u.picture||'' }; this.verifyMsg='已自动恢复登录，用户编号 #'+u.id+'。'; this.loadFavs(); }
+        else if(r.status===401){ clearToken(); }   // token 过期或无效：删掉，重新登录
+      }catch(e){ /* 后端暂时连不上：保持未登录，但不删 token */ }
+    },
+    /* 带着 token 请求后端。网络不通返回 null；401 说明登录失效：清掉登录状态并提示 */
+    async authFetch(path,opt){
+      const o=Object.assign({},opt||{});
+      o.headers=Object.assign({ Authorization:'Bearer '+loadToken() }, o.body?{'Content-Type':'application/json'}:{}, o.headers||{});
+      let r; try{ r=await fetch(API_BASE+path,o); }catch(e){ return null; }
+      if(r.status===401){ clearToken(); this.authUser=null; this.verifyMsg=''; this.favs=[]; this.favState='idle'; this.toast('登录已过期，请重新登录'); this.openLogin(); return null; }
+      return r;
+    },
+    /* ===== 收藏 ===== */
+    async loadFavs(){
+      if(!this.favOn||!this.authUser) return;
+      this.favState='loading';
+      const r=await this.authFetch('/favorites?site='+SITE);
+      if(!this.authUser) return;
+      if(!r||!r.ok){ this.favErr=r?'收藏加载失败（状态码 '+r.status+'）':'连不上后端，收藏没有加载'; this.favState='err'; return; }
+      const rows=await r.json();
+      this.favs=rows.filter(x=>x.kind==='w'||x.kind==='g').reverse().map(x=>({ k:x.kind, key:x.word, id:x.id }));   // 最新的放最上面
+      this.favState='ok';
+    },
+    isFav(k,key){ return this.favs.some(f=>f.k===k&&f.key===key); },
+    async toggleFav(k,key){
+      if(!this.favOn) return;
+      if(!this.authUser){ this.openLogin(); this.loginMsg='登录后才能收藏'; return; }
+      const bk=k+'|'+key; if(favBusy[bk]) return; favBusy[bk]=true;
+      const ex=this.favs.find(f=>f.k===k&&f.key===key);
+      try{
+        if(ex){   // 已收藏 → 取消：先在页面上去掉，失败再放回来
+          this.favs=this.favs.filter(f=>f!==ex);
+          const r=await this.authFetch('/favorites/'+ex.id,{ method:'DELETE' });
+          if(!this.authUser) return;
+          if(!r||!r.ok){ this.favs=[ex].concat(this.favs); this.toast('取消收藏失败，请重试'); }
+        }else{    // 未收藏 → 收藏：先显示，等后端给出编号
+          this.favs=[{ k, key, id:null }].concat(this.favs);
+          const tmp=this.favs[0];
+          const r=await this.authFetch('/favorites',{ method:'POST', body:JSON.stringify({ site:SITE, kind:k, word:key, status:'unknown' }) });
+          if(!this.authUser) return;
+          if(r&&r.ok){ const d=await r.json(); tmp.id=d.id; } else { this.favs=this.favs.filter(f=>f!==tmp); this.toast('收藏失败，请重试'); }
+        }
+      }finally{ delete favBusy[bk]; }
+    },
+    /* 收藏本里每一行要显示的内容：从词库里按文字找回读音和中文意思 */
+    favInfo(f){
+      if(f.k==='g'){ const g=this.grammar.find(x=>x.p===f.key); return g ? { type:'g', g } : { type:'none' }; }
+      const n=this.n2vocab.find(w=>w.k===f.key); if(n) return { type:'n2', w:n };
+      for(const grp of this.synonyms){ const j=grp.words.findIndex(x=>x.k===f.key); if(j>=0) return { type:'syn', w:grp.words[j], grp, j }; }
+      return { type:'none' };
+    },
+    setFPage(p){ if(!p||p<1||p>this.favPages) return; this.favPage=p; window.scrollTo({top:0,behavior:this.smooth()}); },
   },
-  mounted(){ document.documentElement.classList.toggle('my-on',this.mmOn); window.addEventListener('popstate',()=>{ const p=parse(); this.syncArtPage(p); this.route=p.route; this.idx=p.idx; }); }
+  mounted(){ document.documentElement.classList.toggle('my-on',this.mmOn); this.restoreLogin(); window.addEventListener('popstate',()=>{ const p=parse(); this.syncArtPage(p); this.route=p.route; this.idx=p.idx; }); }
 }).component('word-search', WordSearch).component('ana-panel', AnaPanel).component('verb-page', VerbPage).mount('#app');
 </script>
 
