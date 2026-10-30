@@ -241,6 +241,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .mm-btn.on{background:linear-gradient(#34343a,#0e0e10);border-color:transparent;color:var(--gold)}
 .mm-my{font-family:"Noto Sans Myanmar","Myanmar Text","Padauk",var(--font);font-weight:600}
 .namev{font-weight:600;opacity:.75;letter-spacing:0;text-transform:none}
+.fvhead{display:flex;align-items:center;justify-content:space-between;gap:6px 10px;margin-bottom:10px}.fvhead h1{margin:0;font-size:21px;min-width:0}.fvhead .pager{flex:none}   /* 收藏本标题行：标题在左，分页器在右 */
 .h1sub{font-size:15px;font-weight:600;color:var(--sub);margin-left:6px;letter-spacing:0}
 .gh{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
 .ghp{display:inline-flex;align-items:baseline;gap:8px;flex-wrap:wrap;min-width:0}
@@ -557,9 +558,8 @@ body{background:var(--bg)}
 /* 首页：tagline 右边的收藏本大按钮 */
 .favhome{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;margin-left:14px;padding:6px 14px 6px 11px;border:0;border-radius:999px;background:var(--blue);color:#fff;font:700 14px/1 var(--font);font-style:normal;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.18);-webkit-tap-highlight-color:transparent}
 .favhome svg{fill:none}.favhome:active{transform:scale(.96)}
-/* 各模块返回栏：返回键右边的收藏本小按钮；margin-right:auto 把搜索框顶到最右 */
-.bar .favhd{flex:none;margin-right:auto;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--blue);background:var(--card);color:var(--blue);display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.bar .favhd svg{fill:none}
+/* 各模块返回栏：返回键右边的收藏本胶囊（和首页一样）；margin-right:auto 把搜索框顶到最右 */
+.bar .favhome{margin-left:0;margin-right:auto;padding:6px 12px 6px 9px;flex:none}
 .exr,.gr{display:inline-flex;align-items:center;gap:6px}
 .wrow .fvmark{margin-left:4px}   /* 同义词行：收藏按钮紧跟在词后面 */
 .nv-h .fvmark{margin-left:0}   /* 单词行：收藏按钮紧跟在词性后面，级别标签仍靠右 */
@@ -591,11 +591,11 @@ body{background:var(--bg)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div><div class="leaves" aria-hidden="true"><i v-for="n in 7" :key="n"></i></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v91 · Updated 2026-10-30 20:56</span></div>
+      <div class="topline">Japanese <span class="ver">v92 · Updated 2026-10-30 21:02</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
-          <div class="tagline">I can do all things.<button class="favhome" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg><span>收藏本</span></button></div>
+          <div class="tagline">I can do all things.<button class="favhome" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg><span>{{ T('收藏本','သိမ်းထားသည်များ') }}</span></button></div>
         </div>
         <word-search></word-search>
       </div>
@@ -649,7 +649,7 @@ body{background:var(--bg)}
   <!-- ===== SYNONYMS ===== -->
   <template v-else-if="route==='syn'">
     <div class="sticky">
-      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><button class="favhd" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><word-search></word-search></div>
+      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><button class="favhome" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg><span>{{ T('收藏本','သိမ်းထားသည်များ') }}</span></button><word-search></word-search></div>
       <h1>同义词 · 類義語</h1>
       <input id="q2" class="search" style="width:100%" v-model="q" :placeholder="T('筛选同义词（单词 / 读音 / 中文）','ရှာဖွေရန်（စကားလုံး / အသံထွက် / အဓိပ္ပာယ်）')">
       <div class="seg" role="tablist">
@@ -694,7 +694,7 @@ body{background:var(--bg)}
   <!-- ===== ARTICLE LIST ===== -->
   <template v-else-if="route==='art'">
     <div class="sticky">
-      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><button class="favhd" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><word-search></word-search></div>
+      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><button class="favhome" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg><span>{{ T('收藏本','သိမ်းထားသည်များ') }}</span></button><word-search></word-search></div>
       <h1>文章 · 読解</h1>
       <div class="pagerow">
         <span class="meta">{{ articles.length }} {{ T('篇','ပုဒ်') }} · {{ T('已覆盖','') }} {{ coveredGrammar }} {{ T('条 N2 语法','N2 သဒ္ဒါ ပါဝင်') }}</span>
@@ -730,7 +730,7 @@ body{background:var(--bg)}
   <!-- ===== ARTICLE READER ===== -->
   <template v-else-if="route==='a' && art">
     <div class="sticky">
-      <div class="bar"><button class="back" @click="go('art')">‹ 返回</button><button class="favhd" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><word-search></word-search></div>
+      <div class="bar"><button class="back" @click="go('art')">‹ 返回</button><button class="favhome" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg><span>{{ T('收藏本','သိမ်းထားသည်များ') }}</span></button><word-search></word-search></div>
       <h1 v-html="rb(art.title)"></h1>
       <div class="tools">
         <button class="tog" :class="{on:furi}" @click="furi=!furi">{{ T('假名','ခါနာ') }}</button>
@@ -806,7 +806,7 @@ body{background:var(--bg)}
   <!-- ===== GRAMMAR ===== -->
   <template v-else-if="route==='gram'">
     <div class="sticky">
-      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><button class="favhd" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><word-search></word-search></div>
+      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><button class="favhome" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg><span>{{ T('收藏本','သိမ်းထားသည်များ') }}</span></button><word-search></word-search></div>
       <h1>语法 · 文法<span class="h1sub">（{{ Object.keys(gramCounts).length }} 类）</span></h1>
       <input class="search" style="width:100%" v-model="gq" :placeholder="T('筛选语法（文型 / 中文意思）','သဒ္ဒါ ရှာရန်（ပုံစံ / အဓိပ္ပာယ်）')">
       <div class="seg" role="tablist">
@@ -850,7 +850,7 @@ body{background:var(--bg)}
   <!-- ===== N2 VOCAB ===== -->
   <template v-else-if="route==='n2'">
     <div class="sticky">
-      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><button class="favhd" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><word-search></word-search></div>
+      <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><button class="favhome" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg><span>{{ T('收藏本','သိမ်းထားသည်များ') }}</span></button><word-search></word-search></div>
       <h1>N2 词汇 · 語彙</h1>
       <input class="search" style="width:100%" v-model="nq" :placeholder="T('筛选词汇（汉字 / 假名 / 中文）','ဝေါဟာရ ရှာရန်（ခန်းဂျိ / ခါနာ / အဓိပ္ပာယ်）')">
       <div class="seg" role="tablist">
@@ -899,19 +899,19 @@ body{background:var(--bg)}
   <template v-else-if="route==='fav'">
     <div class="sticky">
       <div class="bar"><button class="back" @click="go('home')">‹ 返回</button><word-search></word-search></div>
-      <h1>收藏本 · お気に入り<span class="h1sub">（{{ favs.length }}）</span></h1>
-      <div class="pagerow" v-if="favPages>1">
-        <span class="meta">{{ favs.length }} 条 · ▶ 朗读</span>
-        <div class="pager">
+      <!-- 标题和分页器放同一行：标题在左，分页器在右；每 10 条一页，超过一页才显示分页器 -->
+      <div class="fvhead">
+        <h1>{{ T('收藏本','သိမ်းထားသည်များ') }} · お気に入り<span class="h1sub">（{{ favs.length }}）</span></h1>
+        <div class="pager" v-if="favPages>1">
           <button class="pg arrow" :disabled="favPage===1" @click="setFPage(favPage-1)" aria-label="上一页">‹</button>
           <label class="pick"><span>{{ favPage }} / {{ favPages }}</span><span class="caret">▾</span>
-            <select :value="favPage" @change="setFPage(+$event.target.value)" aria-label="选择页码"><option v-for="p in favPages" :key="p" :value="p">第 {{ p }} 页 · {{ (p-1)*10+1 }}–{{ Math.min(p*10, favs.length) }}</option></select></label>
+            <select :value="favPage" @change="setFPage(+$event.target.value)" aria-label="选择页码"><option v-for="p in favPages" :key="p" :value="p">{{ T('第 '+p+' 页','စာမျက်နှာ '+p) }} · {{ (p-1)*10+1 }}–{{ Math.min(p*10, favs.length) }}</option></select></label>
           <button class="pg arrow" :disabled="favPage===favPages" @click="setFPage(favPage+1)" aria-label="下一页">›</button>
         </div>
       </div>
     </div>
-    <p class="plan" v-if="!authUser">登录后才能看到你的收藏。<button class="lgin" @click="openLogin">用 Google 登录</button></p>
-    <p class="plan" v-else-if="favState==='loading'">收藏加载中…</p>
+    <p class="plan" v-if="!authUser">{{ T('登录后才能看到你的收藏。','သိမ်းထားသည်များကို ကြည့်ရန် လော့ဂ်အင်ဝင်ပါ။') }}<button class="lgin" @click="openLogin">{{ T('用 Google 登录','Google ဖြင့် ဝင်ရန်') }}</button></p>
+    <p class="plan" v-else-if="favState==='loading'">{{ T('收藏加载中…','ဖွင့်နေသည်…') }}</p>
     <p class="plan" v-else-if="favState==='err'">{{ favErr }}</p>
     <template v-else-if="favs.length">
       <div class="card fvc" v-for="(it,i) in pagedFav" :key="it.f.k+'|'+it.f.key">
@@ -970,7 +970,7 @@ body{background:var(--bg)}
         <button class="pg arrow" :disabled="favPage===favPages" @click="setFPage(favPage+1)" aria-label="下一页">›</button>
       </div></div>
     </template>
-    <p class="plan" v-else>这里还没有收藏。在 N2 词汇、同义词、语法里点书签图标，就会收藏到这里。</p>
+    <p class="plan" v-else>{{ T('这里还没有收藏。在 N2 词汇、同义词、语法里点书签图标，就会收藏到这里。','ဤနေရာတွင် မရှိသေးပါ။ N2 ဝေါဟာရ၊ ဝေါဟာရတူ၊ သဒ္ဒါတို့တွင် မှတ်စုအိုင်ကွန်ကို နှိပ်လျှင် ဤနေရာတွင် သိမ်းထားမည်။') }}</p>
   </template>
 
   <!-- ===== VERB ===== -->
@@ -979,14 +979,14 @@ body{background:var(--bg)}
   </template>
 
 <div class="pkmask" v-if="loginOpen" @click.self="loginOpen=false"><div class="card pk">
-  <div class="pkh"><b>登录</b><small>{{ authUser ? '已登录' : '未登录' }}</small></div>
+  <div class="pkh"><b>{{ T('登录','လော့ဂ်အင်') }}</b><small>{{ authUser ? T('已登录','ဝင်ထားသည်') : T('未登录','မဝင်ရသေးပါ') }}</small></div>
   <template v-if="authUser">
     <div class="lguser"><img v-if="authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><div><b>{{ authUser.name }}</b><small>{{ authUser.email }}</small></div></div>
     <p class="pkt">{{ verifyMsg }}</p>
-    <div class="pka"><button class="ghost" @click="doLogout">退出登录</button></div>
+    <div class="pka"><button class="ghost" @click="doLogout">{{ T('退出登录','ထွက်ရန်') }}</button></div>
   </template>
   <template v-else>
-    <p class="pkt">用 Google 账号登录后，收藏的单词和语法会保存在你的账号里，和英语站通用同一个账号。</p>
+    <p class="pkt">{{ T('用 Google 账号登录后，收藏的单词和语法会保存在你的账号里，和英语站通用同一个账号。','Google အကောင့်ဖြင့် ဝင်ပြီးနောက် သိမ်းထားသော စကားလုံးနှင့် သဒ္ဒါများကို သင့်အကောင့်တွင် သိမ်းထားမည်ဖြစ်ပြီး အင်္ဂလိပ်စာဝက်ဘ်ဆိုက်နှင့် အကောင့်တူတူ သုံးနိုင်သည်။') }}</p>
     <div id="gbtn" class="lgbox"></div>
     <small class="pkm" v-if="loginMsg">{{ loginMsg }}</small>
   </template>
@@ -8476,7 +8476,7 @@ const VerbPage = {
   template: `
 <div class="vb">
   <div class="sticky">
-    <div class="bar"><button class="back" @click="$emit('home')">‹ {{ L('返回') }}</button><button class="favhd" type="button" v-if="$root.favOn" @click="$emit('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><word-search></word-search></div>
+    <div class="bar"><button class="back" @click="$emit('home')">‹ {{ L('返回') }}</button><button class="favhome" type="button" v-if="$root.favOn" @click="$emit('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg><span>{{ $root.T('收藏本','သိမ်းထားသည်များ') }}</span></button><word-search></word-search></div>
     <h1>{{ L('动词变形') }} · 動詞の活用</h1>
     <div class="seg" role="tablist">
       <button role="tab" v-for="t in tabs" :key="t[0]" :aria-selected="tab===t[0]" :class="{on:tab===t[0]}" @click="setTab(t[0])">{{ L(t[1]) }}</button>
@@ -8887,7 +8887,7 @@ Vue.createApp({
     async openLogin(){
       this.loginOpen=true; this.loginMsg='';
       if(this.authUser) return;
-      try{ await loadGsi(); }catch(e){ this.loginMsg='连不上 Google，请检查网络后再试'; return; }
+      try{ await loadGsi(); }catch(e){ this.loginMsg=this.T('连不上 Google，请检查网络后再试','Google ကို ချိတ်ဆက်၍မရပါ၊ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ'); return; }
       if(!gsiReady){ google.accounts.id.initialize({ client_id:GOOGLE_CLIENT_ID, callback:r=>this.onGoogle(r) }); gsiReady=true; }
       await this.$nextTick();   // 等弹窗里的 #gbtn 画出来，再让 Google 把按钮放进去
       const box=document.getElementById('gbtn');
@@ -8895,16 +8895,16 @@ Vue.createApp({
     },
     /* 用户在 Google 弹窗里确认后，Google 调用它；resp.credential 就是 Google 的「证明书」，发给后端核对 */
     async onGoogle(resp){
-      this.verifyMsg='正在请求后端验证…';
+      this.verifyMsg=this.T('正在请求后端验证…','စစ်ဆေးနေသည်…');
       try{
         const r=await fetch(API_BASE+'/auth/google',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ idToken:resp.credential }) });
-        if(!r.ok){ this.loginMsg='登录没有通过（状态码 '+r.status+'），请重试'; this.verifyMsg=''; return; }
+        if(!r.ok){ this.loginMsg=this.T('登录没有通过（状态码 '+r.status+'），请重试','လော့ဂ်အင် မအောင်မြင်ပါ (ကုဒ် '+r.status+')၊ ထပ်ကြိုးစားပါ'); this.verifyMsg=''; return; }
         const d=await r.json();   // { token: 我们自己发的通行证, user: {...} }
         saveToken(d.token);
         this.authUser={ name:d.user.name||d.user.email, email:d.user.email, picture:d.user.picture||'' };
-        this.verifyMsg='登录成功，用户编号 #'+d.user.id+'。';
-        this.loginOpen=false; this.go('home'); this.toast('登录成功'); this.loadFavs();   // 登录成功一律回首页，再弹提示
-      }catch(e){ this.loginMsg='连不上后端，请稍后再试'; this.verifyMsg=''; }
+        this.verifyMsg=this.T('登录成功，用户编号 #','လော့ဂ်အင်ဝင်ပြီးပါပြီ၊ အသုံးပြုသူနံပါတ် #')+d.user.id;
+        this.loginOpen=false; this.go('home'); this.toast(this.T('登录成功','လော့ဂ်အင်ဝင်ပြီးပါပြီ')); this.loadFavs();   // 登录成功一律回首页，再弹提示
+      }catch(e){ this.loginMsg=this.T('连不上后端，请稍后再试','ဆာဗာကို ချိတ်ဆက်၍မရပါ၊ နောက်မှ ထပ်ကြိုးစားပါ'); this.verifyMsg=''; }
     },
     doLogout(){
       if(window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
@@ -8915,7 +8915,7 @@ Vue.createApp({
       const t=loadToken(); if(!t||!API_BASE) return;
       try{
         const r=await fetch(API_BASE+'/me',{ headers:{ Authorization:'Bearer '+t } });
-        if(r.ok){ const u=await r.json(); this.authUser={ name:u.name||u.email, email:u.email, picture:u.picture||'' }; this.verifyMsg='已自动恢复登录，用户编号 #'+u.id+'。'; this.loadFavs(); }
+        if(r.ok){ const u=await r.json(); this.authUser={ name:u.name||u.email, email:u.email, picture:u.picture||'' }; this.verifyMsg=this.T('已自动恢复登录，用户编号 #','ပြန်လည်ဝင်ရောက်ပြီးပါပြီ၊ အသုံးပြုသူနံပါတ် #')+u.id; this.loadFavs(); }
         else if(r.status===401){ clearToken(); }   // token 过期或无效：删掉，重新登录
       }catch(e){ /* 后端暂时连不上：保持未登录，但不删 token */ }
     },
@@ -8924,7 +8924,7 @@ Vue.createApp({
       const o=Object.assign({},opt||{});
       o.headers=Object.assign({ Authorization:'Bearer '+loadToken() }, o.body?{'Content-Type':'application/json'}:{}, o.headers||{});
       let r; try{ r=await fetch(API_BASE+path,o); }catch(e){ return null; }
-      if(r.status===401){ clearToken(); this.authUser=null; this.verifyMsg=''; this.favs=[]; this.favState='idle'; this.toast('登录已过期，请重新登录'); this.openLogin(); return null; }
+      if(r.status===401){ clearToken(); this.authUser=null; this.verifyMsg=''; this.favs=[]; this.favState='idle'; this.toast(this.T('登录已过期，请重新登录','လော့ဂ်အင်သက်တမ်းကုန်သွားပါပြီ၊ ပြန်ဝင်ပါ')); this.openLogin(); return null; }
       return r;
     },
     /* ===== 收藏 ===== */
@@ -8933,7 +8933,7 @@ Vue.createApp({
       this.favState='loading';
       const r=await this.authFetch('/favorites?site='+SITE);
       if(!this.authUser) return;
-      if(!r||!r.ok){ this.favErr=r?'收藏加载失败（状态码 '+r.status+'）':'连不上后端，收藏没有加载'; this.favState='err'; return; }
+      if(!r||!r.ok){ this.favErr=r?this.T('收藏加载失败（状态码 '+r.status+'）','ဖွင့်၍မရပါ (ကုဒ် '+r.status+')'):this.T('连不上后端，收藏没有加载','ဆာဗာကို ချိတ်ဆက်၍မရပါ'); this.favState='err'; return; }
       const rows=await r.json();
       this.favs=rows.filter(x=>x.kind==='w'||x.kind==='g').reverse().map(x=>({ k:x.kind, key:x.word, id:x.id }));   // 最新的放最上面
       this.favState='ok';
@@ -8941,7 +8941,7 @@ Vue.createApp({
     isFav(k,key){ return this.favs.some(f=>f.k===k&&f.key===key); },
     async toggleFav(k,key){
       if(!this.favOn) return;
-      if(!this.authUser){ this.openLogin(); this.loginMsg='登录后才能收藏'; return; }
+      if(!this.authUser){ this.openLogin(); this.loginMsg=this.T('登录后才能收藏','သိမ်းရန် လော့ဂ်အင်ဝင်ပါ'); return; }
       const bk=k+'|'+key; if(favBusy[bk]) return; favBusy[bk]=true;
       const ex=this.favs.find(f=>f.k===k&&f.key===key);
       try{
@@ -8949,13 +8949,13 @@ Vue.createApp({
           this.favs=this.favs.filter(f=>f!==ex);
           const r=await this.authFetch('/favorites/'+ex.id,{ method:'DELETE' });
           if(!this.authUser) return;
-          if(!r||!r.ok){ this.favs=[ex].concat(this.favs); this.toast('取消收藏失败，请重试'); } else this.toast('已取消收藏');   // 成功也弹提示
+          if(!r||!r.ok){ this.favs=[ex].concat(this.favs); this.toast(this.T('取消收藏失败，请重试','ဖယ်ရှား၍မရပါ၊ ထပ်ကြိုးစားပါ')); } else this.toast(this.T('已取消收藏','သိမ်းထားမှုကို ဖယ်ရှားပြီးပါပြီ'));   // 成功也弹提示
         }else{    // 未收藏 → 收藏：先显示，等后端给出编号
           this.favs=[{ k, key, id:null }].concat(this.favs);
           const tmp=this.favs[0];
           const r=await this.authFetch('/favorites',{ method:'POST', body:JSON.stringify({ site:SITE, kind:k, word:key, status:'unknown' }) });
           if(!this.authUser) return;
-          if(r&&r.ok){ const d=await r.json(); tmp.id=d.id; this.toast('收藏成功'); } else { this.favs=this.favs.filter(f=>f!==tmp); this.toast('收藏失败，请重试'); }
+          if(r&&r.ok){ const d=await r.json(); tmp.id=d.id; this.toast(this.T('收藏成功','သိမ်းဆည်းပြီးပါပြီ')); } else { this.favs=this.favs.filter(f=>f!==tmp); this.toast(this.T('收藏失败，请重试','သိမ်းဆည်း၍မရပါ၊ ထပ်ကြိုးစားပါ')); }
         }
       }finally{ delete favBusy[bk]; }
     },
