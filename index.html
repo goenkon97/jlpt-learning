@@ -3,6 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+/* iPad 横屏修复：部分 iPad 浏览器（如 Chrome）横屏时布局视口只有约 900px，页面挤在左边、右边空一大截。
+   只在「触屏 + 横屏 + 屏幕短边≥700（排除手机）+ 视口明显比屏幕窄」时，把视口宽度设成屏幕长边；竖屏恢复默认。
+   网址加 ?dbg 可在左下角显示调试信息。 */
+(function(){
+  var DEF='width=device-width, initial-scale=1, viewport-fit=cover';
+  function fit(){
+    var m=document.querySelector('meta[name=viewport]'); if(!m) return;
+    var sw=screen.width, sh=screen.height, long=Math.max(sw,sh), short=Math.min(sw,sh);
+    var land=(window.matchMedia&&matchMedia('(orientation: landscape)').matches)||innerWidth>innerHeight;
+    var touch=(navigator.maxTouchPoints||0)>1;
+    if(touch&&land&&short>=700){ if(innerWidth<0.9*long) m.setAttribute('content','width='+long+', initial-scale=1, viewport-fit=cover'); }
+    else if(m.getAttribute('content')!==DEF) m.setAttribute('content',DEF);
+    if(/[?&]dbg/.test(location.search)){ var b=document.getElementById('vpdbg'); if(!b&&document.body){ b=document.createElement('div'); b.id='vpdbg'; b.style.cssText='position:fixed;left:6px;bottom:6px;z-index:99;background:#000c;color:#fff;font:11px/1.4 monospace;padding:4px 6px;border-radius:6px;pointer-events:none'; document.body.appendChild(b); }
+      if(b) b.textContent='inner '+innerWidth+'x'+innerHeight+' | vv '+(window.visualViewport?Math.round(visualViewport.width):'-')+' | screen '+sw+'x'+sh+' | '+m.getAttribute('content'); }
+  }
+  fit(); ['DOMContentLoaded','load','orientationchange','resize'].forEach(function(e){ window.addEventListener(e,function(){ setTimeout(fit,50); }); });
+})();
+</script>
 <meta name="color-scheme" content="light dark">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 
@@ -524,6 +543,10 @@ body{background:var(--bg)}
 @keyframes playBars{0%,100%{background-size:3px 40%,3px 100%,3px 60%}33%{background-size:3px 100%,3px 45%,3px 85%}66%{background-size:3px 65%,3px 75%,3px 35%}}
 @keyframes playRing{0%{box-shadow:0 0 0 0 rgba(232,89,12,.45)}100%{box-shadow:0 0 0 9px rgba(232,89,12,0)}}
 @media (prefers-reduced-motion:reduce){.play.speaking,.play.speaking::before{animation:none}}
+
+/* iPad 横屏 / 大屏：主列放宽，避免左右空出一大截（手机和竖屏不受影响） */
+@media (min-width:1000px){.wrap{max-width:980px}}
+@media (min-width:1280px){.wrap{max-width:1140px}}
 </style>
 </head>
 <body>
@@ -533,7 +556,7 @@ body{background:var(--bg)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div><div class="leaves" aria-hidden="true"><i v-for="n in 7" :key="n"></i></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v87 · Updated 2026-10-26 20:02</span></div>
+      <div class="topline">Japanese <span class="ver">v88 · Updated 2026-10-30 17:26</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button></span></h1>
