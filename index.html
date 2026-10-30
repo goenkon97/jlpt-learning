@@ -591,7 +591,7 @@ body{background:var(--bg)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div><div class="leaves" aria-hidden="true"><i v-for="n in 7" :key="n"></i></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v92 · Updated 2026-10-30 21:02</span></div>
+      <div class="topline">Japanese <span class="ver">v93 · Updated 2026-10-30 21:09</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -756,6 +756,7 @@ body{background:var(--bg)}
           <span class="gnum">{{ i+1 }}</span>
           <span class="gpat" v-html="rb(g[0])"></span>
           <button class="play lt" @click="sayEx(g[0].replace(/〜/g,''))" aria-label="朗读语法">▶</button>
+          <button class="fvmark" type="button" v-if="favOn" :class="{on:isFav('g',g[0])}" @click.stop="toggleFav('g',g[0])" :aria-label="isFav('g',g[0])?'取消收藏':'收藏'" :title="isFav('g',g[0])?T('已在收藏本里（点击取消）','သိမ်းထားပြီးသား (နှိပ်၍ ဖယ်ရှားရန်)'):T('收藏','သိမ်းရန်')"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button>
           <span class="gm" :lang="aMy(idx)?'my':'zh'">{{ aMy(idx) ? aMy(idx).g[i][0] : g[1] }}</span>
           <button class="gback" @click="toText(i)">{{ T('回到原文 ↑','မူရင်းသို့ ↑') }}</button>
         </div>
@@ -774,6 +775,7 @@ body{background:var(--bg)}
           <span class="gnum">{{ i+1 }}</span>
           <b class="vk">{{ v[0] }}</b>
           <button class="play lt" @click="say(v[1])" aria-label="朗读单词">▶</button>
+          <button class="fvmark" type="button" v-if="favOn" :class="{on:isFav('w',v[0])}" @click.stop="toggleFav('w',v[0])" :aria-label="isFav('w',v[0])?'取消收藏':'收藏'" :title="isFav('w',v[0])?T('已在收藏本里（点击取消）','သိမ်းထားပြီးသား (နှိပ်၍ ဖယ်ရှားရန်)'):T('收藏','သိမ်းရန်')"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button>
           <span class="vr">{{ v[1] }}</span>
           <span class="gm" :lang="aMy(idx)?'my':'zh'">{{ aMy(idx) ? aMy(idx).v[i][0] : v[2] }}</span>
           <button class="gback" v-if="vMarked(i)" @click="toTextV(i)">{{ T('回到原文 ↑','မူရင်းသို့ ↑') }}</button>
@@ -791,6 +793,7 @@ body{background:var(--bg)}
           <span class="n2n">{{ i+1 }}</span>
           <span class="n2w" v-html="rb(vbAlign(w[0],w[1]))"></span>
           <button class="play lt" @click="say(w[1])" aria-label="朗读">▶</button>
+          <button class="fvmark" type="button" v-if="favOn" :class="{on:isFav('w',w[0])}" @click.stop="toggleFav('w',w[0])" :aria-label="isFav('w',w[0])?'取消收藏':'收藏'" :title="isFav('w',w[0])?T('已在收藏本里（点击取消）','သိမ်းထားပြီးသား (နှိပ်၍ ဖယ်ရှားရန်)'):T('收藏','သိမ်းရန်')"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button>
           <span class="n2z" :lang="aN2(w)!==w[2]?'my':'zh'">{{ aN2(w) }}</span>
           <button class="gback" @click="toTextN(i)">{{ T('原文 ↑','မူရင်း ↑') }}</button>
         </div>
@@ -957,6 +960,39 @@ body{background:var(--bg)}
             <div class="gxr"><div class="gexb"><div class="jp2" v-html="render(it.w.ex)"></div><div class="t">{{ sW(it.grp,it.j,1) }}</div></div><button class="play" @click="sayEx(it.w.ex)" aria-label="朗读例句">▶</button></div>
             <ana-panel :ex="it.w.ex" :key="it.w.ex"></ana-panel>
           </div>
+        </template>
+        <!-- 文章里的"本文 N2 语法"（语法库里没有的那几条）：显示文型、意思、两个例句 -->
+        <template v-else-if="it.type==='ag'">
+          <div class="gh"><span class="ghp"><h3 v-html="rb(it.g[0])"></h3><button class="play lt" @click="sayEx(it.g[0].replace(/〜/g,''))" aria-label="朗读语法">▶</button><button class="fvmark on" type="button" @click.stop="toggleFav('g',it.f.key)" aria-label="取消收藏"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button></span><span class="gr"><span class="glv">{{ T('文章','ဆောင်းပါး') }}</span></span></div>
+          <div class="gzh" :lang="aMy(it.ai)?'my':'zh'">{{ aMy(it.ai) ? aMy(it.ai).g[it.i][0] : it.g[1] }}</div>
+          <div class="ex">
+            <div class="gxr" v-for="k in [2,4]" :key="k">
+              <div class="gexb"><div class="jp2" v-html="render(it.g[k])"></div><div class="t">{{ aMy(it.ai) ? aMy(it.ai).g[it.i][k/2] : it.g[k+1] }}</div><ana-panel :ex="it.g[k]" :key="it.g[k]"></ana-panel></div>
+              <button class="play" @click="sayEx(it.g[k])" aria-label="朗读例句">▶</button>
+            </div>
+          </div>
+        </template>
+        <!-- 文章里的"重点词汇"：词 + 读音 + 意思，有例句就带例句 -->
+        <template v-else-if="it.type==='av'">
+          <div class="nv-h">
+            <span class="nv-w" v-html="rb(vbAlign(it.v[0],it.v[1]))"></span>
+            <button class="play lt" @click="say(it.v[1])" aria-label="朗读单词">▶</button>
+            <button class="fvmark on" type="button" @click.stop="toggleFav('w',it.f.key)" aria-label="取消收藏"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><span class="glv">{{ T('文章','ဆောင်းပါး') }}</span>
+          </div>
+          <div class="nv-zh" :lang="aMy(it.ai)?'my':'zh'">{{ aMy(it.ai) ? aMy(it.ai).v[it.i][0] : it.v[2] }}</div>
+          <div class="ex" v-if="it.v[3]">
+            <div class="gxr"><div class="gexb"><div class="jp2" v-html="render(it.v[3],null,'v')"></div><div class="t">{{ aMy(it.ai) ? aMy(it.ai).v[it.i][1] : it.v[4] }}</div></div><button class="play" @click="sayEx(it.v[3])" aria-label="朗读例句">▶</button></div>
+            <ana-panel :ex="it.v[3]" :key="it.v[3]"></ana-panel>
+          </div>
+        </template>
+        <!-- 文章里的"N2 词汇"：只有词 + 读音 + 意思，没有例句，所以收藏里也不显示例句 -->
+        <template v-else-if="it.type==='an'">
+          <div class="nv-h">
+            <span class="nv-w" v-html="rb(vbAlign(it.w[0],it.w[1]))"></span>
+            <button class="play lt" @click="say(it.w[1])" aria-label="朗读">▶</button>
+            <button class="fvmark on" type="button" @click.stop="toggleFav('w',it.f.key)" aria-label="取消收藏"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><span class="glv">{{ T('文章','ဆောင်းပါး') }}</span>
+          </div>
+          <div class="nv-zh" :lang="aN2(it.w)!==it.w[2]?'my':'zh'">{{ aN2(it.w) }}</div>
         </template>
         <!-- 词库里已经找不到的收藏：只显示文字，可以取消 -->
         <template v-else>
@@ -8961,9 +8997,17 @@ Vue.createApp({
     },
     /* 收藏本里每一行要显示的内容：从词库里按文字找回读音和中文意思 */
     favInfo(f){
-      if(f.k==='g'){ const g=this.grammar.find(x=>x.p===f.key); return g ? { type:'g', g } : { type:'none' }; }
+      if(f.k==='g'){
+        const g=this.grammar.find(x=>x.p===f.key); if(g) return { type:'g', g };
+        // 语法库里没有 → 去 30 篇文章的"本文 N2 语法"里找（g[0] 是语法文型，g[1] 中文意思，g[2..5] 两个例句和翻译）
+        for(let ai=0;ai<this.articles.length;ai++){ const i=this.articles[ai].grammar.findIndex(x=>x[0]===f.key); if(i>=0) return { type:'ag', g:this.articles[ai].grammar[i], ai, i }; }
+        return { type:'none' };
+      }
       const n=this.n2vocab.find(w=>w.k===f.key); if(n) return { type:'n2', w:n };
       for(const grp of this.synonyms){ const j=grp.words.findIndex(x=>x.k===f.key); if(j>=0) return { type:'syn', w:grp.words[j], grp, j }; }
+      // N2 词库、同义词里都没有 → 去文章里找：先找"重点词汇"（有读音、意思、例句），再找"N2 词汇"（只有读音和意思，没有例句）
+      for(let ai=0;ai<this.articles.length;ai++){ const i=this.articles[ai].vocab.findIndex(x=>x[0]===f.key); if(i>=0) return { type:'av', v:this.articles[ai].vocab[i], ai, i }; }
+      for(let ai=0;ai<this.articles.length;ai++){ const a=this.articles[ai].n2||[]; const i=a.findIndex(x=>x[0]===f.key); if(i>=0) return { type:'an', w:a[i], ai, i }; }
       return { type:'none' };
     },
     setFPage(p){ if(!p||p<1||p>this.favPages) return; this.favPage=p; window.scrollTo({top:0,behavior:this.smooth()}); },
