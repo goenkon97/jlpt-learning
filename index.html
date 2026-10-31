@@ -591,7 +591,7 @@ body{background:var(--bg)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div><div class="leaves" aria-hidden="true"><i v-for="n in 7" :key="n"></i></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v97 · Updated 2026-10-31 10:20</span></div>
+      <div class="topline">Japanese <span class="ver">v98 · Updated 2026-10-31 10:40</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -8766,7 +8766,7 @@ const saveUser = u => { try{ localStorage.setItem(USER_KEY,JSON.stringify(u)); }
 const loadUser = () => { try{ return JSON.parse(localStorage.getItem(USER_KEY)||'null'); }catch(e){ return null; } };
 const clearUser = () => { try{ localStorage.removeItem(USER_KEY); }catch(e){} };
 /* 页面一打开就悄悄叫醒后端和数据库（免费版会休眠），不等结果 */
-if(API_BASE){ try{ fetch(API_BASE+'/health').catch(()=>{}); }catch(e){} }
+if(API_BASE){ try{ fetch(API_BASE+'/health',{cache:'no-store'}).catch(()=>{}); }catch(e){} }
 const loadGsi = () => new Promise((ok,no)=>{
   if(window.google && google.accounts && google.accounts.id) return ok();
   const el=document.createElement('script'); el.src='https://accounts.google.com/gsi/client'; el.async=true; el.onload=ok; el.onerror=no; document.head.appendChild(el);
@@ -8958,13 +8958,16 @@ Vue.createApp({
        ① 用户资料也缓存在 localStorage（jlpt_user），刷新后先立刻显示成已登录，不等后端；
        ② 再去 /me 核实；网络失败 / 5xx → 自动重试最多 4 次（间隔 0/1.5/3/4.5 秒），期间保持已登录显示，不删 token；
        ③ 只有后端明确回 401（token 真的无效/过期）才清掉 token 和缓存，并提示（带状态码，方便排查）。 */
+    /* 【真正的原因】/me、/health 这类 GET 响应会被浏览器缓存（再次请求时服务器回 304）。
+       缓存里存的"允许跨域的网站"是另一个站点的（jlpt 或 ielts），拿到这个站点用就对不上，被拦成 CORS 错误 → Failed to fetch。
+       所以所有访问后端的请求都加 cache:'no-store'，每次都向服务器要新的。 */
     async restoreLogin(){
       const t=loadToken(); if(!t||!API_BASE) return;
       const cached=loadUser(); if(cached) this.authUser=cached;   // ① 先用缓存显示已登录
       for(let i=0;i<4;i++){
         if(i) await new Promise(ok=>setTimeout(ok,1500*i));
         try{
-          const r=await fetch(API_BASE+'/me',{ headers:{ Authorization:'Bearer '+t } });
+          const r=await fetch(API_BASE+'/me',{ cache:'no-store', headers:{ Authorization:'Bearer '+t } });
           if(r.ok){
             const u=await r.json(); const me={ name:u.name||u.email, email:u.email, picture:u.picture||'' };
             this.authUser=me; saveUser(me);
@@ -8983,7 +8986,7 @@ Vue.createApp({
     async authFetch(path,opt){
       const o=Object.assign({},opt||{});
       o.headers=Object.assign({ Authorization:'Bearer '+loadToken() }, o.body?{'Content-Type':'application/json'}:{}, o.headers||{});
-      let r; try{ r=await fetch(API_BASE+path,o); }catch(e){ return null; }
+      let r; try{ r=await fetch(API_BASE+path,Object.assign({cache:'no-store'},o)); }catch(e){ return null; }
       if(r.status===401){ clearToken(); clearUser(); this.authUser=null; this.verifyMsg=''; this.favs=[]; this.favState='idle'; this.toast(this.T('登录已过期，请重新登录','လော့ဂ်အင်သက်တမ်းကုန်သွားပါပြီ၊ ပြန်ဝင်ပါ')); this.openLogin(); return null; }
       return r;
     },
