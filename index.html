@@ -508,6 +508,13 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .fvmark{flex:none;border:0;background:none;color:var(--sub);cursor:pointer;padding:3px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;-webkit-tap-highlight-color:transparent}
 .fvmark svg{fill:none;transition:fill .15s;width:19px;height:19px}
 .fvmark.on{color:var(--blue)}.fvmark.on svg{fill:currentColor}
+/* 收藏本「Learned」按钮：点一下 = 已学会 = 取消收藏（调用的就是 toggleFav，列表是 Vue 响应式的，favs 变了页面和页码会自动刷新）
+   样式跟着「和纸と墨」：细墨线描边的胶囊，平时低调，悬停/按下时变朱红底（--blue 在这个站里就是朱红） */
+.fvdone-row{display:flex;justify-content:flex-end;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.fvdone{border:1px solid var(--text);background:none;color:var(--text);font:600 12px/1 var(--font);letter-spacing:.06em;padding:7px 14px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent;transition:background .15s,color .15s,border-color .15s}
+.fvdone:hover,.fvdone:active{background:var(--blue);border-color:var(--blue);color:#f3eee3}
+.fvdone svg{width:13px;height:13px}
+
 /* 首页：tagline 右边的收藏本大按钮 */
 .favhome{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;margin-left:14px;padding:6px 14px 6px 11px;border:0;border-radius:999px;background:var(--blue);color:#fff;font:700 14px/1 var(--font);font-style:normal;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.18);-webkit-tap-highlight-color:transparent}
 .favhome svg{fill:none}.favhome:active{transform:scale(.96)}
@@ -611,7 +618,7 @@ html .chip{background:var(--chip);color:var(--text)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v101 · Updated 2026-10-31 17:00</span></div>
+      <div class="topline">Japanese <span class="ver">v102 · Updated 2026-10-31 18:40</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -1018,6 +1025,8 @@ html .chip{background:var(--chip);color:var(--text)}
         <template v-else>
           <div class="nv-h"><span class="nv-w">{{ it.f.key }}</span><button class="fvmark on" type="button" @click.stop="toggleFav(it.f.k,it.f.key)" aria-label="取消收藏"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button></div>
         </template>
+        <!-- 「Learned」：已学会 → 取消收藏。g/w 类型由 toggleFav 内部按文字查找，所以传 it.f.k 即可 -->
+        <div class="fvdone-row"><button class="fvdone" type="button" @click.stop="toggleFav(it.f.k,it.f.key)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Learned</button></div>
       </div>
       <div class="pagerow bottom" v-if="favPages>1"><div class="pager">
         <button class="pg arrow" :disabled="favPage===1" @click="setFPage(favPage-1)" aria-label="上一页">‹</button>
