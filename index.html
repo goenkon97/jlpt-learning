@@ -148,7 +148,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .ana-w .z{font-size:13.5px;color:var(--sub)}
 .ana-n{margin:0;padding-left:18px}
 .gex .ana-n li,.ana-n li{margin:2px 0;line-height:2;background:none;padding:0;border-radius:0;display:list-item}
-.exrow>div{flex:1;min-width:0}
+.exrow>div{flex:0 1 auto;min-width:0}   /* 例句文字块不再撑满整行：朗读按钮紧跟在句子右边，不用手伸到最右边去点 */
 .exrow .play{margin-top:6px}
 .vitem.flash{animation:flashBg 1.8s ease}
 .vword{border:0;background:none;padding:0;display:inline-flex;align-items:baseline;gap:6px;color:var(--text);cursor:pointer}
@@ -229,7 +229,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .wrow.on .k{color:var(--blue)}
 .wrow .wz{display:block;font-size:14px;color:var(--sub);margin-top:2px}
 .words{gap:2px}
-.exh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}
+.exh{display:flex;justify-content:flex-start;align-items:center;gap:8px;margin-bottom:4px}
 .exl{font-size:12px;font-weight:600;color:var(--blue)}
 .play{width:28px;height:28px;border-radius:50%;border:0;background:linear-gradient(#34343a,#0e0e10);color:var(--gold);font-size:10px;flex:none}
 .ver{margin-left:8px;font-size:11px;font-weight:600;color:var(--sub);letter-spacing:0;text-transform:none;white-space:nowrap}
@@ -274,7 +274,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .grow .pos{flex:none}
 .gxr{display:flex;gap:10px;align-items:flex-start}
 .gxr + .gxr{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
-.gexb{flex:1;min-width:0}
+.gexb{flex:0 1 auto;min-width:0}   /* 同上：朗读按钮紧跟句子 */
 .gxr .play{margin-top:8px}
 @media (max-width:520px){.seg button{padding:7px 8px;font-size:13px;gap:3px}.seg button .n{font-size:10px}}
 .garts{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:12px;font-size:12px;color:var(--sub)}
