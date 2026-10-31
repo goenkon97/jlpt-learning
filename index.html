@@ -23,11 +23,6 @@
 })();
 </script>
 <meta name="color-scheme" content="light dark">
-<script>
-/* 皮肤：页面一打开（Vue 还没启动）就先把 class 加到 <html> 上，否则会先闪一下旧皮肤再变。
-   localStorage 里 jlptSkin 存 'maple'（枫叶，旧皮肤）或 'washi'（和紙と墨，新皮肤）；没存过就默认新皮肤。 */
-try{ if(localStorage.getItem('jlptSkin')!=='maple') document.documentElement.classList.add('skin-washi'); }catch(e){ document.documentElement.classList.add('skin-washi'); }
-</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 
 <title>Goen Kon Japanese</title>
@@ -38,15 +33,14 @@ try{ if(localStorage.getItem('jlptSkin')!=='maple') document.documentElement.cla
 <style>
 /* Layout: same as IELTS site — 720px centered column, name left / search right, tile grid, sticky sub-page header */
 :root{
-  /* 枫叶（紅葉）主题：奶油色底、深栗色文字、枫红点缀（--blue 沿用雅思站的变量名，实际是枫红） */
-  --bg:#fbf4ea;--card:#fffaf3;--card2:#fff6ec;--text:#3b2a20;--sub:#8a7264;--line:#f0e1cf;
-  --edge:rgba(196,66,26,.10);--shadow:0 1px 2px rgba(140,60,20,.04),0 8px 22px rgba(140,60,20,.06);--glow:transparent;
-  --ico:#c4421a;--ico-bg:#fde6d3;--ico-ring:#f7cdb0;--numc:rgba(196,66,26,.10);
-  --blue:#c4421a;--chip:#fde8d6;--greige:#f6e9da;--pager-t:#9a3412;
-  --gold:#ffffff;--tab:#fbdcc4;--tab-t:#9a3412;
-  --t1:#fdf1e4;--t2:#f8efe5;--t3:#fdeedf;--cp-bg:#fde3c3;--cp-t:#94450a;
-  --leaf:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 4 56 22 66 15 63 36 79 25 76 35 93 32 84 46 95 53 72 64 77 75 56 70 53 96 47 96 44 70 23 75 28 64 5 53 16 46 7 32 24 35 21 25 37 36 34 15 44 22Z'/%3E%3C/svg%3E");
-  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Hiragino Mincho ProN",serif;
+  /* 「和紙と墨」主题（全站唯一风格）：米白纸 + 墨黑字 + 朱红点缀。
+     整站颜色基本都走这些 CSS 变量；--blue 沿用雅思站的变量名，实际是朱红。 */
+  --bg:#f3eee3;--card:#f8f4ea;--card2:#f3eee3;--text:#1d1b18;--sub:#7a7266;--line:#d6cdbb;
+  --edge:rgba(29,27,24,.08);--shadow:none;--glow:transparent;
+  --ico:#c7321e;--ico-bg:#f1ddd5;--ico-ring:#e3c3b8;--numc:rgba(199,50,30,.12);
+  --blue:#c7321e;--chip:#ece4d3;--greige:#ece4d3;--pager-t:#9a2a18;
+  --gold:#f3eee3;--tab:#e9dfca;--tab-t:#1d1b18;--t1:#f1e9d8;--t2:#f3eee3;--t3:#efe6d3;--cp-bg:#ece4d3;--cp-t:#1d1b18;
+  --serif:"Hiragino Mincho ProN","Yu Mincho","Shippori Mincho","Noto Serif JP","Songti SC",serif;  /* 明朝体：系统自带，不依赖网络字体 */
   --px:20px;
   --font:-apple-system,"SF Pro Text","Helvetica Neue","Hiragino Sans","Hiragino Kaku Gothic ProN","PingFang SC","Noto Sans JP",sans-serif;
   color-scheme:light;
@@ -257,9 +251,9 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .glv.conj{background:var(--t1);color:var(--blue)}
 .glv.keigo{background:var(--t3);color:var(--cp-t)}
 .glv.talk{background:var(--cp-bg);color:var(--cp-t)}
-.glv.kan{background:#fde4dc;color:#b42318}
-.glv.onoma{background:#fcf1d2;color:#8a5a00}
-.glv.ri{background:#f6e3d6;color:#8a3412}
+.glv.kan{background:#f1ddd5;color:#9a2a18}
+.glv.onoma{background:#e9e2c9;color:#6b5a1a}
+.glv.ri{background:#e4ddcf;color:#5a4f3d}
 [lang="my"],.my-on .gzh,.my-on .gtx,.my-on .t,.my-on .simh,.my-on .meta,.my-on .seg button{font-family:"Noto Sans Myanmar","Myanmar Text","Padauk",var(--font)}
 .my-on .gzh,.my-on .t{line-height:1.9}
 .my-on .vb{font-family:"Noto Sans Myanmar","Myanmar Text","Padauk",var(--font)}
@@ -477,7 +471,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .tagline .goal2{font-style:normal;font-family:var(--font);font-size:12.5px;margin-left:10px;color:var(--sub)}
 /* home tiles */
 .tile{position:relative;overflow:hidden;padding:22px 22px 20px}
-.tile .ico{width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fbf3df,var(--ico-bg));border:1px solid var(--ico-ring);display:grid;place-items:center;margin-bottom:12px;flex:none}
+.tile .ico{width:48px;height:48px;border-radius:50%;background:var(--ico-bg);border:1px solid var(--ico-ring);display:grid;place-items:center;margin-bottom:12px;flex:none}
 .tile .ico svg{width:22px;height:22px;stroke:var(--ico);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .tile .no{position:absolute;top:12px;right:18px;font-family:var(--serif);font-size:40px;font-weight:700;line-height:1;color:var(--numc);pointer-events:none}
 .tile h2{font-size:22px}
@@ -494,52 +488,6 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
   .tile h2{font-size:18px}
   .tile .count{font-size:12px}
 }
-/* ===== 枫叶（紅葉）主题：奶油色底、深栗色文字、枫红→橙的渐变点缀，五个模块分别用红/橙/琥珀/赭/金五种秋叶色 ===== */
-body{background:var(--bg)}
-.tile,.card,.ws-pop{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
-.search{background:#fffdf8;border-color:var(--line)}
-.sticky{background:var(--bg);box-shadow:0 0 0 100vmax var(--bg)}
-.seg{background:#f7eadb}
-.badge,.tog.on,.seg button.on,.play,.mm-btn.on,.glv.n2,.gsim button.on,.vb-tag.g1,.vb-to.g1,.vb-sn,.vb-pick button.on,.vb-quick button.on,.vb-cands button.on,.vb-idx button.on{background:linear-gradient(135deg,#e8590c,#c0261a);color:#fff;box-shadow:0 2px 6px rgba(192,38,26,.18)}
-.vb-pick button.on rt,.vb-quick button.on rt,.vb-cands button.on rt,.gsim button.on rt{color:#fff;opacity:.85}
-.play.lt{background:var(--chip);color:#c4421a;box-shadow:none}
-/* 首页：飘落的枫叶 */
-.leaves{display:none}
-.glow{display:block;height:340px;background:radial-gradient(90% 300px at 50% -60px,rgba(251,146,60,.18),transparent 70%)}
-.leaves{display:block;position:absolute;left:0;right:0;top:0;height:330px;overflow:hidden;pointer-events:none;z-index:-1}
-.leaves i{position:absolute;width:34px;height:34px;-webkit-mask:var(--leaf) center/contain no-repeat;mask:var(--leaf) center/contain no-repeat;opacity:.75}
-.leaves i:nth-child(1){left:6%;top:18px;background:#d9381e;transform:rotate(-18deg)}
-.leaves i:nth-child(2){left:22%;top:118px;width:20px;height:20px;background:#f08c1a;transform:rotate(25deg);opacity:.55}
-.leaves i:nth-child(3){right:8%;top:30px;width:46px;height:46px;background:#c0261a;transform:rotate(14deg);opacity:.6}
-.leaves i:nth-child(4){right:28%;top:150px;width:22px;height:22px;background:#e2a21b;transform:rotate(-30deg);opacity:.55}
-.leaves i:nth-child(5){left:48%;top:6px;width:18px;height:18px;background:#e8590c;transform:rotate(40deg);opacity:.5}
-.leaves i:nth-child(6){right:4%;top:200px;width:26px;height:26px;background:#a8431a;transform:rotate(-8deg);opacity:.45}
-.leaves i:nth-child(7){left:2%;top:240px;width:24px;height:24px;background:#f2a33a;transform:rotate(60deg);opacity:.45}
-@media (prefers-reduced-motion:no-preference){
-  .leaves i{animation:leafSway 6s ease-in-out infinite}
-  .leaves i:nth-child(2n){animation-duration:7.5s;animation-delay:-2s}
-  .leaves i:nth-child(3n){animation-duration:9s;animation-delay:-4s}
-  @keyframes leafSway{0%,100%{translate:0 0;rotate:0deg}50%{translate:6px 8px;rotate:12deg}}
-}
-.topline{color:#9a3412;letter-spacing:.2em;text-transform:uppercase;font-size:12.5px}
-.topline .ver{color:#b08d76;letter-spacing:0;text-transform:none}
-.hname{color:#3b2a20}
-.tagline::before{content:"";display:inline-block;vertical-align:-3px;width:18px;height:18px;margin-right:8px;background:linear-gradient(135deg,#f08c1a,#c0261a);-webkit-mask:var(--leaf) center/contain no-repeat;mask:var(--leaf) center/contain no-repeat;transform:rotate(-15deg)}
-.tagline{color:#a0602e}
-/* 五个模块：五种秋叶色 */
-.grid .tile:nth-child(1){--lf:#c0261a;--lf2:#fde4dc}
-.grid .tile:nth-child(2){--lf:#e0620d;--lf2:#fdebd8}
-.grid .tile:nth-child(3){--lf:#c98a06;--lf2:#fcf1d2}
-.grid .tile:nth-child(4){--lf:#9c3d14;--lf2:#f6e3d6}
-.grid .tile:nth-child(5){--lf:#d9381e;--lf2:#fde6d3}
-.tile{transition:transform .2s ease,box-shadow .2s ease;background:linear-gradient(160deg,var(--lf2,#fff5ea) 0%,var(--card) 42%)}
-.tile:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(140,60,20,.05),0 14px 30px rgba(170,70,20,.12)}
-.tile::after{content:"";position:absolute;right:-14px;bottom:-16px;width:96px;height:96px;background:var(--lf,#c4421a);-webkit-mask:var(--leaf) center/contain no-repeat;mask:var(--leaf) center/contain no-repeat;opacity:.08;transform:rotate(-20deg);pointer-events:none}
-.tile .ico{background:var(--lf,#c4421a);border:0;box-shadow:0 4px 10px rgba(150,60,20,.18)}
-.tile .ico svg{stroke:#fff}
-.tile .no{color:var(--lf);opacity:.18}
-.tile .jp{color:var(--lf,#c4421a)}
-.credit{color:#b08d76}
 /* 朗读中的播放按钮：▶ 换成跳动的三根声波，外圈一圈圈扩散 */
 .play.speaking{font-size:0;animation:playRing 1.2s ease-out infinite}
 .play.speaking::before{content:"";display:inline-block;width:12px;height:11px;vertical-align:middle;
@@ -547,7 +495,7 @@ body{background:var(--bg)}
   animation:playBars .9s ease-in-out infinite}
 .play.lt.speaking::before{width:10px;height:9px}
 @keyframes playBars{0%,100%{background-size:3px 40%,3px 100%,3px 60%}33%{background-size:3px 100%,3px 45%,3px 85%}66%{background-size:3px 65%,3px 75%,3px 35%}}
-@keyframes playRing{0%{box-shadow:0 0 0 0 rgba(232,89,12,.45)}100%{box-shadow:0 0 0 9px rgba(232,89,12,0)}}
+@keyframes playRing{0%{box-shadow:0 0 0 0 rgba(199,50,30,.45)}100%{box-shadow:0 0 0 9px rgba(199,50,30,0)}}
 @media (prefers-reduced-motion:reduce){.play.speaking,.play.speaking::before{animation:none}}
 
 /* iPad 横屏 / 大屏：主列放宽，避免左右空出一大截（手机和竖屏不受影响） */
@@ -577,7 +525,7 @@ body{background:var(--bg)}
 .ghost{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:6px 14px;font-size:14px;cursor:pointer}
 .lguser{display:flex;align-items:center;gap:12px;margin:10px 0}.lguser img{width:44px;height:44px;border-radius:50%}.lguser b{display:block;font-size:15px}.lguser small{color:var(--sub);font-size:12px;word-break:break-all}
 .lgbox{display:flex;justify-content:center;min-height:44px;margin-top:8px}
-.lgin{margin-left:8px;border:0;border-radius:999px;padding:5px 14px;background:linear-gradient(135deg,#e8590c,#c0261a);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
+.lgin{margin-left:8px;border:0;border-radius:999px;padding:5px 14px;background:var(--blue);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
 .ftoast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;background:linear-gradient(135deg,rgba(240,140,26,.78),rgba(192,38,26,.78));color:#fff;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:8px 18px;border-radius:14px;font-size:14px;font-weight:600;line-height:1.4;max-width:70vw;text-align:center;box-shadow:0 6px 18px rgba(192,38,26,.18);border:1px solid rgba(255,255,255,.3);pointer-events:none}   /* 提示：屏幕正中间；比之前更小（字 14px、内边距小）、更淡（底色 78% 透明度 + 轻微毛玻璃） */
 /* 弹窗进出场：在正中间轻轻放大 + 淡入，消失时淡出 */
 .tst-enter-active,.tst-leave-active{transition:opacity .25s ease,transform .25s ease}
@@ -589,82 +537,72 @@ body{background:var(--bg)}
 .fvz{margin-top:2px;font-size:13.5px;color:var(--sub);line-height:1.5}
 
 /* ==========================================================================
-   皮肤「和紙と墨」（html.skin-washi）
-   【原理】整站颜色大多走 CSS 变量（--bg/--card/--text/--blue…）。<html> 上有 skin-washi 这个 class 时，
-   先把变量换成"米白纸 + 墨黑 + 朱红"；再对少数写死颜色的地方（橙红渐变按钮、首页模块卡片等）单独覆盖。
-   所有选择器都以 html.skin-washi 开头：优先级比旧规则高，而且去掉这个 class 就完全回到枫叶皮肤，互不影响。
-   以后决定彻底换掉旧皮肤时，把这一整段的 "html.skin-washi " 前缀去掉、删掉旧皮肤那几段即可。
+   「和紙と墨」风格（全站唯一风格）
+   【原理】整站颜色大多走 :root 里的 CSS 变量（--bg/--card/--text/--blue…），那里已经是"米白纸 + 墨黑 + 朱红"；
+   这一段再对少数写死颜色的地方（原来的渐变按钮、首页模块卡片等）单独覆盖。
+   选择器前面加 html 是为了让优先级比前面的通用规则高一点，保证这里的覆盖生效。
    ========================================================================== */
-html.skin-washi{
-  --bg:#f3eee3;--card:#f8f4ea;--card2:#f3eee3;--text:#1d1b18;--sub:#7a7266;--line:#d6cdbb;   /* 纸色、墨色、淡墨、分隔线 */
-  --edge:rgba(29,27,24,.08);--shadow:none;--glow:transparent;
-  --ico:#c7321e;--ico-bg:#f1ddd5;--ico-ring:#e3c3b8;--numc:rgba(199,50,30,.12);
-  --blue:#c7321e;--chip:#ece4d3;--greige:#ece4d3;--pager-t:#9a2a18;                           /* --blue 沿用旧变量名，实际是朱红 */
-  --gold:#f3eee3;--tab:#e9dfca;--tab-t:#1d1b18;--t1:#f1e9d8;--t2:#f3eee3;--t3:#efe6d3;--cp-bg:#ece4d3;--cp-t:#1d1b18;
-  --serif:"Hiragino Mincho ProN","Yu Mincho","Shippori Mincho","Noto Serif JP","Songti SC",serif;  /* 明朝体：系统自带，不依赖网络字体 */
-}
-/* 背景：纸的质感（顶部一层淡淡的高光），去掉枫叶和光晕 */
-html.skin-washi .leaves{display:none}
-html.skin-washi .glow{display:block;height:300px;background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,0));z-index:-1}
+/* 背景：纸的质感（顶部一层淡淡的高光） */
+html .glow{display:block;height:300px;background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,0));z-index:-1}
 /* 右下角一笔"圆相"（ensō）：很淡的装饰，所有页面都有，点不到（pointer-events:none） */
-html.skin-washi body::after{content:"";position:fixed;right:-40px;bottom:-50px;width:190px;height:190px;pointer-events:none;z-index:-1;opacity:.10;
+body::after{content:"";position:fixed;right:-40px;bottom:-50px;width:190px;height:190px;pointer-events:none;z-index:-1;opacity:.10;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M100 22C150 18 182 62 176 106 170 152 128 182 88 176 44 170 20 128 28 90 34 60 56 40 84 32' fill='none' stroke='%231d1b18' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
 
 /* ---------- 首页顶部 ---------- */
-html.skin-washi .topline{text-align:left;font-size:11px;letter-spacing:.18em;color:var(--sub)}
-html.skin-washi .topline .ver{color:var(--sub);letter-spacing:.04em}
-html.skin-washi .hname{font-family:var(--serif);font-weight:800;font-size:42px;color:var(--text);letter-spacing:.02em}
-html.skin-washi .tagline{font-family:var(--serif);font-style:normal;font-size:16px;color:#4b463d}
-html.skin-washi .tagline::before{display:none}                      /* 去掉枫叶小图标 */
-html.skin-washi .credit{color:var(--sub)}
+html .topline{text-transform:uppercase;text-align:left;font-size:11px;letter-spacing:.18em;color:var(--sub)}
+html .topline .ver{text-transform:none;color:var(--sub);letter-spacing:.04em}
+html .hname{font-family:var(--serif);font-weight:800;font-size:42px;color:var(--text);letter-spacing:.02em}
+html .tagline{font-family:var(--serif);font-style:normal;font-size:16px;color:#4b463d}
+html .credit{color:var(--sub)}
 /* JLPT N2 徽章 → 朱红印章：红框、红字、微微歪一点 */
-html.skin-washi .badge{background:none;color:var(--blue);border:2px solid var(--blue);border-radius:5px;box-shadow:none;transform:rotate(-5deg);font-family:var(--serif);font-weight:800;letter-spacing:.1em;padding:3px 9px}
+html .badge{background:none;color:var(--blue);border:2px solid var(--blue);border-radius:5px;box-shadow:none;transform:rotate(-5deg);font-family:var(--serif);font-weight:800;letter-spacing:.1em;padding:3px 9px}
 /* 缅甸语按钮、皮肤按钮：细墨线胶囊；打开时墨黑底、纸色字 */
-html.skin-washi .mm-btn,html.skin-washi .skin-btn{background:none;border:1px solid var(--text);color:var(--text)}
-html.skin-washi .mm-btn.on{background:var(--text);color:var(--bg);border-color:var(--text);box-shadow:none}
-html.skin-washi .tagbtn{background:none;border-color:var(--text);color:var(--text)}
+html .mm-btn{background:none;border:1px solid var(--text);color:var(--text)}
+html .mm-btn.on{background:var(--text);color:var(--bg);border-color:var(--text);box-shadow:none}
+html .tagbtn{background:none;border-color:var(--text);color:var(--text)}
 /* 收藏本：朱红描边的文字按钮 */
-html.skin-washi .favhome{background:none;color:var(--blue);border:1px solid var(--blue);box-shadow:none}
+html .favhome{background:none;color:var(--blue);border:1px solid var(--blue);box-shadow:none}
 /* 搜索框：只留一条墨线（下划线） */
-html.skin-washi .search{background:none;border:0;border-bottom:1.5px solid var(--text);border-radius:0;padding-left:2px;padding-right:2px}
-html.skin-washi .ws-pop{background:var(--card);border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 28px rgba(29,27,24,.14)}
+html .search:focus{outline:none;border-bottom-color:var(--blue)}   /* 聚焦时不要浏览器默认的方框，下划线变朱红 */
+html .search{background:none;border:0;border-bottom:1.5px solid var(--text);border-radius:0;padding-left:2px;padding-right:2px}
+html .ws-pop{background:var(--card);border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 28px rgba(29,27,24,.14)}
 
 /* ---------- 首页五个模块：由"彩色卡片"变成"目录式列表" ----------
    每行三列：编号 | 标题+数量 | 右边大号浅色日文汉字；行与行之间一条细线，上下各一条粗墨线收口。 */
-html.skin-washi .grid{grid-template-columns:1fr;gap:0;border-top:1.5px solid var(--text);margin-top:6px}
-html.skin-washi .grid .tile{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none;transform:none;overflow:visible;
+html .grid{grid-template-columns:1fr;gap:0;border-top:1.5px solid var(--text);margin-top:6px}
+html .grid .tile{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none;transform:none;overflow:visible;
   padding:15px 0;display:grid;grid-template-columns:30px 1fr auto;grid-template-areas:"no h2 jp" "no count jp";column-gap:10px;row-gap:2px;align-items:center}
-html.skin-washi .grid .tile:last-child{border-bottom:1.5px solid var(--text)}
-html.skin-washi .grid .tile:hover{transform:none;box-shadow:none;background:rgba(29,27,24,.03)}
-html.skin-washi .tile::after,html.skin-washi .tile .ico{display:none}   /* 去掉枫叶水印和圆形图标 */
-html.skin-washi .tile .no{position:static;grid-area:no;font-family:var(--serif);font-size:13px;font-weight:700;color:var(--blue);opacity:1;align-self:center}
-html.skin-washi .tile h2{grid-area:h2;font-family:var(--serif);font-size:20px;font-weight:700;letter-spacing:0}
-html.skin-washi .tile h2 .h1sub{display:none}                            /* 语法那一长串括号说明，列表里放不下，隐藏 */
-html.skin-washi .tile h2 .pause{display:inline;margin-left:8px;font-family:var(--font);font-size:11px;font-weight:500;color:var(--sub)}
-html.skin-washi .tile .count{grid-area:count;margin:0;padding:0;font-size:12px;color:var(--sub)}
-html.skin-washi .tile .jp{grid-area:jp;font-family:var(--serif);font-size:30px;font-weight:700;color:#d6cdbb;letter-spacing:.04em;text-align:right}
+html .grid .tile:last-child{border-bottom:1.5px solid var(--text)}
+html .grid .tile:hover{transform:none;box-shadow:none;background:rgba(29,27,24,.03)}
+html .tile::after,html .tile .ico{display:none}   /* 首页列表里不要圆形图标和角落水印 */
+html .tile .no{position:static;grid-area:no;font-family:var(--serif);font-size:13px;font-weight:700;color:var(--blue);opacity:1;align-self:center}
+html .tile h2{grid-area:h2;font-family:var(--serif);font-size:20px;font-weight:700;letter-spacing:0}
+html .tile h2 .h1sub{display:none}                            /* 语法那一长串括号说明，列表里放不下，隐藏 */
+html .tile h2 .pause{display:inline;margin-left:8px;font-family:var(--font);font-size:11px;font-weight:500;color:var(--sub)}
+html .tile .count{grid-area:count;margin:0;padding:0;font-size:12px;color:var(--sub)}
+html .tile .jp{grid-area:jp;font-family:var(--serif);font-size:30px;font-weight:700;color:#d6cdbb;letter-spacing:.04em;text-align:right}
 @media (max-width:520px){
-  html.skin-washi .hname{font-size:38px}
-  html.skin-washi .grid .tile{padding:14px 0}
-  html.skin-washi .tile h2{font-size:19px}
-  html.skin-washi .tile .jp{font-size:26px}
+  html .hname{font-size:38px}
+  html .grid .tile{padding:14px 0}
+  html .tile h2{font-size:19px}
+  html .tile .jp{font-size:26px}
 }
 
 /* ---------- 二级页面（同义词 / 文章 / 语法 / N2 词汇 / 动词变形 / 收藏本）---------- */
-html.skin-washi .sticky,html.skin-washi .sticky h1{font-family:var(--serif)}
-html.skin-washi .sticky h1{font-weight:800;letter-spacing:.01em}
-html.skin-washi .back{color:var(--text)}
-html.skin-washi .card,html.skin-washi .tile{background:var(--card);border:1px solid var(--line);border-radius:8px;box-shadow:none}
-html.skin-washi .card h3{font-family:var(--serif)}
-html.skin-washi .seg{background:var(--chip);border-radius:8px}
+html .sticky,html .sticky h1{font-family:var(--serif)}
+html .sticky h1{font-weight:800;letter-spacing:.01em}
+html .back{color:var(--text)}
+html .card,html .tile{background:var(--card);border:1px solid var(--line);border-radius:8px;box-shadow:none}
+html .card h3{font-family:var(--serif)}
+html .seg{background:var(--chip);border-radius:8px}
 /* 原来是"橙红渐变 + 白字"的所有选中态/按钮 → 墨黑底 + 纸色字 */
-html.skin-washi .tog.on,html.skin-washi .seg button.on,html.skin-washi .glv.n2,html.skin-washi .gsim button.on,html.skin-washi .vb-tag.g1,html.skin-washi .vb-to.g1,html.skin-washi .vb-sn,
-html.skin-washi .vb-pick button.on,html.skin-washi .vb-quick button.on,html.skin-washi .vb-cands button.on,html.skin-washi .vb-idx button.on{background:var(--text);color:var(--bg);box-shadow:none}
-html.skin-washi .vb-pick button.on rt,html.skin-washi .vb-quick button.on rt,html.skin-washi .vb-cands button.on rt,html.skin-washi .gsim button.on rt{color:var(--bg);opacity:.85}
-html.skin-washi .play{background:var(--blue);color:#fff;box-shadow:none}        /* 朗读按钮用朱红，和印章呼应 */
-html.skin-washi .play.lt{background:var(--chip);color:var(--blue)}
-html.skin-washi .chip{background:var(--chip);color:var(--text)}
-html.skin-washi .ftoast{background:linear-gradient(135deg,rgba(29,27,24,.82),rgba(60,52,44,.82));color:#f3eee3}   /* 提示条：墨色半透明 */
+html .tog.on,html .seg button.on,html .glv.n2,html .gsim button.on,html .vb-tag.g1,html .vb-to.g1,html .vb-sn,
+html .vb-pick button.on,html .vb-quick button.on,html .vb-cands button.on,html .vb-idx button.on{background:var(--text);color:var(--bg);box-shadow:none}
+html .vb-pick button.on rt,html .vb-quick button.on rt,html .vb-cands button.on rt,html .gsim button.on rt{color:var(--bg);opacity:.85}
+html .play{background:var(--blue);color:#fff;box-shadow:none}        /* 朗读按钮用朱红，和印章呼应 */
+html .play.lt{background:var(--chip);color:var(--blue)}
+html .chip{background:var(--chip);color:var(--text)}
+html .ftoast{background:linear-gradient(135deg,rgba(29,27,24,.82),rgba(60,52,44,.82));color:#f3eee3}   /* 提示条：墨色半透明 */
 </style>
 </head>
 <body>
@@ -672,12 +610,12 @@ html.skin-washi .ftoast{background:linear-gradient(135deg,rgba(29,27,24,.82),rgb
 
   <!-- ===== HOME ===== -->
   <template v-if="route==='home'">
-    <div class="glow" aria-hidden="true"></div><div class="leaves" aria-hidden="true"><i v-for="n in 7" :key="n"></i></div>
+    <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v99 · Updated 2026-10-31 16:10</span></div>
+      <div class="topline">Japanese <span class="ver">v100 · Updated 2026-10-31 16:40</span></div>
       <div class="hero-row">
         <div>
-          <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="skin-btn mm-btn" type="button" @click="toggleSkin" :aria-label="T('切换皮肤','အသွင်ပြောင်း')" :title="T('切换皮肤','အသွင်ပြောင်း')"><span>{{ T('皮肤','အသွင်') }}</span><span class="mm-my">{{ skin==='washi'?'和紙':'紅葉' }}</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
+          <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
           <div class="tagline">I can do all things.<button class="favhome" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg><span>{{ T('收藏本','သိမ်းထားသည်များ') }}</span></button></div>
         </div>
         <word-search></word-search>
@@ -8856,7 +8794,7 @@ const loadGsi = () => new Promise((ok,no)=>{
 });
 let gsiReady=false, favToastT=0; const favBusy={};
 Vue.createApp({
-  data(){ const p=parse(); return { route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{v:'动词',n:'名词',adj:'形容词',adv:'副词·其他'}, n2CatsMy:{v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား'}, n2Cat:'all', n2Page:1, nq:'', skin:(()=>{try{return localStorage.getItem('jlptSkin')==='maple'?'maple':'washi'}catch(e){return 'washi'}})(), authUser:null, loginOpen:false, loginMsg:'', verifyMsg:'', favs:[], favState:'idle', favErr:'', favPage:1, favToast:'' }; },
+  data(){ const p=parse(); return { route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{v:'动词',n:'名词',adj:'形容词',adv:'副词·其他'}, n2CatsMy:{v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား'}, n2Cat:'all', n2Page:1, nq:'', authUser:null, loginOpen:false, loginMsg:'', verifyMsg:'', favs:[], favState:'idle', favErr:'', favPage:1, favToast:'' }; },
   computed:{
     art(){ return this.articles[this.idx]; },
     favOn(){ return !!API_BASE; },
@@ -9029,13 +8967,6 @@ Vue.createApp({
         this.verifyMsg=this.T('登录成功，用户编号 #','လော့ဂ်အင်ဝင်ပြီးပါပြီ၊ အသုံးပြုသူနံပါတ် #')+d.user.id;
         this.loginOpen=false; this.go('home'); this.toast(this.T('登录成功','လော့ဂ်အင်ဝင်ပြီးပါပြီ')); this.loadFavs();   // 登录成功一律回首页，再弹提示
       }catch(e){ this.loginMsg=this.T('连不上后端，请稍后再试','ဆာဗာကို ချိတ်ဆက်၍မရပါ၊ နောက်မှ ထပ်ကြိုးစားပါ'); this.verifyMsg=''; }
-    },
-    /* 切换皮肤：washi（和紙と墨）⇄ maple（枫叶，旧皮肤）。
-       做两件事：① 给 <html> 加/去 skin-washi 这个 class（CSS 靠它切换整站外观）；② 记在 localStorage，下次打开还是这个皮肤。 */
-    toggleSkin(){
-      this.skin=this.skin==='washi'?'maple':'washi';
-      document.documentElement.classList.toggle('skin-washi',this.skin==='washi');
-      try{ localStorage.setItem('jlptSkin',this.skin); }catch(e){}
     },
     doLogout(){
       if(window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
