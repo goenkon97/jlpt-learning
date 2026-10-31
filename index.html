@@ -591,7 +591,7 @@ body{background:var(--bg)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div><div class="leaves" aria-hidden="true"><i v-for="n in 7" :key="n"></i></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v96 · Updated 2026-10-30 21:40</span></div>
+      <div class="topline">Japanese <span class="ver">v97 · Updated 2026-10-31 10:20</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -8760,6 +8760,11 @@ const TOKEN_KEY = "jlpt_token";  // 我们自己的 token 存在 localStorage �
 const saveToken = t => { try{ localStorage.setItem(TOKEN_KEY,t); }catch(e){} };
 const loadToken = () => { try{ return localStorage.getItem(TOKEN_KEY)||''; }catch(e){ return ''; } };
 const clearToken = () => { try{ localStorage.removeItem(TOKEN_KEY); }catch(e){} };
+// 用户资料（名字/邮箱/头像）也缓存一份：刷新后先立刻显示已登录，再去后端核实
+const USER_KEY = 'jlpt_user';
+const saveUser = u => { try{ localStorage.setItem(USER_KEY,JSON.stringify(u)); }catch(e){} };
+const loadUser = () => { try{ return JSON.parse(localStorage.getItem(USER_KEY)||'null'); }catch(e){ return null; } };
+const clearUser = () => { try{ localStorage.removeItem(USER_KEY); }catch(e){} };
 /* 页面一打开就悄悄叫醒后端和数据库（免费版会休眠），不等结果 */
 if(API_BASE){ try{ fetch(API_BASE+'/health').catch(()=>{}); }catch(e){} }
 const loadGsi = () => new Promise((ok,no)=>{
@@ -8937,30 +8942,49 @@ Vue.createApp({
         if(!r.ok){ this.loginMsg=this.T('登录没有通过（状态码 '+r.status+'），请重试','လော့ဂ်အင် မအောင်မြင်ပါ (ကုဒ် '+r.status+')၊ ထပ်ကြိုးစားပါ'); this.verifyMsg=''; return; }
         const d=await r.json();   // { token: 我们自己发的通行证, user: {...} }
         saveToken(d.token);
-        this.authUser={ name:d.user.name||d.user.email, email:d.user.email, picture:d.user.picture||'' };
+        this.authUser={ name:d.user.name||d.user.email, email:d.user.email, picture:d.user.picture||'' }; saveUser(this.authUser);
         this.verifyMsg=this.T('登录成功，用户编号 #','လော့ဂ်အင်ဝင်ပြီးပါပြီ၊ အသုံးပြုသူနံပါတ် #')+d.user.id;
         this.loginOpen=false; this.go('home'); this.toast(this.T('登录成功','လော့ဂ်အင်ဝင်ပြီးပါပြီ')); this.loadFavs();   // 登录成功一律回首页，再弹提示
       }catch(e){ this.loginMsg=this.T('连不上后端，请稍后再试','ဆာဗာကို ချိတ်ဆက်၍မရပါ၊ နောက်မှ ထပ်ကြိုးစားပါ'); this.verifyMsg=''; }
     },
     doLogout(){
       if(window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
-      clearToken(); this.authUser=null; this.verifyMsg=''; this.loginOpen=false; this.favs=[]; this.favState='idle';
+      clearToken(); clearUser(); this.authUser=null; this.verifyMsg=''; this.loginOpen=false; this.favs=[]; this.favState='idle';
     },
-    /* 页面启动：如果存着 token，就带着它去问后端「我是谁」 */
+    /* 页面启动：如果存着 token，就带着它去问后端「我是谁」
+       【为什么这样写】Vercel 后端是"无服务器函数"，一段时间没人访问会休眠，下次请求要"冷启动"
+       （启动 Node + 连数据库，可能几秒，第一次甚至直接失败返回 5xx/超时）。
+       以前 /me 一失败界面就显示成未登录，看起来像"刷新就掉登录"。现在三层保护：
+       ① 用户资料也缓存在 localStorage（jlpt_user），刷新后先立刻显示成已登录，不等后端；
+       ② 再去 /me 核实；网络失败 / 5xx → 自动重试最多 4 次（间隔 0/1.5/3/4.5 秒），期间保持已登录显示，不删 token；
+       ③ 只有后端明确回 401（token 真的无效/过期）才清掉 token 和缓存，并提示（带状态码，方便排查）。 */
     async restoreLogin(){
       const t=loadToken(); if(!t||!API_BASE) return;
-      try{
-        const r=await fetch(API_BASE+'/me',{ headers:{ Authorization:'Bearer '+t } });
-        if(r.ok){ const u=await r.json(); this.authUser={ name:u.name||u.email, email:u.email, picture:u.picture||'' }; this.verifyMsg=this.T('已自动恢复登录，用户编号 #','ပြန်လည်ဝင်ရောက်ပြီးပါပြီ၊ အသုံးပြုသူနံပါတ် #')+u.id; this.loadFavs(); }
-        else if(r.status===401){ clearToken(); }   // token 过期或无效：删掉，重新登录
-      }catch(e){ /* 后端暂时连不上：保持未登录，但不删 token */ }
+      const cached=loadUser(); if(cached) this.authUser=cached;   // ① 先用缓存显示已登录
+      for(let i=0;i<4;i++){
+        if(i) await new Promise(ok=>setTimeout(ok,1500*i));
+        try{
+          const r=await fetch(API_BASE+'/me',{ headers:{ Authorization:'Bearer '+t } });
+          if(r.ok){
+            const u=await r.json(); const me={ name:u.name||u.email, email:u.email, picture:u.picture||'' };
+            this.authUser=me; saveUser(me);
+            this.verifyMsg=this.T('已自动恢复登录，用户编号 #','ပြန်လည်ဝင်ရောက်ပြီးပါပြီ၊ အသုံးပြုသူနံပါတ် #')+u.id; this.loadFavs(); return;
+          }
+          if(r.status===401){   // ③ 明确无效：才真的退出登录
+            clearToken(); clearUser(); this.authUser=null; this.favs=[]; this.favState='idle';
+            console.warn('[restoreLogin] /me 返回 401，token 无效或已过期');
+            this.toast(this.T('登录已失效（401），请重新登录','လော့ဂ်အင်သက်တမ်းကုန်သွားပါပြီ (401)၊ ပြန်ဝင်ပါ')); return;
+          }
+          console.warn('[restoreLogin] /me 返回 '+r.status+'，稍后重试');   // 5xx：服务器还没准备好
+        }catch(e){ console.warn('[restoreLogin] 连不上后端，稍后重试',e); }   // 网络/CORS 失败：同样重试，不删 token
+      }
     },
     /* 带着 token 请求后端。网络不通返回 null；401 说明登录失效：清掉登录状态并提示 */
     async authFetch(path,opt){
       const o=Object.assign({},opt||{});
       o.headers=Object.assign({ Authorization:'Bearer '+loadToken() }, o.body?{'Content-Type':'application/json'}:{}, o.headers||{});
       let r; try{ r=await fetch(API_BASE+path,o); }catch(e){ return null; }
-      if(r.status===401){ clearToken(); this.authUser=null; this.verifyMsg=''; this.favs=[]; this.favState='idle'; this.toast(this.T('登录已过期，请重新登录','လော့ဂ်အင်သက်တမ်းကုန်သွားပါပြီ၊ ပြန်ဝင်ပါ')); this.openLogin(); return null; }
+      if(r.status===401){ clearToken(); clearUser(); this.authUser=null; this.verifyMsg=''; this.favs=[]; this.favState='idle'; this.toast(this.T('登录已过期，请重新登录','လော့ဂ်အင်သက်တမ်းကုန်သွားပါပြီ၊ ပြန်ဝင်ပါ')); this.openLogin(); return null; }
       return r;
     },
     /* ===== 收藏 ===== */
