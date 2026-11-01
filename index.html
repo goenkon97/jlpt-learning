@@ -518,6 +518,12 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .fvdone:active{background:var(--blue);border-color:var(--blue);color:#f3eee3}
 @media (hover:hover){.fvdone:hover{background:var(--blue);border-color:var(--blue);color:#f3eee3}}
 .fvdone svg{width:13px;height:13px}
+/* 「正在请求数据…」悬浮框：固定在页面上方正中，不挡点击（pointer-events:none）；样式跟着和纸与墨 */
+.netbox{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translateX(-50%);z-index:9998;pointer-events:none;display:flex;align-items:center;gap:8px;background:rgba(29,27,24,.82);color:#f3eee3;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.nt-enter-active,.nt-leave-active{transition:opacity .2s ease}.nt-enter-from,.nt-leave-to{opacity:0}
+.netspin{width:13px;height:13px;border-radius:50%;border:2px solid rgba(243,238,227,.35);border-top-color:#f3eee3;animation:netrot .8s linear infinite}
+@keyframes netrot{to{transform:rotate(360deg)}}
+
 /* 语体标签：口语 / 书面 / 职场 / 通用。颜色克制，跟和纸配色：口语=苔绿，书面=墨灰，职场=靛蓝，通用=几乎透明的细线框 */
 .reg{flex:none;display:inline-block;font-size:11px;font-weight:700;line-height:1;padding:3px 7px;border-radius:7px;letter-spacing:.04em;vertical-align:middle;white-space:nowrap}
 .reg.rK{background:#e3e8d3;color:#4b5b27}
@@ -637,7 +643,7 @@ html .chip{background:var(--chip);color:var(--text)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v107 · Updated 2026-10-31 20:30</span></div>
+      <div class="topline">Japanese <span class="ver">v108 · Updated 2026-11-01 10:30</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -961,7 +967,7 @@ html .chip{background:var(--chip);color:var(--text)}
     </div>
     <p class="plan" v-if="!authUser">{{ T('登录后才能看到你的收藏。','သိမ်းထားသည်များကို ကြည့်ရန် လော့ဂ်အင်ဝင်ပါ။') }}<button class="lgin" @click="openLogin">{{ T('用 Google 登录','Google ဖြင့် ဝင်ရန်') }}</button></p>
     <p class="plan" v-else-if="favState==='loading'">{{ T('收藏加载中…','ဖွင့်နေသည်…') }}</p>
-    <p class="plan" v-else-if="favState==='err'">{{ favErr }}</p>
+    <p class="plan" v-else-if="favState==='err'">{{ favErr }} <button class="fvdone" type="button" @click="loadFavs">{{ T('重试','ပြန်ကြိုးစား') }}</button></p>
     <template v-else-if="favs.length">
       <div class="card fvc" v-for="(it,i) in pagedFav" :key="it.f.k+'|'+it.f.key">
         <span class="num">{{ (favPage-1)*10+i+1 }}</span>
@@ -1074,6 +1080,7 @@ html .chip{background:var(--chip);color:var(--text)}
   </template>
 </div></div>
 <transition name="tst"><div class="ftoast" v-if="favToast" role="status">{{ favToast }}</div></transition>
+<transition name="nt"><div class="netbox" v-if="netShow" role="status" aria-live="polite"><i class="netspin"></i>{{ T('正在请求数据…','ဒေတာတောင်းနေသည်…') }}</div></transition>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
@@ -8812,6 +8819,19 @@ const saveUser = u => { try{ localStorage.setItem(USER_KEY,JSON.stringify(u)); }
 const loadUser = () => { try{ return JSON.parse(localStorage.getItem(USER_KEY)||'null'); }catch(e){ return null; } };
 const clearUser = () => { try{ localStorage.removeItem(USER_KEY); }catch(e){} };
 /* 页面一打开就悄悄叫醒后端和数据库（免费版会休眠），不等结果 */
+/* ===== 「正在请求数据…」悬浮框的数据来源 =====
+   原理：把浏览器自带的 fetch 换成一个"包装版"。凡是发往我们后端（API_BASE）的请求，发出时计数 +1，
+   不管成功、失败还是超时，结束时一定 -1（finally）。所以 net.n > 0 就等于"现在有后端请求还没回来"。
+   net 是 Vue.reactive 对象：数字一变，用到它的界面会自动更新。
+   /health 是页面打开时悄悄叫醒后端的预热请求，不让用户等，所以不计数。 */
+const net=Vue.reactive({ n:0 });
+const rawFetch=window.fetch.bind(window);
+window.fetch=function(u,o){
+  const mine=typeof u==='string' && API_BASE && u.indexOf(API_BASE)===0 && u.indexOf('/health')<0;
+  if(!mine) return rawFetch(u,o);
+  net.n++;
+  return rawFetch(u,o).finally(()=>{ net.n--; });
+};
 if(API_BASE){ try{ fetch(API_BASE+'/health',{cache:'no-store'}).catch(()=>{}); }catch(e){} }
 const loadGsi = () => new Promise((ok,no)=>{
   if(window.google && google.accounts && google.accounts.id) return ok();
@@ -8819,7 +8839,7 @@ const loadGsi = () => new Promise((ok,no)=>{
 });
 let gsiReady=false, favToastT=0; const favBusy={};
 Vue.createApp({
-  data(){ const p=parse(); return { route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{v:'动词',n:'名词',adj:'形容词',adv:'副词·其他'}, n2CatsMy:{v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား'}, n2Cat:'all', n2Page:1, nq:'', authUser:null, loginOpen:false, loginMsg:'', verifyMsg:'', favs:[], favState:'idle', favErr:'', favPage:1, favToast:'' }; },
+  data(){ const p=parse(); return { netShow:false, route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{v:'动词',n:'名词',adj:'形容词',adv:'副词·其他'}, n2CatsMy:{v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား'}, n2Cat:'all', n2Page:1, nq:'', authUser:null, loginOpen:false, loginMsg:'', verifyMsg:'', favs:[], favState:'idle', favErr:'', favPage:1, favToast:'' }; },
   computed:{
     art(){ return this.articles[this.idx]; },
     favOn(){ return !!API_BASE; },
@@ -9010,6 +9030,17 @@ Vue.createApp({
     async restoreLogin(){
       const t=loadToken(); if(!t||!API_BASE) return;
       const cached=loadUser(); if(cached) this.authUser=cached;   // ① 先用缓存显示已登录
+      /* 【这次修的 bug】以前这里不管收藏页，favState 一直是 'idle'（未加载）：
+         后端休眠时 /me 要重试好几次（最长约 9 秒），这期间点进收藏本，页面当成"没有收藏"显示空白；
+         如果 4 次都失败，收藏更是永远不会加载，刷新也一样空。现在：
+         ① 一开始就标成 'loading'（收藏页会显示"加载中"，而不是空白）；
+         ② 4 次都没连上，标成 'err'，收藏页显示错误和「重试」按钮；
+         ③ 整个过程（包括重试之间的等待）都让 net.n 加 1，悬浮框全程显示，不会在等待间隙消失。 */
+      if(this.favOn) this.favState='loading';
+      net.n++;
+      try{ await this.restoreLoginTry(t); } finally{ net.n--; }
+    },
+    async restoreLoginTry(t){
       for(let i=0;i<4;i++){
         if(i) await new Promise(ok=>setTimeout(ok,1500*i));
         try{
@@ -9027,6 +9058,8 @@ Vue.createApp({
           console.warn('[restoreLogin] /me 返回 '+r.status+'，稍后重试');   // 5xx：服务器还没准备好
         }catch(e){ console.warn('[restoreLogin] 连不上后端，稍后重试',e); }   // 网络/CORS 失败：同样重试，不删 token
       }
+      // 4 次都没成功：保持已登录显示，但收藏页给出错误提示和重试按钮（点重试会直接再拉一次收藏）
+      this.favErr=this.T('后端还没醒来，收藏没有加载，点「重试」','ဆာဗာ မနိုးသေးပါ၊ ပြန်ကြိုးစားပါ'); this.favState='err';
     },
     /* 带着 token 请求后端。网络不通返回 null；401 说明登录失效：清掉登录状态并提示 */
     async authFetch(path,opt){
@@ -9102,7 +9135,10 @@ Vue.createApp({
     },
     setFPage(p){ if(!p||p<1||p>this.favPages) return; this.favPage=p; window.scrollTo({top:0,behavior:this.smooth()}); },
   },
-  mounted(){ document.documentElement.classList.toggle('my-on',this.mmOn); this.restoreLogin(); window.addEventListener('popstate',()=>{ const p=parse(); this.syncArtPage(p); this.route=p.route; this.idx=p.idx; }); }
+  mounted(){ document.documentElement.classList.toggle('my-on',this.mmOn);
+    /* 监听"进行中的请求数"：>0 且持续超过 0.3 秒才显示悬浮框（很快就回来的请求不闪一下）；回到 0 立刻消失 */
+    let netT=0; this.$watch(()=>net.n,(n)=>{ clearTimeout(netT); if(n>0){ netT=setTimeout(()=>{ this.netShow=true; },300); } else this.netShow=false; });
+    this.restoreLogin(); window.addEventListener('popstate',()=>{ const p=parse(); this.syncArtPage(p); this.route=p.route; this.idx=p.idx; }); }
 }).component('word-search', WordSearch).component('ana-panel', AnaPanel).component('verb-page', VerbPage).mount('#app');
 </script>
 
