@@ -646,7 +646,7 @@ html .chip{background:var(--chip);color:var(--text)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v110 · Updated 2026-11-02 16:00</span></div>
+      <div class="topline">Japanese <span class="ver">v111 · Updated 2026-11-02 17:00</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -969,8 +969,14 @@ html .chip{background:var(--chip);color:var(--text)}
         </div>
       </div>
       <!-- 收藏分类：只显示"有收藏"的分类，数字是该分类的条数；只有一个分类时不显示（没必要筛选） -->
+      <!-- 第一级：模块（全部 / 普通 / N2）。只有两个模块都有收藏时才显示 -->
+      <div class="seg" role="tablist" v-if="favMods.length>1">
+        <button role="tab" :aria-selected="favLevelNow==='all'" :class="{on:favLevelNow==='all'}" @click="favLevel='all'">{{ T('全部','အားလုံး') }}<span class="n">{{ favEntries.length }}</span></button>
+        <button role="tab" v-for="m in favMods" :key="m.k" :aria-selected="favLevelNow===m.k" :class="{on:favLevelNow===m.k}" @click="favLevel=m.k">{{ m.label }}<span class="n">{{ m.n }}</span></button>
+      </div>
+      <!-- 第二级：当前模块下的分类（动词/名词/形容词/叠词…）；选了"全部"模块时显示所有分类 -->
       <div class="seg" role="tablist" v-if="favGroups.length>1">
-        <button role="tab" :aria-selected="favCatNow==='all'" :class="{on:favCatNow==='all'}" @click="favCat='all'">{{ T('全部','အားလုံး') }}<span class="n">{{ favs.length }}</span></button>
+        <button role="tab" :aria-selected="favCatNow==='all'" :class="{on:favCatNow==='all'}" @click="favCat='all'">{{ T('全部','အားလုံး') }}<span class="n">{{ favInLevel.length }}</span></button>
         <button role="tab" v-for="g in favGroups" :key="g.k" :aria-selected="favCatNow===g.k" :class="{on:favCatNow===g.k}" @click="favCat=g.k">{{ g.label }}<span class="n">{{ g.n }}</span></button>
       </div>
     </div>
@@ -6258,10 +6264,10 @@ const n2vocab = [{"k":"慰める","r":"なぐさめる","c":"v","t":"v","pos":"�
 {"k":"各自","r":"かくじ","c":"adv","t":"adv","pos":"名·副","zh":"各自","ex":"昼食(ちゅうしょく)は[[各自(かくじ)]]で用意(ようい)して下(くだ)さい。","ez":"午饭请各自准备。"},
 {"k":"思い切り","r":"おもいきり","c":"adv","t":"adv","pos":"副·名","zh":"尽情地；狠狠地","ex":"試験(しけん)が終(お)わったら、[[思(おも)い切(き)り]]遊(あそ)びたい。","ez":"考完试想尽情地玩。"},
 {"k":"先程","r":"さきほど","c":"adv","t":"adv","pos":"名·副","zh":"刚才（礼貌）","ex":"[[先程(さきほど)]]御電話(おでんわ)した田中(たなか)です。","ez":"我是刚才给您打过电话的田中。"},
-{"k":"直後","r":"ちょくご","c":"adv","t":"adv","pos":"名","zh":"刚……之后","ex":"家(いえ)を出(で)た[[直後(ちょくご)]]に、雨(あめ)が降(ふ)り出(だ)した。","ez":"刚出家门就下起雨来。"},
+{"k":"直後","r":"ちょくご","c":"n","t":"n","pos":"名","zh":"刚……之后","ex":"家(いえ)を出(で)た[[直後(ちょくご)]]に、雨(あめ)が降(ふ)り出(だ)した。","ez":"刚出家门就下起雨来。"},
 {"k":"毎度","r":"まいど","c":"adv","t":"adv","pos":"名·副","zh":"每次；（商家用语）总是承蒙","ex":"[[毎度(まいど)]]御利用(ごりよう)有難(ありがと)う御座(ござ)います。","ez":"感谢您一直以来的光顾。"},
-{"k":"未満","r":"みまん","c":"adv","t":"adv","pos":"名","zh":"未满；不到","ex":"二十歳(はたち)[[未満(みまん)]]の人(ひと)は御酒(おさけ)を飲(の)んではいけない。","ez":"未满二十岁的人不能喝酒。"},
-{"k":"明け方","r":"あけがた","c":"adv","t":"adv","pos":"名","zh":"黎明；拂晓","ex":"[[明(あ)け方(がた)]]迄(まで)レポートを書(か)いて居(い)た。","ez":"一直写报告写到天亮。"},
+{"k":"未満","r":"みまん","c":"n","t":"n","pos":"名","zh":"未满；不到","ex":"二十歳(はたち)[[未満(みまん)]]の人(ひと)は御酒(おさけ)を飲(の)んではいけない。","ez":"未满二十岁的人不能喝酒。"},
+{"k":"明け方","r":"あけがた","c":"n","t":"n","pos":"名","zh":"黎明；拂晓","ex":"[[明(あ)け方(がた)]]迄(まで)レポートを書(か)いて居(い)た。","ez":"一直写报告写到天亮。"},
 {"k":"割合に","r":"わりあいに","c":"adv","t":"adv","pos":"副","zh":"比较地；意外地","ex":"初(はじ)めての料理(りょうり)だったが、[[割合(わりあい)に]]上手(うま)く出来(でき)た。","ez":"第一次做这道菜，做得还挺不错。"},
 {"k":"油断","r":"ゆだん","c":"n","t":"s","pos":"名·サ变","zh":"大意；疏忽","ex":"最後(さいご)迄(まで)[[油断(ゆだん)]]しては行(い)けない。","ez":"直到最后都不能大意。","trap":"不是“断油”，是放松警惕、掉以轻心。"},
 {"k":"来日","r":"らいにち","c":"n","t":"s","pos":"名·サ变","zh":"（外国人）来日本","ex":"彼(かれ)が[[来日(らいにち)]]したのは五年(ごねん)前(まえ)だ。","ez":"他是五年前来日本的。","trap":"不是“来日方长”的“来日”（将来），专指来日本。"},
@@ -6391,9 +6397,9 @@ const n2vocab = [{"k":"慰める","r":"なぐさめる","c":"v","t":"v","pos":"�
 {"k":"嚔","r":"くしゃみ","c":"n","t":"s","pos":"名·サ变","zh":"喷嚏","ex":"花粉症(かふんしょう)で、朝(あさ)から[[嚔(くしゃみ)]]が止(と)まらない。","ez":"因为花粉症，从早上起喷嚏就停不下来。"},
 {"k":"吃逆","r":"しゃっくり","c":"n","t":"s","pos":"名·サ变","zh":"打嗝","ex":"急(いそ)いで食(た)べたら、[[吃逆(しゃっくり)]]が出(で)た。","ez":"吃得太急，打起嗝来了。"},
 {"k":"じゃん拳","r":"じゃんけん","c":"n","t":"s","pos":"名·サ变","zh":"猜拳；石头剪刀布","ex":"誰(だれ)が行(い)くか、[[じゃん拳(けん)]]で決(き)めよう。","ez":"谁去，用石头剪刀布来定吧。","y":"K"},
-{"k":"すっきり","r":"すっきり","c":"n","t":"s","pos":"副·サ变","zh":"舒畅；整洁利落","ex":"部屋(へや)を片付(かたづ)けたら、気分(きぶん)も[[すっきり]]した。","ez":"收拾完房间，心情也舒畅了。","y":"K"},
-{"k":"のろのろ","r":"のろのろ","c":"n","t":"s","pos":"副·サ变","zh":"慢吞吞","ex":"渋滞(じゅうたい)で、車(くるま)が[[のろのろ]]と進(すす)んで居(い)る。","ez":"因为堵车，车子慢吞吞地往前挪。","y":"K"},
-{"k":"まごまご","r":"まごまご","c":"n","t":"s","pos":"副·サ变","zh":"不知所措；手忙脚乱","ex":"初(はじ)めての駅(えき)で、出口(でぐち)が分(わ)からずに[[まごまご]]した。","ez":"在第一次来的车站找不到出口，手足无措。","y":"K"},
+{"k":"すっきり","r":"すっきり","c":"adv","t":"adv","pos":"副·サ变","zh":"舒畅；整洁利落","ex":"部屋(へや)を片付(かたづ)けたら、気分(きぶん)も[[すっきり]]した。","ez":"收拾完房间，心情也舒畅了。","y":"K"},
+{"k":"のろのろ","r":"のろのろ","c":"adv","t":"adv","pos":"副·サ变","zh":"慢吞吞","ex":"渋滞(じゅうたい)で、車(くるま)が[[のろのろ]]と進(すす)んで居(い)る。","ez":"因为堵车，车子慢吞吞地往前挪。","y":"K"},
+{"k":"まごまご","r":"まごまご","c":"adv","t":"adv","pos":"副·サ变","zh":"不知所措；手忙脚乱","ex":"初(はじ)めての駅(えき)で、出口(でぐち)が分(わ)からずに[[まごまご]]した。","ez":"在第一次来的车站找不到出口，手足无措。","y":"K"},
 {"k":"欠伸","r":"あくび","c":"n","t":"s","pos":"名·サ变","zh":"哈欠","ex":"退屈(たいくつ)な話(はなし)に、思(おも)わず[[欠伸(あくび)]]が出(で)た。","ez":"话太无聊，不由得打了个哈欠。"},
 {"k":"回り道","r":"まわりみち","c":"n","t":"s","pos":"名·サ变","zh":"绕远路；绕道","ex":"工事中(こうじちゅう)だったので、[[回(まわ)り道(みち)]]をして帰(かえ)った。","ez":"因为在施工，绕道回去了。","trap":"不是“回去的路”，是绕远的路。"},
 {"k":"差し引き","r":"さしひき","c":"n","t":"s","pos":"名·サ变","zh":"扣除；相抵","ex":"給料(きゅうりょう)から税金(ぜいきん)を[[差(さ)し引(ひ)き]]すると、手取(てど)りは少(すく)ない。","ez":"工资扣掉税后，到手的不多。","trap":"不是“推拉”，是从总数中扣掉。","y":"B"},
@@ -8848,7 +8854,7 @@ const loadGsi = () => new Promise((ok,no)=>{
 });
 let gsiReady=false, favToastT=0; const favBusy={};
 Vue.createApp({
-  data(){ const p=parse(); return { favCat:'all', netShow:false, route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{v:'动词',n:'名词',adj:'形容词',adv:'副词·其他',syn:'同义词',onoma:'叠词',kan:'语气词',talk:'生活口语',ri:'っり副词',keigo:'敬语',conj:'接续词'}, n2CatsMy:{v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား',syn:'အစားထိုး ဝေါဟာရ',onoma:'ထပ်စကား',kan:'အဆုံးသတ်စကား',talk:'နေ့စဉ်စကားပြော',ri:'っり ကြိယာဝိသေသန',keigo:'ဂုဏ်ပြုစကား',conj:'ဆက်စပ်စကား'}, n2Cat:'all', n2Page:1, nq:'', authUser:null, loginOpen:false, loginMsg:'', verifyMsg:'', favs:[], favState:'idle', favErr:'', favPage:1, favToast:'' }; },
+  data(){ const p=parse(); return { favCat:'all', favLevel:'all', netShow:false, route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{v:'动词',n:'名词',adj:'形容词',adv:'副词·其他',syn:'同义词',onoma:'叠词',kan:'语气词',talk:'生活口语',ri:'っり副词',keigo:'敬语',conj:'接续词'}, n2CatsMy:{v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား',syn:'အစားထိုး ဝေါဟာရ',onoma:'ထပ်စကား',kan:'အဆုံးသတ်စကား',talk:'နေ့စဉ်စကားပြော',ri:'っり ကြိယာဝိသေသန',keigo:'ဂုဏ်ပြုစကား',conj:'ဆက်စပ်စကား'}, n2Cat:'all', n2Page:1, nq:'', authUser:null, loginOpen:false, loginMsg:'', verifyMsg:'', favs:[], favState:'idle', favErr:'', favPage:1, favToast:'' }; },
   computed:{
     art(){ return this.articles[this.idx]; },
     favOn(){ return !!API_BASE; },
@@ -8858,13 +8864,23 @@ Vue.createApp({
          N2 词汇 → 动词/名词/形容词/副词·其他；同义词；语法 → 按语法库的分类（N2 重点、接续词、敬语…）；
          文章里的词汇/N2词/语法；词库里找不到的 → 其他。
        favCatOf 把一条收藏变成分类 key；favGroups 统计每个分类有几条（只显示有收藏的分类）；favFiltered 是当前分类下的列表。 */
+    /* 第一级模块：N2 模块 = N2 词库里的词（含叠词/敬语/语气词等 N2 级别的）+ N2 语法；普通模块 = 其余全部（非 N2 同义词、N3/接续词等语法、文章里的词、其他） */
+    favMods(){
+      const cnt={n2:0,gen:0}; this.favEntries.forEach(it=>{ cnt[this.favModOf(it)]++; });
+      return [{k:'gen',n:cnt.gen,label:this.T('普通','普通')},{k:'n2',n:cnt.n2,label:'N2'}].filter(m=>m.n>0);
+    },
+    favLevelNow(){ return this.favMods.length>1 && this.favMods.some(m=>m.k===this.favLevel) ? this.favLevel : 'all'; },   // 该模块被取消光了/只剩一个模块 → 回到"全部"
+    favInLevel(){ return this.favLevelNow==='all' ? this.favEntries : this.favEntries.filter(it=>this.favModOf(it)===this.favLevelNow); },
+    /* 第二级分类：只统计当前模块里的收藏，N2 模块和普通模块各有自己的排序 */
     favGroups(){
-      const cnt={}; this.favEntries.forEach(it=>{ const k=this.favCatOf(it); cnt[k]=(cnt[k]||0)+1; });
-      const order=['n2:v','n2:n','n2:adj','n2:adv','syn'].concat(Object.keys(this.gramCats).map(c=>'g:'+c),['av','an','ag','none']);
+      const cnt={}; this.favInLevel.forEach(it=>{ const k=this.favCatOf(it); cnt[k]=(cnt[k]||0)+1; });
+      const n2o=['n2:v','n2:n','n2:adj','n2:adv','n2:syn','n2:onoma','n2:ri','n2:keigo','n2:kan','n2:talk','n2:conj','g:n2'];
+      const gen=['syn'].concat(Object.keys(this.gramCats).map(c=>'g:'+c),['av','an','ag','none']);
+      const order=this.favLevelNow==='n2'?n2o:this.favLevelNow==='gen'?gen:n2o.concat(gen);
       return order.filter(k=>cnt[k]).map(k=>({ k, n:cnt[k], label:this.favCatLabel(k) }));
     },
     favCatNow(){ return this.favGroups.some(g=>g.k===this.favCat) ? this.favCat : 'all'; },   // 该分类的收藏被取消光了，自动回到"全部"
-    favFiltered(){ return this.favCatNow==='all' ? this.favEntries : this.favEntries.filter(it=>this.favCatOf(it)===this.favCatNow); },
+    favFiltered(){ return this.favCatNow==='all' ? this.favInLevel : this.favInLevel.filter(it=>this.favCatOf(it)===this.favCatNow); },
     favPages(){ return Math.max(1, Math.ceil(this.favFiltered.length/10)); },
     pagedFav(){ const p=Math.min(this.favPage,this.favPages); return this.favFiltered.slice((p-1)*10, p*10); },
     coveredGrammar(){ return new Set(this.articles.flatMap(a=>a.grammar.map(g=>g[0]))).size; },
@@ -8912,7 +8928,7 @@ Vue.createApp({
     pagedArt(){ const p=Math.min(this.artPage,this.artPages); return this.articles.slice((p-1)*10, p*10); },
     pagedSyn(){ const p=Math.min(this.synPage,this.synPages); return this.filteredSyn.slice((p-1)*10, p*10); }
   },
-  watch:{ mmOn(v){ try{localStorage.setItem('mmOn',v?'1':'0')}catch(e){} document.documentElement.classList.toggle('my-on',v); }, nq(){ this.n2Page=1; }, n2Cat(){ this.n2Page=1; }, favCat(){ this.favPage=1; }, q(){ this.synPage=1; }, synCat(){ this.synPage=1; }, gq(){ this.gramPage=1; }, gramCat(){ this.gramPage=1; } },
+  watch:{ mmOn(v){ try{localStorage.setItem('mmOn',v?'1':'0')}catch(e){} document.documentElement.classList.toggle('my-on',v); }, nq(){ this.n2Page=1; }, n2Cat(){ this.n2Page=1; }, favCat(){ this.favPage=1; }, favLevel(){ this.favCat='all'; this.favPage=1; }, q(){ this.synPage=1; }, synCat(){ this.synPage=1; }, gq(){ this.gramPage=1; }, gramCat(){ this.gramPage=1; } },
   methods:{
     rb(s){ return ruby(esc(s)); },
     setPage(p){ if(!p||p<1||p>this.synPages) return; this.synPage=p; window.scrollTo({top:0,behavior:this.smooth()}); },
@@ -9178,6 +9194,8 @@ Vue.createApp({
     favCatOf(it){ const t=it.type;
       if(t==='n2') return 'n2:'+it.w.c; if(t==='syn') return 'syn'; if(t==='g') return 'g:'+it.g.c;
       return ({av:'av',an:'an',ag:'ag'})[t]||'none'; },
+    /* 一条收藏属于哪个模块：n2 类型（N2 词库）或语法分类为 n2 的 → 'n2'；其余 → 'gen'（普通） */
+    favModOf(it){ const k=this.favCatOf(it); return (k.startsWith('n2:')||k==='g:n2') ? 'n2' : 'gen'; },
     favCatLabel(k){
       if(k.startsWith('n2:')) return this.mmOn?this.n2CatsMy[k.slice(3)]:this.n2Cats[k.slice(3)];
       if(k==='syn') return this.T('同义词','အစားထိုး ဝေါဟာရ');
