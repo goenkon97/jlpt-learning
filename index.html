@@ -518,6 +518,9 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .fvdone:active{background:var(--blue);border-color:var(--blue);color:#f3eee3}
 @media (hover:hover){.fvdone:hover{background:var(--blue);border-color:var(--blue);color:#f3eee3}}
 .fvdone svg{width:13px;height:13px}
+/* N2 页里"叠词/语气词…"条目的补充说明（语法库里的注意事项）：小一号灰字 */
+.nv-note{margin:2px 0 6px;font-size:12.5px;color:var(--sub);line-height:1.6}
+
 /* 「正在请求数据…」悬浮框：固定在页面上方正中，不挡点击（pointer-events:none）；样式跟着和纸与墨 */
 .netbox{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translateX(-50%);z-index:9998;pointer-events:none;display:flex;align-items:center;gap:8px;background:rgba(29,27,24,.82);color:#f3eee3;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;letter-spacing:.04em;white-space:nowrap}
 .nt-enter-active,.nt-leave-active{transition:opacity .2s ease}.nt-enter-from,.nt-leave-to{opacity:0}
@@ -643,7 +646,7 @@ html .chip{background:var(--chip);color:var(--text)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v108 · Updated 2026-11-01 10:30</span></div>
+      <div class="topline">Japanese <span class="ver">v109 · Updated 2026-11-02 15:50</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -684,7 +687,7 @@ html .chip{background:var(--chip);color:var(--text)}
         <span class="jp">語彙</span>
         <p class="desc">{{ T('按 N2 词表系统补词汇：读音、中文、例句、朗读和详细解析。','N2 ဝေါဟာရစာရင်းအတိုင်း စနစ်တကျ ဖြည့်ပါ：အသံထွက်၊ အဓိပ္ပာယ်၊ ဥပမာ၊ အသံဖတ်နဲ့ အသေးစိတ် ခွဲခြမ်းစိတ်ဖြာချက်။') }}</p>
         <div class="peek"><span class="chip" v-for="(n,c) in n2Counts" :key="c">{{ mmOn ? n2CatsMy[c] : n2Cats[c] }} {{ n }}</span></div>
-        <span class="count">{{ n2vocab.length }} {{ T('词 · 持续增加中','လုံး · ဆက်တိုးနေဆဲ') }}</span>
+        <span class="count">{{ n2All.length }} {{ T('词 · 持续增加中','လုံး · ဆက်တိုးနေဆဲ') }}</span>
       </button>
       <button class="tile wide" @click="go('verb')">
         <span class="no">05</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.5 4.5L20 16M20 20v-4h-4"/></svg></span>
@@ -909,7 +912,7 @@ html .chip{background:var(--chip);color:var(--text)}
       <h1>N2 词汇 · 語彙</h1>
       <input class="search" style="width:100%" v-model="nq" :placeholder="T('筛选词汇（汉字 / 假名 / 中文）','ဝေါဟာရ ရှာရန်（ခန်းဂျိ / ခါနာ / အဓိပ္ပာယ်）')">
       <div class="seg" role="tablist">
-        <button role="tab" :aria-selected="n2Cat==='all'" :class="{on:n2Cat==='all'}" @click="n2Cat='all'">{{ T('全部','အားလုံး') }}<span class="n">{{ n2vocab.length }}</span></button>
+        <button role="tab" :aria-selected="n2Cat==='all'" :class="{on:n2Cat==='all'}" @click="n2Cat='all'">{{ T('全部','အားလုံး') }}<span class="n">{{ n2All.length }}</span></button>
         <button role="tab" v-if="n2Traps" :aria-selected="n2Cat==='trap'" :class="{on:n2Cat==='trap'}" @click="n2Cat='trap'">⚠ {{ T('陷阱','ထောင်ချောက်') }}<span class="n">{{ n2Traps }}</span></button>
         <button role="tab" v-for="(n,c) in n2Counts" :key="c" :aria-selected="n2Cat===c" :class="{on:n2Cat===c}" @click="n2Cat=c">{{ mmOn ? n2CatsMy[c] : n2Cats[c] }}<span class="n">{{ n }}</span></button>
       </div>
@@ -923,15 +926,16 @@ html .chip{background:var(--chip);color:var(--text)}
       </div>
       </div>
     </div>
-    <div class="card nv" v-for="(w,i) in pagedN2" :key="w.k">
-      <span class="num">{{ (n2Page-1)*10+i+1 }}</span><button class="cpy" :class="{ok:copied===('n:'+w.k)}" @click="copyCard('n:'+w.k)" :aria-label="T('复制本卡','ကတ်ကို ကူးယူ')" :title="T('复制本卡','ကတ်ကို ကူးယူ')"><svg v-if="copied!==('n:'+w.k)" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span v-else>✓ {{ T('已复制','ကူးပြီး') }}</span></button>
+    <div class="card nv" v-for="(w,i) in pagedN2" :key="w.gp||w.k">
+      <span class="num">{{ (n2Page-1)*10+i+1 }}</span><button class="cpy" :class="{ok:copied===('n:'+(w.gp||w.k))}" @click="copyCard('n:'+(w.gp||w.k))" :aria-label="T('复制本卡','ကတ်ကို ကူးယူ')" :title="T('复制本卡','ကတ်ကို ကူးယူ')"><svg v-if="copied!==('n:'+(w.gp||w.k))" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span v-else>✓ {{ T('已复制','ကူးပြီး') }}</span></button>
       <div class="nv-h">
-        <span class="nv-w" v-html="rb(vAlign(w))"></span>
+        <span class="nv-w" v-html="w.gp?rb(w.gp):rb(vAlign(w))"></span>
         <button class="play lt" @click="say(w.r)" aria-label="朗读单词">▶</button>
         <span class="pos">{{ mmOn ? posMy(w.pos) : w.pos }}</span><span class="reg" :class="'r'+(w.y||'T')" :title="regTitle(w.y)">{{ regT(w.y) }}</span>
-        <button class="fvmark" type="button" v-if="favOn" :class="{on:isFav('w',w.k)}" @click.stop="toggleFav('w',w.k)" :aria-label="isFav('w',w.k)?'取消收藏':'收藏'" :title="isFav('w',w.k)?'取消收藏':'收藏'"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><span class="glv n2">N2</span>
+        <button class="fvmark" type="button" v-if="favOn" :class="{on:isFav('w',w.gp||w.k)}" @click.stop="toggleFav('w',w.gp||w.k)" :aria-label="isFav('w',w.gp||w.k)?'取消收藏':'收藏'" :title="isFav('w',w.gp||w.k)?'取消收藏':'收藏'"><svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg></button><span class="glv n2">N2</span>
       </div>
       <div class="nv-zh">{{ nM(w,0) }}</div>
+      <div class="nv-note" v-if="w.note && !mmOn">{{ w.note }}</div>
       <div class="nv-trap" v-if="w.trap"><b>⚠ {{ T('中文陷阱','တရုတ်စကားနဲ့ မှားတတ်ချက်') }}</b>{{ nM(w,2) }}</div>
       <div class="ex">
         <div class="gxr">
@@ -963,6 +967,11 @@ html .chip{background:var(--chip);color:var(--text)}
             <select :value="favPage" @change="setFPage(+$event.target.value)" aria-label="选择页码"><option v-for="p in favPages" :key="p" :value="p">{{ T('第 '+p+' 页','စာမျက်နှာ '+p) }} · {{ (p-1)*10+1 }}–{{ Math.min(p*10, favs.length) }}</option></select></label>
           <button class="pg arrow" :disabled="favPage===favPages" @click="setFPage(favPage+1)" aria-label="下一页">›</button>
         </div>
+      </div>
+      <!-- 收藏分类：只显示"有收藏"的分类，数字是该分类的条数；只有一个分类时不显示（没必要筛选） -->
+      <div class="seg" role="tablist" v-if="favGroups.length>1">
+        <button role="tab" :aria-selected="favCatNow==='all'" :class="{on:favCatNow==='all'}" @click="favCat='all'">{{ T('全部','အားလုံး') }}<span class="n">{{ favs.length }}</span></button>
+        <button role="tab" v-for="g in favGroups" :key="g.k" :aria-selected="favCatNow===g.k" :class="{on:favCatNow===g.k}" @click="favCat=g.k">{{ g.label }}<span class="n">{{ g.n }}</span></button>
       </div>
     </div>
     <p class="plan" v-if="!authUser">{{ T('登录后才能看到你的收藏。','သိမ်းထားသည်များကို ကြည့်ရန် လော့ဂ်အင်ဝင်ပါ။') }}<button class="lgin" @click="openLogin">{{ T('用 Google 登录','Google ဖြင့် ဝင်ရန်') }}</button></p>
@@ -8839,13 +8848,25 @@ const loadGsi = () => new Promise((ok,no)=>{
 });
 let gsiReady=false, favToastT=0; const favBusy={};
 Vue.createApp({
-  data(){ const p=parse(); return { netShow:false, route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{v:'动词',n:'名词',adj:'形容词',adv:'副词·其他'}, n2CatsMy:{v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား'}, n2Cat:'all', n2Page:1, nq:'', authUser:null, loginOpen:false, loginMsg:'', verifyMsg:'', favs:[], favState:'idle', favErr:'', favPage:1, favToast:'' }; },
+  data(){ const p=parse(); return { favCat:'all', netShow:false, route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{v:'动词',n:'名词',adj:'形容词',adv:'副词·其他',syn:'同义词',onoma:'叠词',kan:'语气词',talk:'生活口语',ri:'っり副词',keigo:'敬语',conj:'接续词'}, n2CatsMy:{v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား',syn:'အစားထိုး ဝေါဟာရ',onoma:'ထပ်စကား',kan:'အဆုံးသတ်စကား',talk:'နေ့စဉ်စကားပြော',ri:'っり ကြိယာဝိသေသန',keigo:'ဂုဏ်ပြုစကား',conj:'ဆက်စပ်စကား'}, n2Cat:'all', n2Page:1, nq:'', authUser:null, loginOpen:false, loginMsg:'', verifyMsg:'', favs:[], favState:'idle', favErr:'', favPage:1, favToast:'' }; },
   computed:{
     art(){ return this.articles[this.idx]; },
     favOn(){ return !!API_BASE; },
     favEntries(){ return this.favs.map(f=>Object.assign({ f }, this.favInfo(f))); },
-    favPages(){ return Math.max(1, Math.ceil(this.favs.length/10)); },
-    pagedFav(){ const p=Math.min(this.favPage,this.favPages); return this.favEntries.slice((p-1)*10, p*10); },
+    /* ===== 收藏本分类（只在前端做，不需要后端）=====
+       收藏在后端只存"一段文字"，没有分类。分类靠 favInfo 把每条收藏对回本地词库，再看它在词库里属于哪一类：
+         N2 词汇 → 动词/名词/形容词/副词·其他；同义词；语法 → 按语法库的分类（N2 重点、接续词、敬语…）；
+         文章里的词汇/N2词/语法；词库里找不到的 → 其他。
+       favCatOf 把一条收藏变成分类 key；favGroups 统计每个分类有几条（只显示有收藏的分类）；favFiltered 是当前分类下的列表。 */
+    favGroups(){
+      const cnt={}; this.favEntries.forEach(it=>{ const k=this.favCatOf(it); cnt[k]=(cnt[k]||0)+1; });
+      const order=['n2:v','n2:n','n2:adj','n2:adv','syn'].concat(Object.keys(this.gramCats).map(c=>'g:'+c),['av','an','ag','none']);
+      return order.filter(k=>cnt[k]).map(k=>({ k, n:cnt[k], label:this.favCatLabel(k) }));
+    },
+    favCatNow(){ return this.favGroups.some(g=>g.k===this.favCat) ? this.favCat : 'all'; },   // 该分类的收藏被取消光了，自动回到"全部"
+    favFiltered(){ return this.favCatNow==='all' ? this.favEntries : this.favEntries.filter(it=>this.favCatOf(it)===this.favCatNow); },
+    favPages(){ return Math.max(1, Math.ceil(this.favFiltered.length/10)); },
+    pagedFav(){ const p=Math.min(this.favPage,this.favPages); return this.favFiltered.slice((p-1)*10, p*10); },
     coveredGrammar(){ return new Set(this.articles.flatMap(a=>a.grammar.map(g=>g[0]))).size; },
     catCounts(){ const c={}; Object.keys(this.synCats).forEach(k=>{ const n=this.synonyms.filter(g=>g.c===k).length; if(n) c[k]=n; }); return c; },
     filteredSyn(){
@@ -8861,16 +8882,41 @@ Vue.createApp({
       return this.grammar.filter(g=>(cat==='all'||g.c===cat) && (!q || this.plain(g.p).includes(q) || g.p.includes(q) || g.zh.includes(q) || g.note.includes(q) || (this.mmOn && (this.gramMy[g.p]||[]).some(x=>x&&x.includes(q))))); },
     gramPages(){ return Math.max(1, Math.ceil(this.filteredGram.length/10)); },
     pagedGram(){ const p=Math.min(this.gramPage,this.gramPages); return this.filteredGram.slice((p-1)*10, p*10); },
-    n2Counts(){ const c={}; Object.keys(this.n2Cats).forEach(k=>{ const n=this.n2vocab.filter(w=>w.c===k).length; if(n) c[k]=n; }); return c; },
+    /* ===== N2 模块的总词表 n2All =====
+       以前 N2 页只有 n2vocab（1800 条）。现在把别的库里"单词性质"的内容也并进来，让这一页什么都能查：
+         ① 同义词库里的每个词（分类：同义词）；
+         ② 语法库里的 叠词(onoma)、语气词(kan)、生活口语(talk)、っり副词(ri)、敬语(keigo)、接续词(conj)（分类：各自的名字）。
+       这些条目原来的数据格式不一样，所以在这里统一"翻译"成 n2vocab 的格式（k 单词 / r 读音 / pos 词性 / zh 中文 / ex 例句 / ez 例句中文），
+       页面模板就不用改动太多。注意：这只是"读取时合并"，原来的同义词页、语法页、数据本身都没动。
+       语法条目额外带 gp（原文型，含注音括号）：标题、收藏用它，这样收藏本里仍然按"语法"识别。
+       my = 缅甸语翻译 [中文意思, 例句翻译]，从 synMy / gramMy 里取；没有就回退中文。 */
+    n2All(){
+      // 复制一份（不改动原数据）；byK 用来查"这个词是不是已经在表里"。
+      // 已经在表里的词（比如 ぺらぺら 既在 N2 词汇里、又在语法库的"叠词"里）不重复添加，而是给它记一个"同时属于的分类 cx"，
+      // 这样点"叠词"分类时它也会出现，不会因为去重而少了。
+      const out=this.n2vocab.map(w=>Object.assign({},w)), seen=new Set(out.map(w=>w.k)), byK=new Map(out.map(w=>[w.k,w]));
+      const also=(o,c)=>{ if(o&&o.c!==c){ (o.cx=o.cx||[]); if(!o.cx.includes(c)) o.cx.push(c); } };
+      const plain=t=>t.replace(/\([^)]*\)/g,'');
+      const reading=t=>t.replace(/[一-鿿々〆ヶ]+\(([ぁ-ゖー]+)\)/g,'$1').replace(/〜/g,'').replace(/[／/]/g,'、');
+      this.synonyms.forEach(g=>{ const my=this.synMy[g.title]; g.words.forEach((x,j)=>{
+        if(seen.has(x.k)){ also(byK.get(x.k),'syn'); return; } seen.add(x.k); const m=my&&my.w&&my.w[j];
+        const o={ k:x.k, r:x.r, pos:x.pos, zh:x.zh, ex:x.ex, ez:x.exZh, c:'syn', y:x.y, my:m?[m[0],m[1]]:null }; out.push(o); byK.set(x.k,o); }); });
+      const GC=['onoma','kan','talk','ri','keigo','conj'];
+      this.grammar.forEach(g=>{ if(!GC.includes(g.c)) return; const k=plain(g.p); if(seen.has(k)||seen.has(g.p)){ also(byK.get(k)||byK.get(g.p),g.c); return; } seen.add(k); seen.add(g.p);
+        const e=g.ex[0]||['','']; const gm=this.gramMy[g.p];
+        const o={ k, r:reading(g.p), gp:g.p, pos:this.gramTag[g.c], zh:g.zh, ex:e[0], ez:e[1], note:g.note, c:g.c, y:g.y, my:gm?[gm[0],gm[3]]:null }; out.push(o); byK.set(k,o); });
+      return out;
+    },
+    n2Counts(){ const c={}; Object.keys(this.n2Cats).forEach(k=>{ const n=this.n2All.filter(w=>w.c===k||(w.cx&&w.cx.includes(k))).length; if(n) c[k]=n; }); return c; },
     n2Traps(){ return this.n2vocab.filter(w=>w.trap).length; },
-    filteredN2(){ const q=this.nq.trim(), cat=this.n2Cat; return this.n2vocab.filter(w=>(cat==='all'||(cat==='trap'?!!w.trap:w.c===cat)) && (!q || w.k.includes(q) || w.r.includes(q) || w.zh.includes(q) || (n2My[w.k]&&n2My[w.k][0].includes(q)))); },
+    filteredN2(){ const q=this.nq.trim(), cat=this.n2Cat; return this.n2All.filter(w=>(cat==='all'||(cat==='trap'?!!w.trap:(w.c===cat||(w.cx&&w.cx.includes(cat))))) && (!q || w.k.includes(q) || (w.gp&&w.gp.includes(q)) || w.r.includes(q) || w.zh.includes(q) || (n2My[w.k]&&n2My[w.k][0].includes(q)))); },
     n2Pages(){ return Math.max(1, Math.ceil(this.filteredN2.length/10)); },
     pagedN2(){ const p=Math.min(this.n2Page,this.n2Pages); return this.filteredN2.slice((p-1)*10, p*10); },
     artPages(){ return Math.max(1, Math.ceil(this.articles.length/10)); },
     pagedArt(){ const p=Math.min(this.artPage,this.artPages); return this.articles.slice((p-1)*10, p*10); },
     pagedSyn(){ const p=Math.min(this.synPage,this.synPages); return this.filteredSyn.slice((p-1)*10, p*10); }
   },
-  watch:{ mmOn(v){ try{localStorage.setItem('mmOn',v?'1':'0')}catch(e){} document.documentElement.classList.toggle('my-on',v); }, nq(){ this.n2Page=1; }, n2Cat(){ this.n2Page=1; }, q(){ this.synPage=1; }, synCat(){ this.synPage=1; }, gq(){ this.gramPage=1; }, gramCat(){ this.gramPage=1; } },
+  watch:{ mmOn(v){ try{localStorage.setItem('mmOn',v?'1':'0')}catch(e){} document.documentElement.classList.toggle('my-on',v); }, nq(){ this.n2Page=1; }, n2Cat(){ this.n2Page=1; }, favCat(){ this.favPage=1; }, q(){ this.synPage=1; }, synCat(){ this.synPage=1; }, gq(){ this.gramPage=1; }, gramCat(){ this.gramPage=1; } },
   methods:{
     rb(s){ return ruby(esc(s)); },
     setPage(p){ if(!p||p<1||p>this.synPages) return; this.synPage=p; window.scrollTo({top:0,behavior:this.smooth()}); },
@@ -8894,7 +8940,7 @@ Vue.createApp({
       else if(t==='g'){ const g=this.grammar.find(x=>x.p===id); if(!g) return []; L.push(P(g.p)+'  ['+(this.mmOn?this.gramTagMy:this.gramTag)[g.c]+']'); L.push(this.gT(g,0));
         if(g.conn) L.push(this.T('接续：','ဆက်ပုံ：')+P(this.gT(g,1))); if(g.note) L.push(this.T('注意：','သတိပြု：')+P(this.gT(g,2)));
         const ex=this.mmOn&&this.gramMy[g.p]? g.ex.map((e,i)=>[e[0],this.gramMy[g.p][3+i]||e[1]]) : g.ex; if(ex.length){ L.push(''); L.push(this.T('例句','ဥပမာ')); ex.forEach(e=>{ L.push('・'+P(e[0])); L.push('　'+e[1]); }); } }
-      else { const w=this.n2vocab.find(x=>x.k===id); if(!w) return []; L.push(H(w)+'  '+(this.mmOn?this.posMy(w.pos):w.pos)); L.push(this.nM(w,0));
+      else { const w=this.n2All.find(x=>(x.gp||x.k)===id); if(!w) return []; L.push(H(w)+'  '+(this.mmOn?this.posMy(w.pos):w.pos)); L.push(this.nM(w,0));
         if(w.trap) L.push('⚠ '+this.T('中文陷阱：','မှားတတ်ချက်：')+this.nM(w,2)); if(w.ex){ L.push(''); L.push(this.T('例句：','ဥပမာ：')+P(w.ex)); L.push(this.nM(w,1)); } }
       return L; },
     cardText(key){ return this.cardLines(key).join('\n').replace(/([一-鿿々〆ヶ]+)\(([ぁ-ゖー]+)\)/g,'$1（$2）'); },
@@ -8913,7 +8959,7 @@ Vue.createApp({
     T(zh,my){ return this.mmOn ? my : zh; },
     aMy(i){ return this.mmOn ? artMy[i] : null; },
     aN2(w){ if(!this.mmOn) return w[2]; const m=n2My[w[0]]; return m ? m[0] : (artN2My[w[0]]||w[2]); },
-    nM(w,i){ const m=this.mmOn&&n2My[w.k]; return m ? m[i] : [w.zh,w.ez,w.trap][i]; },
+    nM(w,i){ const m=this.mmOn&&(w.my||n2My[w.k]); return m&&m[i] ? m[i] : [w.zh,w.ez,w.trap][i]; },
     sT(g){ const m=this.mmOn&&this.synMy[g.title]; return m ? m.t : g.title; },
     sW(g,j,i){ const w=g.words[j]||g.words[0]; const m=this.mmOn&&this.synMy[g.title]; const x=m&&m.w[j]; return x&&x[i] ? x[i] : (i?w.exZh:w.zh); },
     posMy(p){ const M={'动':'ကြိယာ','副':'ကြိယာဝိသေသန','形':'နာမဝိသေသန','形动':'နာမဝိသေသန(な)','名':'နာမ်','接续':'ဆက်စပ်','词组':'စကားစု','惯用':'အသုံးအနှုန်း','连体':'နာမ်အထူးပြု(連体詞)','サ变':'する','五段':'အုပ်စု၁','一段':'အုပ်စု၂','他':'ကတ္တားပါ','自':'ကတ္တားမဲ့','自他':'ကတ္တားမဲ့/ပါ','他自':'ကတ္တားပါ/မဲ့'}; return p.split('·').map(s=>M[s]||s).join('·'); },
@@ -9133,6 +9179,14 @@ Vue.createApp({
       for(let ai=0;ai<this.articles.length;ai++){ const i=this.articles[ai].grammar.findIndex(x=>x[0]===f.key); if(i>=0) return { type:'ag', g:this.articles[ai].grammar[i], ai, i }; }
       return { type:'none' };
     },
+    favCatOf(it){ const t=it.type;
+      if(t==='n2') return 'n2:'+it.w.c; if(t==='syn') return 'syn'; if(t==='g') return 'g:'+it.g.c;
+      return ({av:'av',an:'an',ag:'ag'})[t]||'none'; },
+    favCatLabel(k){
+      if(k.startsWith('n2:')) return this.mmOn?this.n2CatsMy[k.slice(3)]:this.n2Cats[k.slice(3)];
+      if(k==='syn') return this.T('同义词','အစားထိုး ဝေါဟာရ');
+      if(k.startsWith('g:')) { const c=k.slice(2); return this.mmOn?(this.gramCatsMy&&this.gramCatsMy[c]||this.gramTagMy[c]||this.gramCats[c]):this.gramCats[c]; }
+      return ({av:this.T('文章词汇','ဆောင်းပါး ဝေါဟာရ'),an:this.T('文章 N2 词','ဆောင်းပါး N2 စာလုံး'),ag:this.T('文章语法','ဆောင်းပါး သဒ္ဒါ'),none:this.T('其他','အခြား')})[k]; },
     setFPage(p){ if(!p||p<1||p>this.favPages) return; this.favPage=p; window.scrollTo({top:0,behavior:this.smooth()}); },
   },
   mounted(){ document.documentElement.classList.toggle('my-on',this.mmOn);
