@@ -646,7 +646,7 @@ html .chip{background:var(--chip);color:var(--text)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v109 · Updated 2026-11-02 15:50</span></div>
+      <div class="topline">Japanese <span class="ver">v110 · Updated 2026-11-02 16:00</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -8883,28 +8883,24 @@ Vue.createApp({
     gramPages(){ return Math.max(1, Math.ceil(this.filteredGram.length/10)); },
     pagedGram(){ const p=Math.min(this.gramPage,this.gramPages); return this.filteredGram.slice((p-1)*10, p*10); },
     /* ===== N2 模块的总词表 n2All =====
-       以前 N2 页只有 n2vocab（1800 条）。现在把别的库里"单词性质"的内容也并进来，让这一页什么都能查：
-         ① 同义词库里的每个词（分类：同义词）；
-         ② 语法库里的 叠词(onoma)、语气词(kan)、生活口语(talk)、っり副词(ri)、敬语(keigo)、接续词(conj)（分类：各自的名字）。
-       这些条目原来的数据格式不一样，所以在这里统一"翻译"成 n2vocab 的格式（k 单词 / r 读音 / pos 词性 / zh 中文 / ex 例句 / ez 例句中文），
-       页面模板就不用改动太多。注意：这只是"读取时合并"，原来的同义词页、语法页、数据本身都没动。
-       语法条目额外带 gp（原文型，含注音括号）：标题、收藏用它，这样收藏本里仍然按"语法"识别。
-       my = 缅甸语翻译 [中文意思, 例句翻译]，从 synMy / gramMy 里取；没有就回退中文。 */
+       N2 页只放"N2 级别"的内容。数据来源：
+         ① n2vocab（1800 条，本来就是 N2 词汇）；
+         ② 同义词库里分类为 "n2"（N2 换说法）的 150 组、450 个词——别的分类（动词/副词/形容词…）是通用同义词，不分级别，不放进来；
+         ③ 语法库里的 叠词/语气词/生活口语/っり副词/敬语/接续词：这些条目本身没有级别，所以【不单独添加】，
+            只有"这个词本来就在 N2 词汇里"（比如 ぺらぺら）时，才给它记一个"同时属于该分类"的标记 cx，
+            让 N2 页的"叠词""っり副词"等分类标签能把这些 N2 词筛出来；N2 词汇里没有的（比如语气词）就不会出现。
+       同义词条目的数据格式和 n2vocab 不一样，这里统一"翻译"成 n2vocab 的格式（k/r/pos/zh/ex/ez），页面模板就不用大改。
+       这只是"读取时合并"，原来的同义词页、语法页、数据本身都没动。my = 缅甸语翻译 [中文意思, 例句翻译]，取自 synMy。 */
     n2All(){
-      // 复制一份（不改动原数据）；byK 用来查"这个词是不是已经在表里"。
-      // 已经在表里的词（比如 ぺらぺら 既在 N2 词汇里、又在语法库的"叠词"里）不重复添加，而是给它记一个"同时属于的分类 cx"，
-      // 这样点"叠词"分类时它也会出现，不会因为去重而少了。
+      // 复制一份（不改动原数据）；byK 用来查"这个词是不是已经在表里"
       const out=this.n2vocab.map(w=>Object.assign({},w)), seen=new Set(out.map(w=>w.k)), byK=new Map(out.map(w=>[w.k,w]));
       const also=(o,c)=>{ if(o&&o.c!==c){ (o.cx=o.cx||[]); if(!o.cx.includes(c)) o.cx.push(c); } };
-      const plain=t=>t.replace(/\([^)]*\)/g,'');
-      const reading=t=>t.replace(/[一-鿿々〆ヶ]+\(([ぁ-ゖー]+)\)/g,'$1').replace(/〜/g,'').replace(/[／/]/g,'、');
-      this.synonyms.forEach(g=>{ const my=this.synMy[g.title]; g.words.forEach((x,j)=>{
+      this.synonyms.forEach(g=>{ if(g.c!=='n2') return; const my=this.synMy[g.title]; g.words.forEach((x,j)=>{
         if(seen.has(x.k)){ also(byK.get(x.k),'syn'); return; } seen.add(x.k); const m=my&&my.w&&my.w[j];
         const o={ k:x.k, r:x.r, pos:x.pos, zh:x.zh, ex:x.ex, ez:x.exZh, c:'syn', y:x.y, my:m?[m[0],m[1]]:null }; out.push(o); byK.set(x.k,o); }); });
+      const plain=t=>t.replace(/\([^)]*\)/g,'');
       const GC=['onoma','kan','talk','ri','keigo','conj'];
-      this.grammar.forEach(g=>{ if(!GC.includes(g.c)) return; const k=plain(g.p); if(seen.has(k)||seen.has(g.p)){ also(byK.get(k)||byK.get(g.p),g.c); return; } seen.add(k); seen.add(g.p);
-        const e=g.ex[0]||['','']; const gm=this.gramMy[g.p];
-        const o={ k, r:reading(g.p), gp:g.p, pos:this.gramTag[g.c], zh:g.zh, ex:e[0], ez:e[1], note:g.note, c:g.c, y:g.y, my:gm?[gm[0],gm[3]]:null }; out.push(o); byK.set(k,o); });
+      this.grammar.forEach(g=>{ if(GC.includes(g.c)) also(byK.get(plain(g.p)),g.c); });
       return out;
     },
     n2Counts(){ const c={}; Object.keys(this.n2Cats).forEach(k=>{ const n=this.n2All.filter(w=>w.c===k||(w.cx&&w.cx.includes(k))).length; if(n) c[k]=n; }); return c; },
