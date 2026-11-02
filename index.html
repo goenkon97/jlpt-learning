@@ -646,7 +646,7 @@ html .chip{background:var(--chip);color:var(--text)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v112 · Updated 2026-11-02 18:00</span></div>
+      <div class="topline">Japanese <span class="ver">v113 · Updated 2026-11-02 18:30</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -8978,7 +8978,9 @@ Vue.createApp({
       const cnt={}; this.favInLevel.forEach(it=>{ const k=this.favCatOf(it); cnt[k]=(cnt[k]||0)+1; });
       const n2o=['n2:v','n2:n','n2:adj','n2:adv','n2:syn','n2:onoma','n2:ri','n2:keigo','n2:kan','n2:talk','n2:conj','g:n2'];
       const gen=['syn'].concat(Object.keys(this.gramCats).map(c=>'g:'+c),['av','an','ag','none']);
-      const order=this.favLevelNow==='n2'?n2o:this.favLevelNow==='gen'?gen:n2o.concat(gen);
+      // 普通模块的排序里要去掉 g:n2（它属于 N2 模块）；"全部"时两段拼起来，也用 Set 去重——否则 g:n2 出现两次，"N2 重点"标签就重复了
+      const genOnly=gen.filter(k=>k!=='g:n2');
+      const order=this.favLevelNow==='n2'?n2o:this.favLevelNow==='gen'?genOnly:[...new Set(n2o.concat(genOnly))];
       return order.filter(k=>cnt[k]).map(k=>({ k, n:cnt[k], label:this.favCatLabel(k) }));
     },
     favCatNow(){ return this.favGroups.some(g=>g.k===this.favCat) ? this.favCat : 'all'; },   // 该分类的收藏被取消光了，自动回到"全部"
