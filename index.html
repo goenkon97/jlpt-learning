@@ -646,7 +646,7 @@ html .chip{background:var(--chip);color:var(--text)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v113 · Updated 2026-11-02 18:30</span></div>
+      <div class="topline">Japanese <span class="ver">v114 · Updated 2026-11-02 19:00</span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -983,7 +983,7 @@ html .chip{background:var(--chip);color:var(--text)}
         <button role="tab" v-for="m in favMods" :key="m.k" :aria-selected="favLevelNow===m.k" :class="{on:favLevelNow===m.k}" @click="favLevel=m.k">{{ m.label }}<span class="n">{{ m.n }}</span></button>
       </div>
       <!-- 第二级：当前模块下的分类（动词/名词/形容词/叠词…）；选了"全部"模块时显示所有分类 -->
-      <div class="seg" role="tablist" v-if="favGroups.length>1">
+      <div class="seg" role="tablist" v-if="favGroups.length>=1">
         <button role="tab" :aria-selected="favCatNow==='all'" :class="{on:favCatNow==='all'}" @click="favCat='all'">{{ T('全部','အားလုံး') }}<span class="n">{{ favInLevel.length }}</span></button>
         <button role="tab" v-for="g in favGroups" :key="g.k" :aria-selected="favCatNow===g.k" :class="{on:favCatNow===g.k}" @click="favCat=g.k">{{ g.label }}<span class="n">{{ g.n }}</span></button>
       </div>
