@@ -646,7 +646,7 @@ html .chip{background:var(--chip);color:var(--text)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v115 · Updated 2026-11-02 19:30<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
+      <div class="topline">Japanese <span class="ver">v116 · Updated 2026-11-17 07:15<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -8990,14 +8990,18 @@ Vue.createApp({
       return order.filter(k=>cnt[k]).map(k=>({ k, n:cnt[k], label:this.favCatLabel(k) }));
     },
     favCatNow(){ return this.favGroups.some(g=>g.k===this.favCat) ? this.favCat : 'all'; },   // 该分类的收藏被取消光了，自动回到"全部"
-    favFiltered(){ return this.favCatNow==='all' ? this.favInLevel : this.favInLevel.filter(it=>this.favCatOf(it)===this.favCatNow); },
+    favFiltered(){ const a=this.favCatNow==='all' ? this.favInLevel : this.favInLevel.filter(it=>this.favCatOf(it)===this.favCatNow);
+      // 按语体排序：口语 → 通用 → 书面 → 职场（从易到难）。单词的语体在 it.w.y，语法在 it.g.y；文章里收藏的词没有语体，算"通用"
+      return this.byReg(a, it=>(it.w&&it.w.y) || (it.g&&it.g.y)); },
     favPages(){ return Math.max(1, Math.ceil(this.favFiltered.length/10)); },
     pagedFav(){ const p=Math.min(this.favPage,this.favPages); return this.favFiltered.slice((p-1)*10, p*10); },
     coveredGrammar(){ return new Set(this.articles.flatMap(a=>a.grammar.map(g=>g[0]))).size; },
     catCounts(){ const c={}; Object.keys(this.synCats).forEach(k=>{ const n=this.synonyms.filter(g=>g.c===k).length; if(n) c[k]=n; }); return c; },
     filteredSyn(){
       const q=this.q.trim(), cat=this.synCat;
-      return this.synonyms.filter(g=>(cat==='all'||g.c===cat) && (!q || g.title.includes(q) || g.words.some(w=>w.k.includes(q)||w.r.includes(q)||w.zh.includes(q)) || (this.synMy[g.title]&&JSON.stringify(this.synMy[g.title]).includes(q))));
+      const list=this.synonyms.filter(g=>(cat==='all'||g.c===cat) && (!q || g.title.includes(q) || g.words.some(w=>w.k.includes(q)||w.r.includes(q)||w.zh.includes(q)) || (this.synMy[g.title]&&JSON.stringify(this.synMy[g.title]).includes(q))));
+      // 同义词一组有 2~4 个词，每个词语体可能不同：取这一组里排名最靠前（最口语）的词来决定整组的位置；组内词的顺序不动
+      return this.byReg(list, g=>g.words.reduce((best,w)=>this.regRank(w.y)<this.regRank(best)?w.y:best, 'B'));
     },
     synPages(){ return Math.max(1, Math.ceil(this.filteredSyn.length/10)); },
     pageList(){ const n=this.synPages, c=this.synPage; if(n<=7) return Array.from({length:n},(_,i)=>i+1);
@@ -9005,7 +9009,8 @@ Vue.createApp({
       const out=[1]; if(a>2) out.push(0); for(let i=a;i<=b;i++) out.push(i); if(b<n-1) out.push(0); out.push(n); return out; },
     gramCounts(){ const c={}; Object.keys(this.gramCats).forEach(k=>{ const n=this.grammar.filter(g=>g.c===k).length; if(n) c[k]=n; }); return c; },
     filteredGram(){ const q=this.gq.trim(), cat=this.gramCat;
-      return this.grammar.filter(g=>(cat==='all'||g.c===cat) && (!q || this.plain(g.p).includes(q) || g.p.includes(q) || g.zh.includes(q) || g.note.includes(q) || (this.mmOn && (this.gramMy[g.p]||[]).some(x=>x&&x.includes(q))))); },
+      // 按语体排序：口语 → 通用 → 书面 → 职场
+      return this.byReg(this.grammar.filter(g=>(cat==='all'||g.c===cat) && (!q || this.plain(g.p).includes(q) || g.p.includes(q) || g.zh.includes(q) || g.note.includes(q) || (this.mmOn && (this.gramMy[g.p]||[]).some(x=>x&&x.includes(q))))), g=>g.y); },
     gramPages(){ return Math.max(1, Math.ceil(this.filteredGram.length/10)); },
     pagedGram(){ const p=Math.min(this.gramPage,this.gramPages); return this.filteredGram.slice((p-1)*10, p*10); },
     /* ===== N2 模块的总词表 n2All =====
@@ -9039,7 +9044,7 @@ Vue.createApp({
     },
     n2Counts(){ const c={}; Object.keys(this.n2Cats).forEach(k=>{ const n=this.n2All.filter(w=>w.c===k||(w.cx&&w.cx.includes(k))).length; if(n) c[k]=n; }); return c; },
     n2Traps(){ return this.n2vocab.filter(w=>w.trap).length; },
-    filteredN2(){ const q=this.nq.trim(), cat=this.n2Cat; return this.n2All.filter(w=>(cat==='all'||(cat==='trap'?!!w.trap:(w.c===cat||(w.cx&&w.cx.includes(cat))))) && (!q || w.k.includes(q) || (w.gp&&w.gp.includes(q)) || w.r.includes(q) || w.zh.includes(q) || (n2My[w.k]&&n2My[w.k][0].includes(q)))); },
+    filteredN2(){ const q=this.nq.trim(), cat=this.n2Cat; /* 按语体排序：口语 → 通用 → 书面 → 职场 */ return this.byReg(this.n2All.filter(w=>(cat==='all'||(cat==='trap'?!!w.trap:(w.c===cat||(w.cx&&w.cx.includes(cat))))) && (!q || w.k.includes(q) || (w.gp&&w.gp.includes(q)) || w.r.includes(q) || w.zh.includes(q) || (n2My[w.k]&&n2My[w.k][0].includes(q)))), w=>w.y); },
     n2Pages(){ return Math.max(1, Math.ceil(this.filteredN2.length/10)); },
     pagedN2(){ const p=Math.min(this.n2Page,this.n2Pages); return this.filteredN2.slice((p-1)*10, p*10); },
     artPages(){ return Math.max(1, Math.ceil(this.articles.length/10)); },
@@ -9270,6 +9275,13 @@ Vue.createApp({
     /* ===== 语体标签（口语 / 书面 / 职场 / 通用）=====
        数据里每条单词、同义词、语法有一个可选字段 y：K=口语常用，S=书面常用，B=职场/正式场合常用；没有 y 就是通用。
        这两个方法只负责"把代码翻译成要显示的字"，真正的标注写在词库数据里（n2vocab / synonyms / grammar）。 */
+    /* ===== 语体排序（单词、语法、同义词、收藏本所有列表共用）=====
+       语体 y：K=口语、T=通用（没标的也算通用）、S=书面、B=职场。
+       排序从易到难：口语 0 → 通用 1 → 书面 2 → 职场 3（职场敬语最难，放最后）。
+       regRank 把语体变成名次数字；byReg(列表, 取语体的函数) 按名次排，名次相同的保持原来的先后顺序。
+       先 map 出新数组再排，不改动原数据。 */
+    regRank(y){ return y==='K'?0:y==='S'?2:y==='B'?3:1; },
+    byReg(list, getY){ return list.map((x,i)=>[x,this.regRank(getY(x)),i]).sort((a,b)=>a[1]-b[1]||a[2]-b[2]).map(p=>p[0]); },
     regT(y){ return y==='K'?this.T('口语','စကားပြော'):y==='S'?this.T('书面','စာရေး'):y==='B'?this.T('职场','အလုပ်ခွင်'):this.T('通用','အများသုံး'); },
     regTitle(y){ return y==='K'?this.T('口语里常用，日常说话很自然','စကားပြောတွင် အသုံးများ'):y==='S'?this.T('书面语：文章、新闻、论文里常用，口语里说会显得生硬','စာပေတွင် အသုံးများ၊ စကားပြောတွင် တင်းမာသည်'):y==='B'?this.T('公司、商务、正式场合常用','ကုမ္ပဏီ၊ စီးပွားရေး၊ တရားဝင်နေရာတွင် အသုံးများ'):this.T('口语、书面都能用','စကားပြော၊ စာပေ နှစ်မျိုးလုံးသုံးနိုင်'); },
     async toggleFav(k,key){
