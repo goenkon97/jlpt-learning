@@ -646,7 +646,7 @@ html .chip{background:var(--chip);color:var(--text)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v116 · Updated 2026-11-17 07:15<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
+      <div class="topline">Japanese <span class="ver">v117 · Updated 2026-11-17 07:20<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -8990,9 +8990,8 @@ Vue.createApp({
       return order.filter(k=>cnt[k]).map(k=>({ k, n:cnt[k], label:this.favCatLabel(k) }));
     },
     favCatNow(){ return this.favGroups.some(g=>g.k===this.favCat) ? this.favCat : 'all'; },   // 该分类的收藏被取消光了，自动回到"全部"
-    favFiltered(){ const a=this.favCatNow==='all' ? this.favInLevel : this.favInLevel.filter(it=>this.favCatOf(it)===this.favCatNow);
-      // 按语体排序：口语 → 通用 → 书面 → 职场（从易到难）。单词的语体在 it.w.y，语法在 it.g.y；文章里收藏的词没有语体，算"通用"
-      return this.byReg(a, it=>(it.w&&it.w.y) || (it.g&&it.g.y)); },
+    // 收藏本保持"收藏的先后顺序"，不按语体排序（其他列表才按 口语→通用→书面→职场 排）
+    favFiltered(){ return this.favCatNow==='all' ? this.favInLevel : this.favInLevel.filter(it=>this.favCatOf(it)===this.favCatNow); },
     favPages(){ return Math.max(1, Math.ceil(this.favFiltered.length/10)); },
     pagedFav(){ const p=Math.min(this.favPage,this.favPages); return this.favFiltered.slice((p-1)*10, p*10); },
     coveredGrammar(){ return new Set(this.articles.flatMap(a=>a.grammar.map(g=>g[0]))).size; },
@@ -9275,7 +9274,7 @@ Vue.createApp({
     /* ===== 语体标签（口语 / 书面 / 职场 / 通用）=====
        数据里每条单词、同义词、语法有一个可选字段 y：K=口语常用，S=书面常用，B=职场/正式场合常用；没有 y 就是通用。
        这两个方法只负责"把代码翻译成要显示的字"，真正的标注写在词库数据里（n2vocab / synonyms / grammar）。 */
-    /* ===== 语体排序（单词、语法、同义词、收藏本所有列表共用）=====
+    /* ===== 语体排序（N2 词汇、语法、同义词列表共用；收藏本不用，保持收藏顺序）=====
        语体 y：K=口语、T=通用（没标的也算通用）、S=书面、B=职场。
        排序从易到难：口语 0 → 通用 1 → 书面 2 → 职场 3（职场敬语最难，放最后）。
        regRank 把语体变成名次数字；byReg(列表, 取语体的函数) 按名次排，名次相同的保持原来的先后顺序。
