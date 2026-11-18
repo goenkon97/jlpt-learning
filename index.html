@@ -536,9 +536,6 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 .pri.p1{background:var(--blue);color:#fff}                 /* 必读 */
 .pri.p2{background:#f3ddd4;color:#9a3b22}                   /* 优先 */
 .pri.p3{background:none;color:var(--sub);box-shadow:inset 0 0 0 1px var(--line);font-weight:600}   /* 推荐 */
-.pseg{margin-top:6px}
-.pdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle}
-.pdot.p1{background:var(--blue)} .pdot.p2{background:#e2a58f} .pdot.p3{box-shadow:inset 0 0 0 1.5px var(--sub)}
 .reg.rT{background:none;color:var(--sub);box-shadow:inset 0 0 0 1px var(--line);font-weight:600}
 .gr .reg{margin-right:6px}
 
@@ -654,7 +651,7 @@ html .chip{background:var(--chip);color:var(--text)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v124 · Updated 2026-11-17 16:39<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
+      <div class="topline">Japanese <span class="ver">v125 · Updated 2026-11-18 14:21<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -933,11 +930,6 @@ html .chip{background:var(--chip);color:var(--text)}
         <button role="tab" v-if="n2Traps" :aria-selected="n2Cat==='trap'" :class="{on:n2Cat==='trap'}" @click="n2Cat='trap'">⚠ {{ T('陷阱','ထောင်ချောက်') }}<span class="n">{{ n2Traps }}</span></button>
         <button role="tab" v-for="(n,c) in n2Counts" :key="c" :aria-selected="n2Cat===c" :class="{on:n2Cat===c}" @click="n2Cat=c">{{ mmOn ? n2CatsMy[c] : n2Cats[c] }}<span class="n">{{ n }}</span></button>
       </div>
-      <!-- 优先级筛选：必读 = 最高频、先背；优先 = 常用常考；推荐 = 较少见/偏书面。列表默认就是按 必读 → 优先 → 推荐 排的 -->
-      <div class="seg pseg" role="tablist">
-        <button role="tab" :aria-selected="n2Pri===0" :class="{on:n2Pri===0}" @click="n2Pri=0">{{ T('全部级别','အဆင့်အားလုံး') }}</button>
-        <button role="tab" v-for="p in [1,2,3]" :key="p" :aria-selected="n2Pri===p" :class="{on:n2Pri===p}" @click="n2Pri=p"><i class="pdot" :class="'p'+p"></i>{{ priT(p) }}<span class="n">{{ n2PriCounts[p]||0 }}</span></button>
-      </div>
       <div class="pagerow">
         <span class="meta">{{ filteredN2.length }} {{ T('词 · ▶ 朗读','လုံး · ▶ နားထောင်ရန်') }}</span>
       <div class="pager" v-if="n2Pages>1">
@@ -993,11 +985,6 @@ html .chip{background:var(--chip);color:var(--text)}
       <div class="seg" role="tablist">
         <button role="tab" :aria-selected="n3Cat==='all'" :class="{on:n3Cat==='all'}" @click="n3Cat='all'">{{ T('全部','အားလုံး') }}<span class="n">{{ n3All.length }}</span></button>
         <button role="tab" v-for="(n,c) in n3Counts" :key="c" :aria-selected="n3Cat===c" :class="{on:n3Cat===c}" @click="n3Cat=c">{{ mmOn ? n3CatsMy[c] : n3Cats[c] }}<span class="n">{{ n }}</span></button>
-      </div>
-      <!-- 优先级筛选（和 N2 页一样）：必读 = 最高频、先背；优先 = 常用常考；推荐 = 较少见/偏书面 -->
-      <div class="seg pseg" role="tablist">
-        <button role="tab" :aria-selected="n3Pri===0" :class="{on:n3Pri===0}" @click="n3Pri=0">{{ T('全部级别','အဆင့်အားလုံး') }}</button>
-        <button role="tab" v-for="p in [1,2,3]" :key="p" :aria-selected="n3Pri===p" :class="{on:n3Pri===p}" @click="n3Pri=p"><i class="pdot" :class="'p'+p"></i>{{ priT(p) }}<span class="n">{{ n3PriCounts[p]||0 }}</span></button>
       </div>
       <div class="pagerow">
         <span class="meta">{{ filteredN3.length }} {{ T('词 · ▶ 朗读','လုံး · ▶ နားထောင်ရန်') }}</span>
@@ -11091,12 +11078,12 @@ const loadGsi = () => new Promise((ok,no)=>{
 });
 let gsiReady=false, favToastT=0; const favBusy={};
 Vue.createApp({
-  data(){ const p=parse(); return { userCount, favCat:'all', favLevel:'all', netShow:false, route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{gram:'N2 语法',v:'动词',n:'名词',adj:'形容词',adv:'副词·其他',syn:'同义词',onoma:'叠词',kan:'语气词',talk:'生活口语',ri:'っり副词',keigo:'敬语',conj:'接续词'}, n2CatsMy:{gram:'N2 သဒ္ဒါ',v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား',syn:'အစားထိုး ဝေါဟာရ',onoma:'ထပ်စကား',kan:'အဆုံးသတ်စကား',talk:'နေ့စဉ်စကားပြော',ri:'っり ကြိယာဝိသေသန',keigo:'ဂုဏ်ပြုစကား',conj:'ဆက်စပ်စကား'}, n2Cat:'all', n2Page:1, nq:'', n2Pri:0,
+  data(){ const p=parse(); return { userCount, favCat:'all', favLevel:'all', netShow:false, route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{gram:'N2 语法',v:'动词',n:'名词',adj:'形容词',adv:'副词·其他',syn:'同义词',onoma:'叠词',kan:'语气词',talk:'生活口语',ri:'っり副词',keigo:'敬语',conj:'接续词'}, n2CatsMy:{gram:'N2 သဒ္ဒါ',v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား',syn:'အစားထိုး ဝေါဟာရ',onoma:'ထပ်စကား',kan:'အဆုံးသတ်စကား',talk:'နေ့စဉ်စကားပြော',ri:'っり ကြိယာဝိသေသန',keigo:'ဂုဏ်ပြုစကား',conj:'ဆက်စပ်စကား'}, n2Cat:'all', n2Page:1, nq:'',
     /* N3 页：n3vocab = N3 词表（2046 词）；n3Cats = 分类标签（N3 语法/动词/名词/形容词/副词·其他，再加上能对上的叠词等）；
        n3Cat 当前分类、n3Page 当前页、n3q 搜索框 */
     n3vocab, n3Cats:{gram:'N3 语法',v:'动词',n:'名词',adj:'形容词',adv:'副词·其他',onoma:'叠词',kan:'语气词',talk:'生活口语',ri:'っり副词',keigo:'敬语',conj:'接续词'},
     n3CatsMy:{gram:'N3 သဒ္ဒါ',v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား',onoma:'ထပ်စကား',kan:'အဆုံးသတ်စကား',talk:'နေ့စဉ်စကားပြော',ri:'っり ကြိယာဝိသေသန',keigo:'ဂုဏ်ပြုစကား',conj:'ဆက်စပ်စကား'},
-    n3Cat:'all', n3Page:1, n3q:'', n3Pri:0, authUser:null, loginOpen:false, loginMsg:'', verifyMsg:'', favs:[], favState:'idle', favErr:'', favPage:1, favToast:'' }; },
+    n3Cat:'all', n3Page:1, n3q:'', authUser:null, loginOpen:false, loginMsg:'', verifyMsg:'', favs:[], favState:'idle', favErr:'', favPage:1, favToast:'' }; },
   computed:{
     art(){ return this.articles[this.idx]; },
     favOn(){ return !!API_BASE; },
@@ -11188,20 +11175,17 @@ Vue.createApp({
     },
     n3Counts(){ const c={}; Object.keys(this.n3Cats).forEach(k=>{ const n=this.n3All.filter(w=>w.c===k||(w.cx&&w.cx.includes(k))).length; if(n) c[k]=n; }); return c; },
     // 筛选（分类 + 搜索）后按语体排序：口语 → 通用 → 书面 → 职场
-    /* N3 页列表同 N2 页：n3Base = 按"分类 + 搜索"筛；n3PriCounts = 每个级别有几个；
-       filteredN3 = 再按优先级筛，排序 必读 → 优先 → 推荐（同级里按语体从易到难） */
-    n3PriCounts(){ const c={}; this.n3Base.forEach(w=>{ const p=w.pri||2; c[p]=(c[p]||0)+1; }); return c; },
-    filteredN3(){ const p=this.n3Pri; return this.byPri(p ? this.n3Base.filter(w=>(w.pri||2)===p) : this.n3Base); },
+    /* N3 页列表同 N2 页：n3Base = 按"分类 + 搜索"筛；filteredN3 = 把它排序 必读 → 优先 → 推荐（同级里按语体从易到难） */
+    filteredN3(){ return this.byPri(this.n3Base); },   // 按"分类 + 搜索"筛出来后，按 必读 → 优先 → 推荐 排
     n3Base(){ const q=this.n3q.trim(), cat=this.n3Cat; return (this.n3All.filter(w=>(cat==='all'||w.c===cat||(w.cx&&w.cx.includes(cat))) && (!q || w.k.includes(q) || (w.gp&&w.gp.includes(q)) || w.r.includes(q) || w.zh.includes(q) || (w.my&&w.my[0]&&w.my[0].includes(q))))); },
     n3Pages(){ return Math.max(1, Math.ceil(this.filteredN3.length/10)); },
     pagedN3(){ const p=Math.min(this.n3Page,this.n3Pages); return this.filteredN3.slice((p-1)*10, p*10); },
     n2Counts(){ const c={}; Object.keys(this.n2Cats).forEach(k=>{ const n=this.n2All.filter(w=>w.c===k||(w.cx&&w.cx.includes(k))).length; if(n) c[k]=n; }); return c; },
     n2Traps(){ return this.n2vocab.filter(w=>w.trap).length; },
     /* N2 页的列表分两步：
-       n2Base   = 按"分类标签 + 搜索框"筛出来的词（优先级那排的数字就是数这里面各级别有几个）；
-       filteredN2 = 再按"优先级筛选"筛一次，然后排序：必读 → 优先 → 推荐（同一级里再按 口语 → 通用 → 书面 → 职场，从易到难） */
-    n2PriCounts(){ const c={}; this.n2Base.forEach(w=>{ const p=w.pri||3; c[p]=(c[p]||0)+1; }); return c; },
-    filteredN2(){ const p=this.n2Pri; return this.byPri(p ? this.n2Base.filter(w=>(w.pri||3)===p) : this.n2Base); },
+       n2Base   = 按"分类标签 + 搜索框"筛出来的词；
+       filteredN2 = 把 n2Base 排序：必读 → 优先 → 推荐（同一级里再按 口语 → 通用 → 书面 → 职场，从易到难） */
+    filteredN2(){ return this.byPri(this.n2Base); },   // 按"分类 + 搜索"筛出来后，按 必读 → 优先 → 推荐 排
     n2Base(){ const q=this.nq.trim(), cat=this.n2Cat; return (this.n2All.filter(w=>(cat==='all'||(cat==='trap'?!!w.trap:(w.c===cat||(w.cx&&w.cx.includes(cat))))) && (!q || w.k.includes(q) || (w.gp&&w.gp.includes(q)) || w.r.includes(q) || w.zh.includes(q) || (n2My[w.k]&&n2My[w.k][0].includes(q))))); },
     n2Pages(){ return Math.max(1, Math.ceil(this.filteredN2.length/10)); },
     pagedN2(){ const p=Math.min(this.n2Page,this.n2Pages); return this.filteredN2.slice((p-1)*10, p*10); },
@@ -11209,7 +11193,7 @@ Vue.createApp({
     pagedArt(){ const p=Math.min(this.artPage,this.artPages); return this.articles.slice((p-1)*10, p*10); },
     pagedSyn(){ const p=Math.min(this.synPage,this.synPages); return this.filteredSyn.slice((p-1)*10, p*10); }
   },
-  watch:{ n2Pri(){ this.n2Page=1; }, n3Pri(){ this.n3Page=1; }, mmOn(v){ try{localStorage.setItem('mmOn',v?'1':'0')}catch(e){} document.documentElement.classList.toggle('my-on',v); }, nq(){ this.n2Page=1; }, n2Cat(){ this.n2Page=1; }, n3q(){ this.n3Page=1; }, n3Cat(){ this.n3Page=1; }, favCat(){ this.favPage=1; }, favLevel(){ this.favCat='all'; this.favPage=1; }, q(){ this.synPage=1; }, synCat(){ this.synPage=1; }, gq(){ this.gramPage=1; }, gramCat(){ this.gramPage=1; } },
+  watch:{ mmOn(v){ try{localStorage.setItem('mmOn',v?'1':'0')}catch(e){} document.documentElement.classList.toggle('my-on',v); }, nq(){ this.n2Page=1; }, n2Cat(){ this.n2Page=1; }, n3q(){ this.n3Page=1; }, n3Cat(){ this.n3Page=1; }, favCat(){ this.favPage=1; }, favLevel(){ this.favCat='all'; this.favPage=1; }, q(){ this.synPage=1; }, synCat(){ this.synPage=1; }, gq(){ this.gramPage=1; }, gramCat(){ this.gramPage=1; } },
   methods:{
     rb(s){ return ruby(esc(s)); },
     setPage(p){ if(!p||p<1||p>this.synPages) return; this.synPage=p; window.scrollTo({top:0,behavior:this.smooth()}); },
