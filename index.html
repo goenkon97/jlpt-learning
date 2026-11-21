@@ -651,7 +651,7 @@ html .chip{background:var(--chip);color:var(--text)}
   <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v130 · Updated 2026-11-21 14:13<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
+      <div class="topline">Japanese <span class="ver">v131 · Updated 2026-11-21 18:25<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -11089,7 +11089,9 @@ Vue.createApp({
     favOn(){ return !!API_BASE; },
     /* 收藏本的默认顺序：按优先级 必读(1) → 优先(2) → 推荐(3) → 没有标签的(4)；同一级里保持收藏时的先后顺序
        （JS 的 sort 是"稳定排序"：优先级相同的两条，排序后还是原来的先后，所以收藏顺序不会被打乱） */
-    favEntries(){ return this.favs.map(f=>Object.assign({ f }, this.favInfo(f))).sort((a,b)=>this.favPri(a)-this.favPri(b)); },
+    /* 第二层（小排序）：同一个优先级里，再按语体 口语(0) → 通用(1) → 书面(2) → 职场(3) 排；
+       两层都一样的，还是保持收藏时的先后（稳定排序） */
+    favEntries(){ return this.favs.map(f=>Object.assign({ f }, this.favInfo(f))).sort((a,b)=>this.favPri(a)-this.favPri(b)||this.favReg(a)-this.favReg(b)); },
     /* ===== 收藏本分类（只在前端做，不需要后端）=====
        收藏在后端只存"一段文字"，没有分类。分类靠 favInfo 把每条收藏对回本地词库，再看它在词库里属于哪一类：
          N2 词汇 → 动词/名词/形容词/副词·其他；同义词；语法 → 按语法库的分类（N2 重点、接续词、敬语…）；
@@ -11482,6 +11484,8 @@ Vue.createApp({
     },
     /* 一条收藏的优先级：N2/N3 词、同义词里的词看 w.pri，语法看 g.pri；文章里的词等没有标签的 → 4（排在最后） */
     favPri(it){ const p=(it.w&&it.w.pri)||(it.g&&!Array.isArray(it.g)&&it.g.pri); return p||4; },
+    /* 一条收藏的语体排名：词看 w.y，语法看 g.y（K 口语 / 没写=通用 / S 书面 / B 职场），交给 regRank 换成 0~3 */
+    favReg(it){ const y=(it.w&&!Array.isArray(it.w)&&it.w.y)||(it.g&&!Array.isArray(it.g)&&it.g.y); return this.regRank(y); },
     favCatOf(it){ const t=it.type;
       if(t==='n2') return 'n2:'+it.w.c; if(t==='n3') return 'n3:'+it.w.c; if(t==='syn') return 'syn'; if(t==='g') return 'g:'+it.g.c;
       return ({av:'av',an:'an',ag:'ag'})[t]||'none'; },
