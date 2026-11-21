@@ -35,11 +35,12 @@
 /* Layout: same as IELTS site — 720px centered column, name left / search right, tile grid, sticky sub-page header */
 :root{
   /* 默认皮肤「极简白」：白底、黑字、灰色辅助、一个蓝色强调色（整站颜色都走这些变量） */
-  --bg:#ffffff;--card:#ffffff;--card2:#ffffff;--text:#111827;--sub:#6b7280;--line:#e5e7eb;
-  --edge:rgba(17,24,39,.08);--shadow:none;--glow:transparent;
-  --ico:#2563eb;--ico-bg:#eff6ff;--ico-ring:#bfdbfe;--numc:rgba(37,99,235,.12);
-  --blue:#2563eb;--chip:#f3f4f6;--greige:#f3f4f6;--pager-t:#1d4ed8;
-  --gold:#ffffff;--tab:#f3f4f6;--tab-t:#111827;--t1:#f3f4f6;--t2:#f3f4f6;--t3:#eef2f7;--cp-bg:#f3f4f6;--cp-t:#111827;
+  --bg:#f6f5f3;--card:#ffffff;--card2:#ffffff;--text:#1c1917;--sub:#78716c;--line:#e7e5e4;
+  --edge:#ebe9e6;--shadow:0 1px 2px rgba(28,25,23,.04),0 4px 14px rgba(28,25,23,.04);--glow:transparent;
+  --ico:#1c1917;--ico-bg:#f5f5f4;--ico-ring:#e7e5e4;--numc:rgba(28,25,23,.08);
+  --blue:#292524;--chip:#f5f5f4;--greige:#f5f5f4;--pager-t:#44403c;
+  --gold:#ffffff;--tab:#f5f5f4;--tab-t:#1c1917;--t1:#f6f5f3;--t2:#f5f5f4;--t3:#f3f1ee;--cp-bg:#f5f5f4;--cp-t:#1c1917;
+  --acc:#ea580c;--acc-bg:#fff1e6;--acc-t:#9a3412;   /* 唯一的强调色：暖橙，只用在"例句里的目标词、必读、当前位置"这几处 */
   --font:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Sans","Hiragino Kaku Gothic ProN","PingFang SC","Noto Sans JP",sans-serif;
   --serif:var(--font);   /* 极简皮肤不用明朝体，标题也用无衬线 */
   --px:20px;
@@ -660,8 +661,44 @@ html .chip{background:var(--chip);color:var(--text)}
    只作用在首页：body 加 min-home 类时整页变白底（在首页时由 watch 加上，离开首页去掉）；
    其余页面还是原来的样式。颜色：黑 #111827、灰字 #6b7280、浅灰底 #f3f4f6、分隔线 #f1f2f4、强调蓝 #2563eb */
 /* 极简皮肤（html 没有 washi 类时）：卡片 14px 圆角 + 浅灰描边，分段按钮圆角 10px */
-html:not(.washi) .card,html:not(.washi) .tile{border-radius:14px;border-color:#e5e7eb}
-html:not(.washi) .seg{border-radius:10px}
+/* 分层：页面底是暖浅灰，卡片是纯白 + 很淡的阴影，例句框又回到浅灰 → 三层一眼分得清 */
+body.min-home{background:#fff}                                     /* 首页保持纯白（封面） */
+html:not(.washi) .card,html:not(.washi) .tile{border-radius:16px;border:1px solid var(--edge);background:#fff;box-shadow:var(--shadow)}
+html:not(.washi) .ex{background:var(--t1);border-radius:12px}
+/* 分类筛选：白色胶囊组，未选中灰字，选中墨黑底白字；后面的数字更淡 */
+html:not(.washi) .seg{background:#fff;border:1px solid var(--edge);border-radius:14px;padding:5px;box-shadow:var(--shadow)}
+html:not(.washi) .seg button{color:#57534e;border-radius:10px}
+html:not(.washi) .seg button .n{color:#a8a29e;opacity:1}
+html:not(.washi) .seg button.on{background:#1c1917;color:#fff}
+html:not(.washi) .seg button.on .n{color:#d6d3d1}
+html:not(.washi) .seg button:hover:not(.on){background:var(--chip)}
+/* 翻页：白底小方块，页码用墨黑 */
+html:not(.washi) .pager .pg,html:not(.washi) .pager .pick{background:#fff;border:1px solid var(--edge);color:#1c1917}
+/* 朗读按钮：墨黑圆；小号朗读按钮：浅灰底黑图标 */
+html:not(.washi) .play{background:#1c1917;color:#fff}
+html:not(.washi) .play.lt{background:var(--chip);color:#1c1917}
+/* 例句里的目标词：暖橙字 + 暖橙下划线（全页唯一的彩色重点） */
+html:not(.washi) .vx{color:var(--acc);border-bottom-color:var(--acc)}
+html:not(.washi) .vw{border-bottom-color:var(--acc)}
+/* 优先级标签：必读 = 实心暖橙，优先 = 浅橙底，推荐 = 灰色描边 */
+html:not(.washi) .pri.p1{background:var(--acc);color:#fff}
+html:not(.washi) .pri.p2{background:var(--acc-bg);color:var(--acc-t)}
+/* 等级角标：N2 墨黑，N3 浅灰底深字（两者能分开） */
+html:not(.washi) .glv.n3{background:#e7e5e4;color:#292524}
+/* 小标题（详细解析里的"用法""搭配"等）：灰色小字，不抢正文 */
+html:not(.washi) .ana-h,html:not(.washi) .vb-th,html:not(.washi) .vb-teh{color:var(--sub)}
+html:not(.washi) .n2n,html:not(.washi) .gnum{color:#a8a29e}
+/* 顶部"收藏本"按钮：白底灰边黑字 */
+html:not(.washi) .favhome{background:#fff;color:#1c1917;border:1px solid var(--edge)}
+/* 顶部标题前面的彩色小方块：和首页模块列表同一套颜色，一眼知道自己在哪个模块 */
+html:not(.washi) body[data-r] .sticky h1::before{width:34px;height:34px;border-radius:10px;margin-right:10px;vertical-align:.12em;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;letter-spacing:0}
+html:not(.washi) body[data-r=n2] .sticky h1::before{content:"N2";background:#eff6ff;color:#1d4ed8}
+html:not(.washi) body[data-r=n3] .sticky h1::before{content:"N3";background:#eff6ff;color:#1d4ed8}
+html:not(.washi) body[data-r=gram] .sticky h1::before{content:"文";background:#f5f3ff;color:#6d28d9}
+html:not(.washi) body[data-r=syn] .sticky h1::before{content:"似";background:#ecfdf5;color:#047857}
+html:not(.washi) body[data-r=art] .sticky h1::before{content:"読";background:#fff7ed;color:#c2410c}
+html:not(.washi) body[data-r=verb] .sticky h1::before{content:"活";background:#fdf2f8;color:#be185d}
+html:not(.washi) body[data-r=fav] .sticky h1::before{content:"★";background:#fef9c3;color:#a16207}
 html:not(.washi) .badge{transform:none;border-radius:6px;border:0;background:#eff6ff;color:#1d4ed8;font-family:var(--font)}
 html:not(.washi) .search{border-bottom-color:#111827}
 html:not(.washi) .ws-pop{border-radius:12px;box-shadow:0 10px 28px rgba(17,24,39,.10)}
@@ -771,7 +808,7 @@ html:not(.washi) .ws-pop{border-radius:12px;box-shadow:0 10px 28px rgba(17,24,39
       </nav>
 
       <footer class="mh-foot">
-        <span class="ver">v127 · Updated 2026-11-21 14:03<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span>
+        <span class="ver">v128 · Updated 2026-11-21 14:10<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span>
         <span>{{ T('词典数据','အဘိဓာန်ဒေတာ') }}：JMdict（EDRDG）· CC BY-SA 4.0</span>
       </footer>
     </div>
@@ -781,7 +818,7 @@ html:not(.washi) .ws-pop{border-radius:12px;box-shadow:0 10px 28px rgba(17,24,39
   <template v-if="route==='home' && skin==='washi'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v127 · Updated 2026-11-21 14:03<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
+      <div class="topline">Japanese <span class="ver">v128 · Updated 2026-11-21 14:10<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
       <div class="hero-row">
         <div>
           <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" type="button" @click="skin='min'" title="切换皮肤：极简白" aria-label="切换皮肤：极简白"><span>极简</span></button><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
@@ -11325,7 +11362,7 @@ Vue.createApp({
     pagedArt(){ const p=Math.min(this.artPage,this.artPages); return this.articles.slice((p-1)*10, p*10); },
     pagedSyn(){ const p=Math.min(this.synPage,this.synPages); return this.filteredSyn.slice((p-1)*10, p*10); }
   },
-  watch:{ route:{ immediate:true, handler(v){ document.body.classList.toggle('min-home', v==='home'); } },
+  watch:{ route:{ immediate:true, handler(v){ document.body.classList.toggle('min-home', v==='home'); document.body.dataset.r=v; } },   // data-r = 当前模块（n2/gram/syn…），给标题前的彩色小方块用
     /* 皮肤：washi = 和紙と墨，min = 极简白（默认）。记在本机，下次打开还是这个 */
     skin:{ immediate:true, handler(v){ document.documentElement.classList.toggle('washi', v==='washi'); try{ localStorage.setItem('jlpt-skin', v); }catch(_){} } },
     mmOn(v){ try{localStorage.setItem('mmOn',v?'1':'0')}catch(e){} document.documentElement.classList.toggle('my-on',v); }, nq(){ this.n2Page=1; }, n2Cat(){ this.n2Page=1; }, n3q(){ this.n3Page=1; }, n3Cat(){ this.n3Page=1; }, favCat(){ this.favPage=1; }, favLevel(){ this.favCat='all'; this.favPage=1; }, q(){ this.synPage=1; }, synCat(){ this.synPage=1; }, gq(){ this.gramPage=1; }, gramCat(){ this.gramPage=1; } },
