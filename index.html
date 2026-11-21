@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
+<script>try{if(localStorage.getItem('jlpt-skin')==='washi')document.documentElement.classList.add('washi')}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
 /* iPad 横屏修复：部分 iPad 浏览器（如 Chrome）横屏时布局视口只有约 900px，页面挤在左边、右边空一大截。
@@ -33,7 +34,19 @@
 <style>
 /* Layout: same as IELTS site — 720px centered column, name left / search right, tile grid, sticky sub-page header */
 :root{
-  /* 「和紙と墨」主题（全站唯一风格）：米白纸 + 墨黑字 + 朱红点缀。
+  /* 默认皮肤「极简白」：白底、黑字、灰色辅助、一个蓝色强调色（整站颜色都走这些变量） */
+  --bg:#ffffff;--card:#ffffff;--card2:#ffffff;--text:#111827;--sub:#6b7280;--line:#e5e7eb;
+  --edge:rgba(17,24,39,.08);--shadow:none;--glow:transparent;
+  --ico:#2563eb;--ico-bg:#eff6ff;--ico-ring:#bfdbfe;--numc:rgba(37,99,235,.12);
+  --blue:#2563eb;--chip:#f3f4f6;--greige:#f3f4f6;--pager-t:#1d4ed8;
+  --gold:#ffffff;--tab:#f3f4f6;--tab-t:#111827;--t1:#f3f4f6;--t2:#f3f4f6;--t3:#eef2f7;--cp-bg:#f3f4f6;--cp-t:#111827;
+  --font:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Sans","Hiragino Kaku Gothic ProN","PingFang SC","Noto Sans JP",sans-serif;
+  --serif:var(--font);   /* 极简皮肤不用明朝体，标题也用无衬线 */
+  --px:20px;
+  color-scheme:light;
+}
+html.washi{
+  /* 「和紙と墨」皮肤（可在首页切换）：米白纸 + 墨黑字 + 朱红点缀。
      整站颜色基本都走这些 CSS 变量；--blue 沿用雅思站的变量名，实际是朱红。 */
   --bg:#f3eee3;--card:#f8f4ea;--card2:#f3eee3;--text:#1d1b18;--sub:#7a7266;--line:#d6cdbb;
   --edge:rgba(29,27,24,.08);--shadow:none;--glow:transparent;
@@ -584,7 +597,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 /* 背景：纸的质感（顶部一层淡淡的高光） */
 html .glow{display:block;height:300px;background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,0));z-index:-1}
 /* 右下角一笔"圆相"（ensō）：很淡的装饰，所有页面都有，点不到（pointer-events:none） */
-body::after{content:"";position:fixed;right:-40px;bottom:-50px;width:190px;height:190px;pointer-events:none;z-index:-1;opacity:.10;
+html.washi body::after{content:"";position:fixed;right:-40px;bottom:-50px;width:190px;height:190px;pointer-events:none;z-index:-1;opacity:.10;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M100 22C150 18 182 62 176 106 170 152 128 182 88 176 44 170 20 128 28 90 34 60 56 40 84 32' fill='none' stroke='%231d1b18' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
 
 /* ---------- 首页顶部 ---------- */
@@ -646,8 +659,12 @@ html .chip{background:var(--chip);color:var(--text)}
 /* ===== 首页 · 极简白皮肤（方案 A）=====
    只作用在首页：body 加 min-home 类时整页变白底（在首页时由 watch 加上，离开首页去掉）；
    其余页面还是原来的样式。颜色：黑 #111827、灰字 #6b7280、浅灰底 #f3f4f6、分隔线 #f1f2f4、强调蓝 #2563eb */
-body.min-home{background:#fff}
-body.min-home .glow,body.min-home::after{display:none}
+/* 极简皮肤（html 没有 washi 类时）：卡片 14px 圆角 + 浅灰描边，分段按钮圆角 10px */
+html:not(.washi) .card,html:not(.washi) .tile{border-radius:14px;border-color:#e5e7eb}
+html:not(.washi) .seg{border-radius:10px}
+html:not(.washi) .badge{transform:none;border-radius:6px;border:0;background:#eff6ff;color:#1d4ed8;font-family:var(--font)}
+html:not(.washi) .search{border-bottom-color:#111827}
+html:not(.washi) .ws-pop{border-radius:12px;box-shadow:0 10px 28px rgba(17,24,39,.10)}
 .mh{color:#111827;font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans","Noto Sans SC","Noto Sans JP",sans-serif;max-width:560px;margin:0 auto}
 .mh button{font-family:inherit}
 .mh-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-top:4px}
@@ -695,7 +712,7 @@ body.min-home .glow,body.min-home::after{display:none}
 <div id="app" class="wrap">
 
   <!-- ===== HOME（极简白皮肤：白底黑字 + 一个蓝色；手机上一列，电脑上模块列表分两列）===== -->
-  <template v-if="route==='home'">
+  <template v-if="route==='home' && skin!=='washi'">
     <div class="mh">
       <!-- 顶部：日期 + 名字 + 一句话；右边是缅甸语开关、登录 -->
       <header class="mh-top">
@@ -705,6 +722,7 @@ body.min-home .glow,body.min-home::after{display:none}
           <div class="mh-tag">I can do all things. <span class="mh-badge">JLPT N2</span></div>
         </div>
         <div class="mh-acts">
+          <button class="mh-mm" type="button" @click="skin='washi'" title="切换皮肤：和紙と墨" aria-label="切换皮肤：和紙と墨">和紙</button>
           <button class="mh-mm" type="button" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span lang="my">မြန်မာ</span></button>
           <button class="mh-round" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button>
         </div>
@@ -753,10 +771,78 @@ body.min-home .glow,body.min-home::after{display:none}
       </nav>
 
       <footer class="mh-foot">
-        <span class="ver">v126 · Updated 2026-11-21 13:59<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span>
+        <span class="ver">v127 · Updated 2026-11-21 14:03<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span>
         <span>{{ T('词典数据','အဘိဓာန်ဒေတာ') }}：JMdict（EDRDG）· CC BY-SA 4.0</span>
       </footer>
     </div>
+  </template>
+
+  <!-- ===== HOME（和紙と墨皮肤：v125 的原首页）===== -->
+  <template v-if="route==='home' && skin==='washi'">
+    <div class="glow" aria-hidden="true"></div>
+    <div class="hero">
+      <div class="topline">Japanese <span class="ver">v127 · Updated 2026-11-21 14:03<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
+      <div class="hero-row">
+        <div>
+          <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" type="button" @click="skin='min'" title="切换皮肤：极简白" aria-label="切换皮肤：极简白"><span>极简</span></button><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
+          <div class="tagline">I can do all things.<button class="favhome" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg><span>{{ T('收藏本','သိမ်းထားသည်များ') }}</span></button></div>
+        </div>
+        <word-search></word-search>
+      </div>
+    </div>
+
+    <div class="grid">
+      <button class="tile" @click="go('syn')">
+        <span class="no">01</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></svg></span>
+        <h2>同义词</h2>
+        <span class="jp">類義語</span>
+        <p class="desc">{{ T('意思相近的词放在一起，分清细微差别和用法。','အဓိပ္ပာယ်နီးစပ်တဲ့ စကားလုံးတွေကို အတူစုထားပြီး သိမ်မွေ့တဲ့ ကွာခြားချက်နဲ့ အသုံးပြုပုံကို ခွဲခြားပါ။') }}</p>
+        <div class="peek"><span class="chip" v-for="g in synonyms.slice(0,3)" :key="g.title">{{ g.words[0].k }}</span></div>
+        <span class="count">{{ synonyms.length }} {{ T('组','အုပ်စု') }} · {{ Object.keys(synCats).length }} {{ T('个分类','အမျိုးအစား') }}</span>
+      </button>
+      <button class="tile" @click="go('art')">
+        <span class="no">02</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg></span>
+        <h2>文章<span class="pause">{{ T('N2 改写完成 · 30 篇','N2 ၃၀ ပုဒ် ပြီးဆုံး') }}</span></h2>
+        <span class="jp">読解</span>
+        <p class="desc">{{ T('N2 读解文章，汉字上方注假名，读着读着把语法和词汇连起来。','N2 စာဖတ်ဆောင်းပါးများ၊ ခန်းဂျိအပေါ်မှာ ခါနာ အသံထွက်ပါပြီး ဖတ်ရင်း သဒ္ဒါနဲ့ ဝေါဟာရကို ချိတ်ဆက်ပါ။') }}</p>
+        <div class="peek"><span class="chip" v-for="a in articles.slice(0,4)" :key="a.title">{{ a.short }}</span></div>
+        <span class="count">{{ articles.length }} {{ T('篇','ပုဒ်') }} · {{ T('覆盖 N2 语法','N2 သဒ္ဒါ') }} {{ coveredGrammar }} {{ T('条','ခု ပါဝင်') }}</span>
+      </button>
+      <button class="tile" @click="go('gram')">
+        <span class="no">03</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg></span>
+        <h2>语法<span class="h1sub">{{ T('（N2 ＋ N3 ＋ 接续词 ＋ 敬语 ＋ 口语 ＋ 语气词 ＋ 叠词 ＋ っり副词）','（N2 ＋ N3 ＋ ဆက်စပ်စကား ＋ ရိုသေစကား ＋ စကားပြော ＋ အာမေဍိတ် ＋ ထပ်ဆင့်စကား ＋ っり）') }}</span></h2>
+        <span class="jp">文法</span>
+        <p class="desc">{{ T('N2、N3 重点文型，加接续词、敬语和生活口语：接续、意思、两个例句、相近说法。','N2、N3 အဓိက သဒ္ဒါပုံစံများ၊ ဆက်စပ်စကား၊ ရိုသေစကားနဲ့ နေ့စဉ်စကားပြော：ချိတ်ဆက်ပုံ၊ အဓိပ္ပာယ်၊ ဥပမာ နှစ်ခု၊ ဆင်တူပုံစံများ။') }}</p>
+        <div class="peek"><span class="chip" v-for="(n,c) in gramCounts" :key="c">{{ mmOn ? gramCatsMy[c] : gramCats[c] }}</span></div>
+        <span class="count">{{ grammar.length }} {{ T('条','ခု') }} · N2 {{ gramCounts.n2 }} · N3 {{ gramCounts.n3 }} · {{ T('接续词','ဆက်စပ်စကား') }} {{ gramCounts.conj }} · {{ T('敬语','ရိုသေစကား') }} {{ gramCounts.keigo }} · {{ T('口语','စကားပြော') }} {{ gramCounts.talk }} · {{ T('语气词','အာမေဍိတ်') }} {{ gramCounts.kan }} · {{ T('叠词','ထပ်ဆင့်') }} {{ gramCounts.onoma }} · {{ T('っり副词','っり') }} {{ gramCounts.ri }}</span>
+      </button>
+      <button class="tile" @click="go('n2')">
+        <span class="no">04</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v13M8 10h5M8 14h5"/></svg></span>
+        <h2>N2 词汇</h2>
+        <span class="jp">語彙</span>
+        <p class="desc">{{ T('按 N2 词表系统补词汇：读音、中文、例句、朗读和详细解析。','N2 ဝေါဟာရစာရင်းအတိုင်း စနစ်တကျ ဖြည့်ပါ：အသံထွက်၊ အဓိပ္ပာယ်၊ ဥပမာ၊ အသံဖတ်နဲ့ အသေးစိတ် ခွဲခြမ်းစိတ်ဖြာချက်။') }}</p>
+        <div class="peek"><span class="chip" v-for="(n,c) in n2Counts" :key="c">{{ mmOn ? n2CatsMy[c] : n2Cats[c] }} {{ n }}</span></div>
+        <span class="count">{{ n2All.length }} {{ T('词 · 持续增加中','လုံး · ဆက်တိုးနေဆဲ') }}</span>
+      </button>
+      <!-- N3 词汇：和 N2 词汇同样的结构，数据来自 n3vocab（N3 词表）+ 语法库里的"N3 重点" -->
+      <button class="tile" @click="go('n3')">
+        <span class="no">05</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v13M8 10h5M8 14h5"/></svg></span>
+        <h2>N3 词汇</h2>
+        <span class="jp">語彙</span>
+        <p class="desc">{{ T('N3 词表全收录，加上 N3 语法：读音、中文、例句、朗读和详细解析。','N3 ဝေါဟာရစာရင်း အပြည့်အစုံ၊ N3 သဒ္ဒါပါ：အသံထွက်၊ အဓိပ္ပာယ်၊ ဥပမာ၊ အသံဖတ်နဲ့ အသေးစိတ် ခွဲခြမ်းစိတ်ဖြာချက်။') }}</p>
+        <div class="peek"><span class="chip" v-for="(n,c) in n3Counts" :key="c">{{ mmOn ? n3CatsMy[c] : n3Cats[c] }} {{ n }}</span></div>
+        <span class="count">{{ n3All.length }} {{ T('词 · 持续完善中','လုံး · ဆက်ဖြည့်နေဆဲ') }}</span>
+      </button>
+      <button class="tile" @click="go('verb')">
+        <span class="no">06</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.5 4.5L20 16M20 20v-4h-4"/></svg></span>
+        <h2>动词变形</h2>
+        <span class="jp">動詞の活用</span>
+        <p class="desc">{{ T('一类、二类、三类动词怎么变：て形、ない形、可能、被动、使役……图解加例句，还能查任意动词。','အုပ်စု ၁၊ ၂၊ ၃ ကြိယာ ပုံပြောင်းနည်း：て形、ない形、နိုင်ခြေ၊ ခံရ၊ ခိုင်းစေ……ပုံနဲ့ ဥပမာပါပြီး ဘယ်ကြိယာမဆို ရှာနိုင်ပါတယ်။') }}</p>
+        <div class="peek"><span class="chip">{{ T('三类怎么分','အုပ်စု ၃ မျိုး ခွဲနည်း') }}</span><span class="chip">{{ T('て形音便','て形 အသံပြောင်း') }}</span><span class="chip">{{ T('被动 · 使役','ခံရ · ခိုင်းစေ') }}</span><span class="chip">{{ T('查变形','ပုံပြောင်း ရှာရန်') }}</span></div>
+        <span class="count">{{ T('15 种变形 · 一类 / 二类 / 三类','ပုံပြောင်း ၁၅ မျိုး · အုပ်စု ၁ / ၂ / ၃') }}</span>
+      </button>
+    </div>
+    <p class="credit">{{ T('词典数据','အဘိဓာန်ဒေတာ') }}：JMdict（EDRDG）· CC BY-SA 4.0</p>
   </template>
 
   <!-- ===== SYNONYMS ===== -->
@@ -11122,7 +11208,7 @@ const loadGsi = () => new Promise((ok,no)=>{
 });
 let gsiReady=false, favToastT=0; const favBusy={};
 Vue.createApp({
-  data(){ const p=parse(); return { userCount, favCat:'all', favLevel:'all', netShow:false, route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{gram:'N2 语法',v:'动词',n:'名词',adj:'形容词',adv:'副词·其他',syn:'同义词',onoma:'叠词',kan:'语气词',talk:'生活口语',ri:'っり副词',keigo:'敬语',conj:'接续词'}, n2CatsMy:{gram:'N2 သဒ္ဒါ',v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား',syn:'အစားထိုး ဝေါဟာရ',onoma:'ထပ်စကား',kan:'အဆုံးသတ်စကား',talk:'နေ့စဉ်စကားပြော',ri:'っり ကြိယာဝိသေသန',keigo:'ဂုဏ်ပြုစကား',conj:'ဆက်စပ်စကား'}, n2Cat:'all', n2Page:1, nq:'',
+  data(){ const p=parse(); return { skin:(()=>{ try{ return localStorage.getItem('jlpt-skin')==='washi'?'washi':'min'; }catch(_){ return 'min'; } })(), userCount, favCat:'all', favLevel:'all', netShow:false, route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{gram:'N2 语法',v:'动词',n:'名词',adj:'形容词',adv:'副词·其他',syn:'同义词',onoma:'叠词',kan:'语气词',talk:'生活口语',ri:'っり副词',keigo:'敬语',conj:'接续词'}, n2CatsMy:{gram:'N2 သဒ္ဒါ',v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား',syn:'အစားထိုး ဝေါဟာရ',onoma:'ထပ်စကား',kan:'အဆုံးသတ်စကား',talk:'နေ့စဉ်စကားပြော',ri:'っり ကြိယာဝိသေသန',keigo:'ဂုဏ်ပြုစကား',conj:'ဆက်စပ်စကား'}, n2Cat:'all', n2Page:1, nq:'',
     /* N3 页：n3vocab = N3 词表（2046 词）；n3Cats = 分类标签（N3 语法/动词/名词/形容词/副词·其他，再加上能对上的叠词等）；
        n3Cat 当前分类、n3Page 当前页、n3q 搜索框 */
     n3vocab, n3Cats:{gram:'N3 语法',v:'动词',n:'名词',adj:'形容词',adv:'副词·其他',onoma:'叠词',kan:'语气词',talk:'生活口语',ri:'っり副词',keigo:'敬语',conj:'接续词'},
@@ -11239,7 +11325,9 @@ Vue.createApp({
     pagedArt(){ const p=Math.min(this.artPage,this.artPages); return this.articles.slice((p-1)*10, p*10); },
     pagedSyn(){ const p=Math.min(this.synPage,this.synPages); return this.filteredSyn.slice((p-1)*10, p*10); }
   },
-  watch:{ route:{ immediate:true, handler(v){ document.body.classList.toggle('min-home', v==='home'); } },   // 首页用白底（极简皮肤），其他页面恢复原来的底色
+  watch:{ route:{ immediate:true, handler(v){ document.body.classList.toggle('min-home', v==='home'); } },
+    /* 皮肤：washi = 和紙と墨，min = 极简白（默认）。记在本机，下次打开还是这个 */
+    skin:{ immediate:true, handler(v){ document.documentElement.classList.toggle('washi', v==='washi'); try{ localStorage.setItem('jlpt-skin', v); }catch(_){} } },
     mmOn(v){ try{localStorage.setItem('mmOn',v?'1':'0')}catch(e){} document.documentElement.classList.toggle('my-on',v); }, nq(){ this.n2Page=1; }, n2Cat(){ this.n2Page=1; }, n3q(){ this.n3Page=1; }, n3Cat(){ this.n3Page=1; }, favCat(){ this.favPage=1; }, favLevel(){ this.favCat='all'; this.favPage=1; }, q(){ this.synPage=1; }, synCat(){ this.synPage=1; }, gq(){ this.gramPage=1; }, gramCat(){ this.gramPage=1; } },
   methods:{
     rb(s){ return ruby(esc(s)); },
