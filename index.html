@@ -2,7 +2,6 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<script>try{if(localStorage.getItem('jlpt-skin')==='washi')document.documentElement.classList.add('washi')}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
 /* iPad 横屏修复：部分 iPad 浏览器（如 Chrome）横屏时布局视口只有约 900px，页面挤在左边、右边空一大截。
@@ -34,20 +33,7 @@
 <style>
 /* Layout: same as IELTS site — 720px centered column, name left / search right, tile grid, sticky sub-page header */
 :root{
-  /* 默认皮肤「极简白」：白底、黑字、灰色辅助、一个蓝色强调色（整站颜色都走这些变量） */
-  --bg:#f6f5f3;--card:#ffffff;--card2:#ffffff;--text:#1c1917;--sub:#78716c;--line:#e7e5e4;
-  --edge:#ebe9e6;--shadow:0 1px 2px rgba(28,25,23,.04),0 4px 14px rgba(28,25,23,.04);--glow:transparent;
-  --ico:#1c1917;--ico-bg:#f5f5f4;--ico-ring:#e7e5e4;--numc:rgba(28,25,23,.08);
-  --blue:#292524;--chip:#f5f5f4;--greige:#f5f5f4;--pager-t:#44403c;
-  --gold:#ffffff;--tab:#f5f5f4;--tab-t:#1c1917;--t1:#f6f5f3;--t2:#f5f5f4;--t3:#f3f1ee;--cp-bg:#f5f5f4;--cp-t:#1c1917;
-  --acc:#ea580c;--acc-bg:#fff1e6;--acc-t:#9a3412;   /* 唯一的强调色：暖橙，只用在"例句里的目标词、必读、当前位置"这几处 */
-  --font:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Sans","Hiragino Kaku Gothic ProN","PingFang SC","Noto Sans JP",sans-serif;
-  --serif:var(--font);   /* 极简皮肤不用明朝体，标题也用无衬线 */
-  --px:20px;
-  color-scheme:light;
-}
-html.washi{
-  /* 「和紙と墨」皮肤（可在首页切换）：米白纸 + 墨黑字 + 朱红点缀。
+  /* 「和紙と墨」主题（全站唯一风格）：米白纸 + 墨黑字 + 朱红点缀。
      整站颜色基本都走这些 CSS 变量；--blue 沿用雅思站的变量名，实际是朱红。 */
   --bg:#f3eee3;--card:#f8f4ea;--card2:#f3eee3;--text:#1d1b18;--sub:#7a7266;--line:#d6cdbb;
   --edge:rgba(29,27,24,.08);--shadow:none;--glow:transparent;
@@ -598,7 +584,7 @@ ruby rt{font-size:.52em;color:var(--sub);letter-spacing:0;font-weight:400}
 /* 背景：纸的质感（顶部一层淡淡的高光） */
 html .glow{display:block;height:300px;background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,0));z-index:-1}
 /* 右下角一笔"圆相"（ensō）：很淡的装饰，所有页面都有，点不到（pointer-events:none） */
-html.washi body::after{content:"";position:fixed;right:-40px;bottom:-50px;width:190px;height:190px;pointer-events:none;z-index:-1;opacity:.10;
+body::after{content:"";position:fixed;right:-40px;bottom:-50px;width:190px;height:190px;pointer-events:none;z-index:-1;opacity:.10;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M100 22C150 18 182 62 176 106 170 152 128 182 88 176 44 170 20 128 28 90 34 60 56 40 84 32' fill='none' stroke='%231d1b18' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
 
 /* ---------- 首页顶部 ---------- */
@@ -656,172 +642,19 @@ html .glv.n3{background:var(--blue);color:#fff}   /* N3 角标：朱红底（N2 
 html .play{background:var(--blue);color:#fff;box-shadow:none}        /* 朗读按钮用朱红，和印章呼应 */
 html .play.lt{background:var(--chip);color:var(--blue)}
 html .chip{background:var(--chip);color:var(--text)}
-
-/* ===== 首页 · 极简白皮肤（方案 A）=====
-   只作用在首页：body 加 min-home 类时整页变白底（在首页时由 watch 加上，离开首页去掉）；
-   其余页面还是原来的样式。颜色：黑 #111827、灰字 #6b7280、浅灰底 #f3f4f6、分隔线 #f1f2f4、强调蓝 #2563eb */
-/* 极简皮肤（html 没有 washi 类时）：卡片 14px 圆角 + 浅灰描边，分段按钮圆角 10px */
-/* 分层：页面底是暖浅灰，卡片是纯白 + 很淡的阴影，例句框又回到浅灰 → 三层一眼分得清 */
-body.min-home{background:#fff}                                     /* 首页保持纯白（封面） */
-html:not(.washi) .card,html:not(.washi) .tile{border-radius:16px;border:1px solid var(--edge);background:#fff;box-shadow:var(--shadow)}
-html:not(.washi) .ex{background:var(--t1);border-radius:12px}
-/* 分类筛选：白色胶囊组，未选中灰字，选中墨黑底白字；后面的数字更淡 */
-html:not(.washi) .seg{background:#fff;border:1px solid var(--edge);border-radius:14px;padding:5px;box-shadow:var(--shadow)}
-html:not(.washi) .seg button{color:#57534e;border-radius:10px}
-html:not(.washi) .seg button .n{color:#a8a29e;opacity:1}
-html:not(.washi) .seg button.on{background:#1c1917;color:#fff}
-html:not(.washi) .seg button.on .n{color:#d6d3d1}
-html:not(.washi) .seg button:hover:not(.on){background:var(--chip)}
-/* 翻页：白底小方块，页码用墨黑 */
-html:not(.washi) .pager .pg,html:not(.washi) .pager .pick{background:#fff;border:1px solid var(--edge);color:#1c1917}
-/* 朗读按钮：墨黑圆；小号朗读按钮：浅灰底黑图标 */
-html:not(.washi) .play{background:#1c1917;color:#fff}
-html:not(.washi) .play.lt{background:var(--chip);color:#1c1917}
-/* 例句里的目标词：暖橙字 + 暖橙下划线（全页唯一的彩色重点） */
-html:not(.washi) .vx{color:var(--acc);border-bottom-color:var(--acc)}
-html:not(.washi) .vw{border-bottom-color:var(--acc)}
-/* 优先级标签：必读 = 实心暖橙，优先 = 浅橙底，推荐 = 灰色描边 */
-html:not(.washi) .pri.p1{background:var(--acc);color:#fff}
-html:not(.washi) .pri.p2{background:var(--acc-bg);color:var(--acc-t)}
-/* 等级角标：N2 墨黑，N3 浅灰底深字（两者能分开） */
-html:not(.washi) .glv.n3{background:#e7e5e4;color:#292524}
-/* 小标题（详细解析里的"用法""搭配"等）：灰色小字，不抢正文 */
-html:not(.washi) .ana-h,html:not(.washi) .vb-th,html:not(.washi) .vb-teh{color:var(--sub)}
-html:not(.washi) .n2n,html:not(.washi) .gnum{color:#a8a29e}
-/* 顶部"收藏本"按钮：白底灰边黑字 */
-html:not(.washi) .favhome{background:#fff;color:#1c1917;border:1px solid var(--edge)}
-/* 顶部标题前面的彩色小方块：和首页模块列表同一套颜色，一眼知道自己在哪个模块 */
-html:not(.washi) body[data-r] .sticky h1::before{width:34px;height:34px;border-radius:10px;margin-right:10px;vertical-align:.12em;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;letter-spacing:0}
-html:not(.washi) body[data-r=n2] .sticky h1::before{content:"N2";background:#eff6ff;color:#1d4ed8}
-html:not(.washi) body[data-r=n3] .sticky h1::before{content:"N3";background:#eff6ff;color:#1d4ed8}
-html:not(.washi) body[data-r=gram] .sticky h1::before{content:"文";background:#f5f3ff;color:#6d28d9}
-html:not(.washi) body[data-r=syn] .sticky h1::before{content:"似";background:#ecfdf5;color:#047857}
-html:not(.washi) body[data-r=art] .sticky h1::before{content:"読";background:#fff7ed;color:#c2410c}
-html:not(.washi) body[data-r=verb] .sticky h1::before{content:"活";background:#fdf2f8;color:#be185d}
-html:not(.washi) body[data-r=fav] .sticky h1::before{content:"★";background:#fef9c3;color:#a16207}
-html:not(.washi) .badge{transform:none;border-radius:6px;border:0;background:#eff6ff;color:#1d4ed8;font-family:var(--font)}
-html:not(.washi) .search{border-bottom-color:#111827}
-html:not(.washi) .ws-pop{border-radius:12px;box-shadow:0 10px 28px rgba(17,24,39,.10)}
-.mh{color:#111827;font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans","Noto Sans SC","Noto Sans JP",sans-serif;max-width:560px;margin:0 auto}
-.mh button{font-family:inherit}
-.mh-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-top:4px}
-.mh-date{font-size:13px;color:#6b7280}
-.mh-title{margin:4px 0 0;font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1.15;color:#111827}
-.mh-tag{margin-top:6px;font-size:14px;color:#4b5563;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.mh-badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:#eff6ff;color:#1d4ed8}
-.mh-acts{display:flex;gap:8px;flex:none}
-.mh-round,.mh-mm{height:44px;min-width:44px;border-radius:22px;border:1px solid #e5e7eb;background:#fff;color:#111827;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;overflow:hidden}
-.mh-round img{width:100%;height:100%;object-fit:cover}
-.mh-mm{padding:0 14px;font-size:13px;font-weight:600}
-.mh-mm.on{background:#111827;border-color:#111827;color:#fff}
-.mh-search{margin-top:18px}
-.mh-search input,.mh-search .search{width:100%;box-sizing:border-box}
-.mh-card{margin-top:16px;padding:18px;border-radius:20px;background:#f3f4f6;display:flex;flex-direction:column;gap:14px}
-.mh-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.mh-stat{background:#fff;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:2px;min-width:0}
-.mh-stat b{font-size:22px;font-weight:700;letter-spacing:-.01em}
-.mh-stat span{font-size:12px;color:#4b5563}
-.mh-main{height:48px;border-radius:14px;border:0;background:#111827;color:#fff;font-size:15px;font-weight:600;cursor:pointer}
-.mh-main:hover{background:#1f2937}
-.mh-label{padding:26px 2px 6px;font-size:13px;font-weight:600;color:#6b7280}
-.mh-list{display:flex;flex-direction:column}
-.mh-row{display:flex;align-items:center;gap:14px;min-height:64px;padding:8px 2px;border:0;border-bottom:1px solid #f1f2f4;background:none;color:#111827;text-align:left;cursor:pointer;width:100%}
-.mh-row:last-child{border-bottom:0}
-.mh-row:hover .mh-name{color:#2563eb}
-.mh-ico{flex:none;width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
-.i-blue{background:#eff6ff;color:#1d4ed8}.i-violet{background:#f5f3ff;color:#6d28d9}.i-green{background:#ecfdf5;color:#047857}
-.i-orange{background:#fff7ed;color:#c2410c}.i-pink{background:#fdf2f8;color:#be185d}
-.mh-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.mh-name{font-size:16px;font-weight:600}
-.mh-desc{font-size:12.5px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mh-chev{flex:none;fill:none;stroke:#9ca3af;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.mh-foot{margin-top:28px;padding-top:16px;border-top:1px solid #f1f2f4;display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6b7280}
-.mh-foot .ver{color:#6b7280}
-/* 电脑宽屏：内容区放宽，模块列表分两列 */
-@media (min-width:900px){
-  .mh{max-width:880px}
-  .mh-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:32px}
-  .mh-row:nth-last-child(2){border-bottom:0}
-}
 </style>
 </head>
 <body>
 <div id="app" class="wrap">
 
-  <!-- ===== HOME（极简白皮肤：白底黑字 + 一个蓝色；手机上一列，电脑上模块列表分两列）===== -->
-  <template v-if="route==='home' && skin!=='washi'">
-    <div class="mh">
-      <!-- 顶部：日期 + 名字 + 一句话；右边是缅甸语开关、登录 -->
-      <header class="mh-top">
-        <div class="mh-hello">
-          <div class="mh-date">{{ todayLabel }}</div>
-          <h1 class="mh-title">Goen Kon</h1>
-          <div class="mh-tag">I can do all things. <span class="mh-badge">JLPT N2</span></div>
-        </div>
-        <div class="mh-acts">
-          <button class="mh-mm" type="button" @click="skin='washi'" title="切换皮肤：和紙と墨" aria-label="切换皮肤：和紙と墨">和紙</button>
-          <button class="mh-mm" type="button" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span lang="my">မြန်မာ</span></button>
-          <button class="mh-round" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button>
-        </div>
-      </header>
-
-      <!-- 查词（原来的查词组件，原样放进来） -->
-      <div class="mh-search"><word-search></word-search></div>
-
-      <!-- 灰色概览卡：三个真实数字 + 一个主按钮（有收藏功能就去收藏本，没有就去 N2 词汇） -->
-      <section class="mh-card" aria-label="概览">
-        <div class="mh-stats">
-          <div class="mh-stat"><b>{{ n2All.length + n3All.length }}</b><span>{{ T('词汇（N2 + N3）','ဝေါဟာရ（N2 + N3）') }}</span></div>
-          <div class="mh-stat"><b>{{ grammar.length }}</b><span>{{ T('语法','သဒ္ဒါ') }}</span></div>
-          <div class="mh-stat"><b>{{ articles.length }}</b><span>{{ T('文章','ဆောင်းပါး') }}</span></div>
-        </div>
-        <button v-if="favOn" class="mh-main" type="button" @click="go('fav')">{{ T('打开收藏本','သိမ်းထားသည်များ ဖွင့်ရန်') }}<template v-if="favs.length"> · {{ favs.length }}</template></button>
-        <button v-else class="mh-main" type="button" @click="go('n2')">{{ T('开始背 N2 词汇','N2 ဝေါဟာရ စလေ့လာရန်') }}</button>
-      </section>
-
-      <div class="mh-label">{{ T('学习模块','သင်ခန်းစာများ') }}</div>
-      <nav class="mh-list" aria-label="学习模块">
-        <button class="mh-row" type="button" @click="go('n2')">
-          <span class="mh-ico i-blue" aria-hidden="true">N2</span>
-          <span class="mh-txt"><span class="mh-name">N2 词汇</span><span class="mh-desc">{{ n2All.length }} {{ T('词','လုံး') }} · {{ T('必读','မဖြစ်မနေ') }} {{ n2All.filter(w=>w.pri===1).length }}</span></span><svg class="mh-chev" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6"/></svg>
-        </button>
-        <button class="mh-row" type="button" @click="go('n3')">
-          <span class="mh-ico i-blue" aria-hidden="true">N3</span>
-          <span class="mh-txt"><span class="mh-name">N3 词汇</span><span class="mh-desc">{{ n3All.length }} {{ T('词','လုံး') }} · {{ T('必读','မဖြစ်မနေ') }} {{ n3All.filter(w=>w.pri===1).length }}</span></span><svg class="mh-chev" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6"/></svg>
-        </button>
-        <button class="mh-row" type="button" @click="go('gram')">
-          <span class="mh-ico i-violet" aria-hidden="true">文</span>
-          <span class="mh-txt"><span class="mh-name">{{ T('语法','သဒ္ဒါ') }}</span><span class="mh-desc">{{ grammar.length }} {{ T('条','ခု') }} · N2 {{ gramCounts.n2 }} · N3 {{ gramCounts.n3 }} · {{ T('口语、语气词、叠词…','စကားပြော၊ အာမေဍိတ်…') }}</span></span><svg class="mh-chev" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6"/></svg>
-        </button>
-        <button class="mh-row" type="button" @click="go('syn')">
-          <span class="mh-ico i-green" aria-hidden="true">似</span>
-          <span class="mh-txt"><span class="mh-name">{{ T('同义词辨析','ဆင်တူစကား') }}</span><span class="mh-desc">{{ synonyms.length }} {{ T('组','အုပ်စု') }} · {{ Object.keys(synCats).length }} {{ T('个分类','အမျိုးအစား') }}</span></span><svg class="mh-chev" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6"/></svg>
-        </button>
-        <button class="mh-row" type="button" @click="go('art')">
-          <span class="mh-ico i-orange" aria-hidden="true">読</span>
-          <span class="mh-txt"><span class="mh-name">{{ T('文章阅读','စာဖတ်') }}</span><span class="mh-desc">{{ articles.length }} {{ T('篇','ပုဒ်') }} · {{ T('覆盖 N2 语法','N2 သဒ္ဒါ') }} {{ coveredGrammar }} {{ T('条','ခု') }}</span></span><svg class="mh-chev" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6"/></svg>
-        </button>
-        <button class="mh-row" type="button" @click="go('verb')">
-          <span class="mh-ico i-pink" aria-hidden="true">活</span>
-          <span class="mh-txt"><span class="mh-name">{{ T('动词变形','ကြိယာ ပုံပြောင်း') }}</span><span class="mh-desc">{{ T('15 种变形 · 一类 / 二类 / 三类','ပုံပြောင်း ၁၅ မျိုး') }}</span></span><svg class="mh-chev" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6"/></svg>
-        </button>
-      </nav>
-
-      <footer class="mh-foot">
-        <span class="ver">v128 · Updated 2026-11-21 14:10<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span>
-        <span>{{ T('词典数据','အဘိဓာန်ဒေတာ') }}：JMdict（EDRDG）· CC BY-SA 4.0</span>
-      </footer>
-    </div>
-  </template>
-
-  <!-- ===== HOME（和紙と墨皮肤：v125 的原首页）===== -->
-  <template v-if="route==='home' && skin==='washi'">
+  <!-- ===== HOME ===== -->
+  <template v-if="route==='home'">
     <div class="glow" aria-hidden="true"></div>
     <div class="hero">
-      <div class="topline">Japanese <span class="ver">v128 · Updated 2026-11-21 14:10<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
+      <div class="topline">Japanese <span class="ver">v129 · Updated 2026-11-21 14:11<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
       <div class="hero-row">
         <div>
-          <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" type="button" @click="skin='min'" title="切换皮肤：极简白" aria-label="切换皮肤：极简白"><span>极简</span></button><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
+          <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
           <div class="tagline">I can do all things.<button class="favhome" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg><span>{{ T('收藏本','သိမ်းထားသည်များ') }}</span></button></div>
         </div>
         <word-search></word-search>
@@ -11245,7 +11078,7 @@ const loadGsi = () => new Promise((ok,no)=>{
 });
 let gsiReady=false, favToastT=0; const favBusy={};
 Vue.createApp({
-  data(){ const p=parse(); return { skin:(()=>{ try{ return localStorage.getItem('jlpt-skin')==='washi'?'washi':'min'; }catch(_){ return 'min'; } })(), userCount, favCat:'all', favLevel:'all', netShow:false, route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{gram:'N2 语法',v:'动词',n:'名词',adj:'形容词',adv:'副词·其他',syn:'同义词',onoma:'叠词',kan:'语气词',talk:'生活口语',ri:'っり副词',keigo:'敬语',conj:'接续词'}, n2CatsMy:{gram:'N2 သဒ္ဒါ',v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား',syn:'အစားထိုး ဝေါဟာရ',onoma:'ထပ်စကား',kan:'အဆုံးသတ်စကား',talk:'နေ့စဉ်စကားပြော',ri:'っり ကြိယာဝိသေသန',keigo:'ဂုဏ်ပြုစကား',conj:'ဆက်စပ်စကား'}, n2Cat:'all', n2Page:1, nq:'',
+  data(){ const p=parse(); return { userCount, favCat:'all', favLevel:'all', netShow:false, route:p.route, idx:p.idx, q:'', furi:true, showZh:false, hiGram:true, hiVoc:true, hiN2:true, flashG:null, flashV:null, flashN:null, openAna:{}, copied:null, synonyms, synCats, synMy, synCatsMy:{v:'ကြိယာ',adv:'ကြိယာဝိသေသန',adj:'နာမဝိသေသန',n:'နာမ်',conj:'ဆက်စပ်စကား',exp:'အသုံးအနှုန်း',n2:'N2 အစားထိုးပြောနည်း'}, synCat:'all', synPage:1, sel:{}, grammar, gramCats, gramTag:{n2:'N2',n3:'N3',conj:'接续词',keigo:'敬语',talk:'口语',kan:'语气词',onoma:'叠词',ri:'っり副词'}, gramTagMy:{n2:'N2',n3:'N3',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'စကားပြော',kan:'အာမေဍိတ်',onoma:'ထပ်ဆင့်စကား',ri:'っり ကြိယာဝိသေသန'}, gramCatsMy:{n2:'N2 အဓိက',n3:'N3 အဓိက',conj:'ဆက်စပ်စကား',keigo:'ရိုသေစကား',talk:'နေ့စဉ်စကားပြော',kan:'အာမေဍိတ်・ဝါကျအဆုံး',onoma:'ထပ်ဆင့်စကား・အသံတု',ri:'っり ကြိယာဝိသေသန'}, mmOn:(()=>{try{return localStorage.getItem('mmOn')==='1'}catch(e){return false}})(), gramMy, simMy, gramCat:'all', gramPage:1, simSel:{}, simEx, gq:'', articles, artPage:1, n2vocab, n2My, n2Cats:{gram:'N2 语法',v:'动词',n:'名词',adj:'形容词',adv:'副词·其他',syn:'同义词',onoma:'叠词',kan:'语气词',talk:'生活口语',ri:'っり副词',keigo:'敬语',conj:'接续词'}, n2CatsMy:{gram:'N2 သဒ္ဒါ',v:'ကြိယာ',n:'နာမ်',adj:'နာမဝိသေသန',adv:'ကြိယာဝိသေသန·အခြား',syn:'အစားထိုး ဝေါဟာရ',onoma:'ထပ်စကား',kan:'အဆုံးသတ်စကား',talk:'နေ့စဉ်စကားပြော',ri:'っり ကြိယာဝိသေသန',keigo:'ဂုဏ်ပြုစကား',conj:'ဆက်စပ်စကား'}, n2Cat:'all', n2Page:1, nq:'',
     /* N3 页：n3vocab = N3 词表（2046 词）；n3Cats = 分类标签（N3 语法/动词/名词/形容词/副词·其他，再加上能对上的叠词等）；
        n3Cat 当前分类、n3Page 当前页、n3q 搜索框 */
     n3vocab, n3Cats:{gram:'N3 语法',v:'动词',n:'名词',adj:'形容词',adv:'副词·其他',onoma:'叠词',kan:'语气词',talk:'生活口语',ri:'っり副词',keigo:'敬语',conj:'接续词'},
@@ -11254,8 +11087,6 @@ Vue.createApp({
   computed:{
     art(){ return this.articles[this.idx]; },
     favOn(){ return !!API_BASE; },
-    /* 首页左上角的日期，例如"11月21日 · 周六"（缅甸语模式下用 21/11 这种写法） */
-    todayLabel(){ const d=new Date(); return this.mmOn ? (d.getDate()+'/'+(d.getMonth()+1)) : ((d.getMonth()+1)+'月'+d.getDate()+'日 · 周'+'日一二三四五六'[d.getDay()]); },
     favEntries(){ return this.favs.map(f=>Object.assign({ f }, this.favInfo(f))); },
     /* ===== 收藏本分类（只在前端做，不需要后端）=====
        收藏在后端只存"一段文字"，没有分类。分类靠 favInfo 把每条收藏对回本地词库，再看它在词库里属于哪一类：
@@ -11362,10 +11193,7 @@ Vue.createApp({
     pagedArt(){ const p=Math.min(this.artPage,this.artPages); return this.articles.slice((p-1)*10, p*10); },
     pagedSyn(){ const p=Math.min(this.synPage,this.synPages); return this.filteredSyn.slice((p-1)*10, p*10); }
   },
-  watch:{ route:{ immediate:true, handler(v){ document.body.classList.toggle('min-home', v==='home'); document.body.dataset.r=v; } },   // data-r = 当前模块（n2/gram/syn…），给标题前的彩色小方块用
-    /* 皮肤：washi = 和紙と墨，min = 极简白（默认）。记在本机，下次打开还是这个 */
-    skin:{ immediate:true, handler(v){ document.documentElement.classList.toggle('washi', v==='washi'); try{ localStorage.setItem('jlpt-skin', v); }catch(_){} } },
-    mmOn(v){ try{localStorage.setItem('mmOn',v?'1':'0')}catch(e){} document.documentElement.classList.toggle('my-on',v); }, nq(){ this.n2Page=1; }, n2Cat(){ this.n2Page=1; }, n3q(){ this.n3Page=1; }, n3Cat(){ this.n3Page=1; }, favCat(){ this.favPage=1; }, favLevel(){ this.favCat='all'; this.favPage=1; }, q(){ this.synPage=1; }, synCat(){ this.synPage=1; }, gq(){ this.gramPage=1; }, gramCat(){ this.gramPage=1; } },
+  watch:{ mmOn(v){ try{localStorage.setItem('mmOn',v?'1':'0')}catch(e){} document.documentElement.classList.toggle('my-on',v); }, nq(){ this.n2Page=1; }, n2Cat(){ this.n2Page=1; }, n3q(){ this.n3Page=1; }, n3Cat(){ this.n3Page=1; }, favCat(){ this.favPage=1; }, favLevel(){ this.favCat='all'; this.favPage=1; }, q(){ this.synPage=1; }, synCat(){ this.synPage=1; }, gq(){ this.gramPage=1; }, gramCat(){ this.gramPage=1; } },
   methods:{
     rb(s){ return ruby(esc(s)); },
     setPage(p){ if(!p||p<1||p>this.synPages) return; this.synPage=p; window.scrollTo({top:0,behavior:this.smooth()}); },
