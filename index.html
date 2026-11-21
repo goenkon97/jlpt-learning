@@ -642,77 +642,121 @@ html .glv.n3{background:var(--blue);color:#fff}   /* N3 角标：朱红底（N2 
 html .play{background:var(--blue);color:#fff;box-shadow:none}        /* 朗读按钮用朱红，和印章呼应 */
 html .play.lt{background:var(--chip);color:var(--blue)}
 html .chip{background:var(--chip);color:var(--text)}
+
+/* ===== 首页 · 极简白皮肤（方案 A）=====
+   只作用在首页：body 加 min-home 类时整页变白底（在首页时由 watch 加上，离开首页去掉）；
+   其余页面还是原来的样式。颜色：黑 #111827、灰字 #6b7280、浅灰底 #f3f4f6、分隔线 #f1f2f4、强调蓝 #2563eb */
+body.min-home{background:#fff}
+body.min-home .glow,body.min-home::after{display:none}
+.mh{color:#111827;font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans","Noto Sans SC","Noto Sans JP",sans-serif;max-width:560px;margin:0 auto}
+.mh button{font-family:inherit}
+.mh-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-top:4px}
+.mh-date{font-size:13px;color:#6b7280}
+.mh-title{margin:4px 0 0;font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1.15;color:#111827}
+.mh-tag{margin-top:6px;font-size:14px;color:#4b5563;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mh-badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:#eff6ff;color:#1d4ed8}
+.mh-acts{display:flex;gap:8px;flex:none}
+.mh-round,.mh-mm{height:44px;min-width:44px;border-radius:22px;border:1px solid #e5e7eb;background:#fff;color:#111827;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;overflow:hidden}
+.mh-round img{width:100%;height:100%;object-fit:cover}
+.mh-mm{padding:0 14px;font-size:13px;font-weight:600}
+.mh-mm.on{background:#111827;border-color:#111827;color:#fff}
+.mh-search{margin-top:18px}
+.mh-search input,.mh-search .search{width:100%;box-sizing:border-box}
+.mh-card{margin-top:16px;padding:18px;border-radius:20px;background:#f3f4f6;display:flex;flex-direction:column;gap:14px}
+.mh-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mh-stat{background:#fff;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.mh-stat b{font-size:22px;font-weight:700;letter-spacing:-.01em}
+.mh-stat span{font-size:12px;color:#4b5563}
+.mh-main{height:48px;border-radius:14px;border:0;background:#111827;color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+.mh-main:hover{background:#1f2937}
+.mh-label{padding:26px 2px 6px;font-size:13px;font-weight:600;color:#6b7280}
+.mh-list{display:flex;flex-direction:column}
+.mh-row{display:flex;align-items:center;gap:14px;min-height:64px;padding:8px 2px;border:0;border-bottom:1px solid #f1f2f4;background:none;color:#111827;text-align:left;cursor:pointer;width:100%}
+.mh-row:last-child{border-bottom:0}
+.mh-row:hover .mh-name{color:#2563eb}
+.mh-ico{flex:none;width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
+.i-blue{background:#eff6ff;color:#1d4ed8}.i-violet{background:#f5f3ff;color:#6d28d9}.i-green{background:#ecfdf5;color:#047857}
+.i-orange{background:#fff7ed;color:#c2410c}.i-pink{background:#fdf2f8;color:#be185d}
+.mh-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.mh-name{font-size:16px;font-weight:600}
+.mh-desc{font-size:12.5px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mh-chev{flex:none;fill:none;stroke:#9ca3af;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mh-foot{margin-top:28px;padding-top:16px;border-top:1px solid #f1f2f4;display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6b7280}
+.mh-foot .ver{color:#6b7280}
+/* 电脑宽屏：内容区放宽，模块列表分两列 */
+@media (min-width:900px){
+  .mh{max-width:880px}
+  .mh-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:32px}
+  .mh-row:nth-last-child(2){border-bottom:0}
+}
 </style>
 </head>
 <body>
 <div id="app" class="wrap">
 
-  <!-- ===== HOME ===== -->
+  <!-- ===== HOME（极简白皮肤：白底黑字 + 一个蓝色；手机上一列，电脑上模块列表分两列）===== -->
   <template v-if="route==='home'">
-    <div class="glow" aria-hidden="true"></div>
-    <div class="hero">
-      <div class="topline">Japanese <span class="ver">v125 · Updated 2026-11-18 14:21<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span></div>
-      <div class="hero-row">
-        <div>
-          <h1 class="hname">Goen Kon <span class="tags"><span class="badge">JLPT N2</span><button class="mm-btn" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span>ミャンマー語</span><span class="mm-my" lang="my">မြန်မာ</span></button><button class="tagbtn" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button></span></h1>
-          <div class="tagline">I can do all things.<button class="favhome" type="button" v-if="favOn" @click="go('fav')" aria-label="收藏本" title="收藏本"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4.4L5.5 21V4.5a1 1 0 0 1 1-1z"/></svg><span>{{ T('收藏本','သိမ်းထားသည်များ') }}</span></button></div>
+    <div class="mh">
+      <!-- 顶部：日期 + 名字 + 一句话；右边是缅甸语开关、登录 -->
+      <header class="mh-top">
+        <div class="mh-hello">
+          <div class="mh-date">{{ todayLabel }}</div>
+          <h1 class="mh-title">Goen Kon</h1>
+          <div class="mh-tag">I can do all things. <span class="mh-badge">JLPT N2</span></div>
         </div>
-        <word-search></word-search>
-      </div>
-    </div>
+        <div class="mh-acts">
+          <button class="mh-mm" type="button" :class="{on:mmOn}" :aria-pressed="mmOn" @click="mmOn=!mmOn" aria-label="ミャンマー語（缅甸语）"><span lang="my">မြန်မာ</span></button>
+          <button class="mh-round" type="button" @click="openLogin" :aria-label="authUser?'账号':'登录'" :title="authUser?'账号':'登录'"><img v-if="authUser && authUser.picture" :src="authUser.picture" alt="" referrerpolicy="no-referrer"><svg v-else viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button>
+        </div>
+      </header>
 
-    <div class="grid">
-      <button class="tile" @click="go('syn')">
-        <span class="no">01</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></svg></span>
-        <h2>同义词</h2>
-        <span class="jp">類義語</span>
-        <p class="desc">{{ T('意思相近的词放在一起，分清细微差别和用法。','အဓိပ္ပာယ်နီးစပ်တဲ့ စကားလုံးတွေကို အတူစုထားပြီး သိမ်မွေ့တဲ့ ကွာခြားချက်နဲ့ အသုံးပြုပုံကို ခွဲခြားပါ။') }}</p>
-        <div class="peek"><span class="chip" v-for="g in synonyms.slice(0,3)" :key="g.title">{{ g.words[0].k }}</span></div>
-        <span class="count">{{ synonyms.length }} {{ T('组','အုပ်စု') }} · {{ Object.keys(synCats).length }} {{ T('个分类','အမျိုးအစား') }}</span>
-      </button>
-      <button class="tile" @click="go('art')">
-        <span class="no">02</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg></span>
-        <h2>文章<span class="pause">{{ T('N2 改写完成 · 30 篇','N2 ၃၀ ပုဒ် ပြီးဆုံး') }}</span></h2>
-        <span class="jp">読解</span>
-        <p class="desc">{{ T('N2 读解文章，汉字上方注假名，读着读着把语法和词汇连起来。','N2 စာဖတ်ဆောင်းပါးများ၊ ခန်းဂျိအပေါ်မှာ ခါနာ အသံထွက်ပါပြီး ဖတ်ရင်း သဒ္ဒါနဲ့ ဝေါဟာရကို ချိတ်ဆက်ပါ။') }}</p>
-        <div class="peek"><span class="chip" v-for="a in articles.slice(0,4)" :key="a.title">{{ a.short }}</span></div>
-        <span class="count">{{ articles.length }} {{ T('篇','ပုဒ်') }} · {{ T('覆盖 N2 语法','N2 သဒ္ဒါ') }} {{ coveredGrammar }} {{ T('条','ခု ပါဝင်') }}</span>
-      </button>
-      <button class="tile" @click="go('gram')">
-        <span class="no">03</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg></span>
-        <h2>语法<span class="h1sub">{{ T('（N2 ＋ N3 ＋ 接续词 ＋ 敬语 ＋ 口语 ＋ 语气词 ＋ 叠词 ＋ っり副词）','（N2 ＋ N3 ＋ ဆက်စပ်စကား ＋ ရိုသေစကား ＋ စကားပြော ＋ အာမေဍိတ် ＋ ထပ်ဆင့်စကား ＋ っり）') }}</span></h2>
-        <span class="jp">文法</span>
-        <p class="desc">{{ T('N2、N3 重点文型，加接续词、敬语和生活口语：接续、意思、两个例句、相近说法。','N2、N3 အဓိက သဒ္ဒါပုံစံများ၊ ဆက်စပ်စကား၊ ရိုသေစကားနဲ့ နေ့စဉ်စကားပြော：ချိတ်ဆက်ပုံ၊ အဓိပ္ပာယ်၊ ဥပမာ နှစ်ခု၊ ဆင်တူပုံစံများ။') }}</p>
-        <div class="peek"><span class="chip" v-for="(n,c) in gramCounts" :key="c">{{ mmOn ? gramCatsMy[c] : gramCats[c] }}</span></div>
-        <span class="count">{{ grammar.length }} {{ T('条','ခု') }} · N2 {{ gramCounts.n2 }} · N3 {{ gramCounts.n3 }} · {{ T('接续词','ဆက်စပ်စကား') }} {{ gramCounts.conj }} · {{ T('敬语','ရိုသေစကား') }} {{ gramCounts.keigo }} · {{ T('口语','စကားပြော') }} {{ gramCounts.talk }} · {{ T('语气词','အာမေဍိတ်') }} {{ gramCounts.kan }} · {{ T('叠词','ထပ်ဆင့်') }} {{ gramCounts.onoma }} · {{ T('っり副词','っり') }} {{ gramCounts.ri }}</span>
-      </button>
-      <button class="tile" @click="go('n2')">
-        <span class="no">04</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v13M8 10h5M8 14h5"/></svg></span>
-        <h2>N2 词汇</h2>
-        <span class="jp">語彙</span>
-        <p class="desc">{{ T('按 N2 词表系统补词汇：读音、中文、例句、朗读和详细解析。','N2 ဝေါဟာရစာရင်းအတိုင်း စနစ်တကျ ဖြည့်ပါ：အသံထွက်၊ အဓိပ္ပာယ်၊ ဥပမာ၊ အသံဖတ်နဲ့ အသေးစိတ် ခွဲခြမ်းစိတ်ဖြာချက်။') }}</p>
-        <div class="peek"><span class="chip" v-for="(n,c) in n2Counts" :key="c">{{ mmOn ? n2CatsMy[c] : n2Cats[c] }} {{ n }}</span></div>
-        <span class="count">{{ n2All.length }} {{ T('词 · 持续增加中','လုံး · ဆက်တိုးနေဆဲ') }}</span>
-      </button>
-      <!-- N3 词汇：和 N2 词汇同样的结构，数据来自 n3vocab（N3 词表）+ 语法库里的"N3 重点" -->
-      <button class="tile" @click="go('n3')">
-        <span class="no">05</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v13M8 10h5M8 14h5"/></svg></span>
-        <h2>N3 词汇</h2>
-        <span class="jp">語彙</span>
-        <p class="desc">{{ T('N3 词表全收录，加上 N3 语法：读音、中文、例句、朗读和详细解析。','N3 ဝေါဟာရစာရင်း အပြည့်အစုံ၊ N3 သဒ္ဒါပါ：အသံထွက်၊ အဓိပ္ပာယ်၊ ဥပမာ၊ အသံဖတ်နဲ့ အသေးစိတ် ခွဲခြမ်းစိတ်ဖြာချက်။') }}</p>
-        <div class="peek"><span class="chip" v-for="(n,c) in n3Counts" :key="c">{{ mmOn ? n3CatsMy[c] : n3Cats[c] }} {{ n }}</span></div>
-        <span class="count">{{ n3All.length }} {{ T('词 · 持续完善中','လုံး · ဆက်ဖြည့်နေဆဲ') }}</span>
-      </button>
-      <button class="tile" @click="go('verb')">
-        <span class="no">06</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.5 4.5L20 16M20 20v-4h-4"/></svg></span>
-        <h2>动词变形</h2>
-        <span class="jp">動詞の活用</span>
-        <p class="desc">{{ T('一类、二类、三类动词怎么变：て形、ない形、可能、被动、使役……图解加例句，还能查任意动词。','အုပ်စု ၁၊ ၂၊ ၃ ကြိယာ ပုံပြောင်းနည်း：て形、ない形、နိုင်ခြေ၊ ခံရ၊ ခိုင်းစေ……ပုံနဲ့ ဥပမာပါပြီး ဘယ်ကြိယာမဆို ရှာနိုင်ပါတယ်။') }}</p>
-        <div class="peek"><span class="chip">{{ T('三类怎么分','အုပ်စု ၃ မျိုး ခွဲနည်း') }}</span><span class="chip">{{ T('て形音便','て形 အသံပြောင်း') }}</span><span class="chip">{{ T('被动 · 使役','ခံရ · ခိုင်းစေ') }}</span><span class="chip">{{ T('查变形','ပုံပြောင်း ရှာရန်') }}</span></div>
-        <span class="count">{{ T('15 种变形 · 一类 / 二类 / 三类','ပုံပြောင်း ၁၅ မျိုး · အုပ်စု ၁ / ၂ / ၃') }}</span>
-      </button>
+      <!-- 查词（原来的查词组件，原样放进来） -->
+      <div class="mh-search"><word-search></word-search></div>
+
+      <!-- 灰色概览卡：三个真实数字 + 一个主按钮（有收藏功能就去收藏本，没有就去 N2 词汇） -->
+      <section class="mh-card" aria-label="概览">
+        <div class="mh-stats">
+          <div class="mh-stat"><b>{{ n2All.length + n3All.length }}</b><span>{{ T('词汇（N2 + N3）','ဝေါဟာရ（N2 + N3）') }}</span></div>
+          <div class="mh-stat"><b>{{ grammar.length }}</b><span>{{ T('语法','သဒ္ဒါ') }}</span></div>
+          <div class="mh-stat"><b>{{ articles.length }}</b><span>{{ T('文章','ဆောင်းပါး') }}</span></div>
+        </div>
+        <button v-if="favOn" class="mh-main" type="button" @click="go('fav')">{{ T('打开收藏本','သိမ်းထားသည်များ ဖွင့်ရန်') }}<template v-if="favs.length"> · {{ favs.length }}</template></button>
+        <button v-else class="mh-main" type="button" @click="go('n2')">{{ T('开始背 N2 词汇','N2 ဝေါဟာရ စလေ့လာရန်') }}</button>
+      </section>
+
+      <div class="mh-label">{{ T('学习模块','သင်ခန်းစာများ') }}</div>
+      <nav class="mh-list" aria-label="学习模块">
+        <button class="mh-row" type="button" @click="go('n2')">
+          <span class="mh-ico i-blue" aria-hidden="true">N2</span>
+          <span class="mh-txt"><span class="mh-name">N2 词汇</span><span class="mh-desc">{{ n2All.length }} {{ T('词','လုံး') }} · {{ T('必读','မဖြစ်မနေ') }} {{ n2All.filter(w=>w.pri===1).length }}</span></span><svg class="mh-chev" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="mh-row" type="button" @click="go('n3')">
+          <span class="mh-ico i-blue" aria-hidden="true">N3</span>
+          <span class="mh-txt"><span class="mh-name">N3 词汇</span><span class="mh-desc">{{ n3All.length }} {{ T('词','လုံး') }} · {{ T('必读','မဖြစ်မနေ') }} {{ n3All.filter(w=>w.pri===1).length }}</span></span><svg class="mh-chev" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="mh-row" type="button" @click="go('gram')">
+          <span class="mh-ico i-violet" aria-hidden="true">文</span>
+          <span class="mh-txt"><span class="mh-name">{{ T('语法','သဒ္ဒါ') }}</span><span class="mh-desc">{{ grammar.length }} {{ T('条','ခု') }} · N2 {{ gramCounts.n2 }} · N3 {{ gramCounts.n3 }} · {{ T('口语、语气词、叠词…','စကားပြော၊ အာမေဍိတ်…') }}</span></span><svg class="mh-chev" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="mh-row" type="button" @click="go('syn')">
+          <span class="mh-ico i-green" aria-hidden="true">似</span>
+          <span class="mh-txt"><span class="mh-name">{{ T('同义词辨析','ဆင်တူစကား') }}</span><span class="mh-desc">{{ synonyms.length }} {{ T('组','အုပ်စု') }} · {{ Object.keys(synCats).length }} {{ T('个分类','အမျိုးအစား') }}</span></span><svg class="mh-chev" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="mh-row" type="button" @click="go('art')">
+          <span class="mh-ico i-orange" aria-hidden="true">読</span>
+          <span class="mh-txt"><span class="mh-name">{{ T('文章阅读','စာဖတ်') }}</span><span class="mh-desc">{{ articles.length }} {{ T('篇','ပုဒ်') }} · {{ T('覆盖 N2 语法','N2 သဒ္ဒါ') }} {{ coveredGrammar }} {{ T('条','ခု') }}</span></span><svg class="mh-chev" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="mh-row" type="button" @click="go('verb')">
+          <span class="mh-ico i-pink" aria-hidden="true">活</span>
+          <span class="mh-txt"><span class="mh-name">{{ T('动词变形','ကြိယာ ပုံပြောင်း') }}</span><span class="mh-desc">{{ T('15 种变形 · 一类 / 二类 / 三类','ပုံပြောင်း ၁၅ မျိုး') }}</span></span><svg class="mh-chev" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </nav>
+
+      <footer class="mh-foot">
+        <span class="ver">v126 · Updated 2026-11-21 13:59<template v-if="userCount!==null"> · ユーザー {{ userCount }} 人</template></span>
+        <span>{{ T('词典数据','အဘိဓာန်ဒေတာ') }}：JMdict（EDRDG）· CC BY-SA 4.0</span>
+      </footer>
     </div>
-    <p class="credit">{{ T('词典数据','အဘိဓာန်ဒေတာ') }}：JMdict（EDRDG）· CC BY-SA 4.0</p>
   </template>
 
   <!-- ===== SYNONYMS ===== -->
@@ -11087,6 +11131,8 @@ Vue.createApp({
   computed:{
     art(){ return this.articles[this.idx]; },
     favOn(){ return !!API_BASE; },
+    /* 首页左上角的日期，例如"11月21日 · 周六"（缅甸语模式下用 21/11 这种写法） */
+    todayLabel(){ const d=new Date(); return this.mmOn ? (d.getDate()+'/'+(d.getMonth()+1)) : ((d.getMonth()+1)+'月'+d.getDate()+'日 · 周'+'日一二三四五六'[d.getDay()]); },
     favEntries(){ return this.favs.map(f=>Object.assign({ f }, this.favInfo(f))); },
     /* ===== 收藏本分类（只在前端做，不需要后端）=====
        收藏在后端只存"一段文字"，没有分类。分类靠 favInfo 把每条收藏对回本地词库，再看它在词库里属于哪一类：
@@ -11193,7 +11239,8 @@ Vue.createApp({
     pagedArt(){ const p=Math.min(this.artPage,this.artPages); return this.articles.slice((p-1)*10, p*10); },
     pagedSyn(){ const p=Math.min(this.synPage,this.synPages); return this.filteredSyn.slice((p-1)*10, p*10); }
   },
-  watch:{ mmOn(v){ try{localStorage.setItem('mmOn',v?'1':'0')}catch(e){} document.documentElement.classList.toggle('my-on',v); }, nq(){ this.n2Page=1; }, n2Cat(){ this.n2Page=1; }, n3q(){ this.n3Page=1; }, n3Cat(){ this.n3Page=1; }, favCat(){ this.favPage=1; }, favLevel(){ this.favCat='all'; this.favPage=1; }, q(){ this.synPage=1; }, synCat(){ this.synPage=1; }, gq(){ this.gramPage=1; }, gramCat(){ this.gramPage=1; } },
+  watch:{ route:{ immediate:true, handler(v){ document.body.classList.toggle('min-home', v==='home'); } },   // 首页用白底（极简皮肤），其他页面恢复原来的底色
+    mmOn(v){ try{localStorage.setItem('mmOn',v?'1':'0')}catch(e){} document.documentElement.classList.toggle('my-on',v); }, nq(){ this.n2Page=1; }, n2Cat(){ this.n2Page=1; }, n3q(){ this.n3Page=1; }, n3Cat(){ this.n3Page=1; }, favCat(){ this.favPage=1; }, favLevel(){ this.favCat='all'; this.favPage=1; }, q(){ this.synPage=1; }, synCat(){ this.synPage=1; }, gq(){ this.gramPage=1; }, gramCat(){ this.gramPage=1; } },
   methods:{
     rb(s){ return ruby(esc(s)); },
     setPage(p){ if(!p||p<1||p>this.synPages) return; this.synPage=p; window.scrollTo({top:0,behavior:this.smooth()}); },
